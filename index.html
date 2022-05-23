@@ -11,7 +11,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title> Syclover</title>
+      <title> Kama</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -59,7 +59,7 @@
       <img src="/images/cover2.jpg" alt="image frame" />
     </div>
     <div class="cover-inner text-center text-white">
-      <h1><a href="/">Syclover</a></h1>
+      <h1><a href="/">Kama</a></h1>
       <div id="subtitle-box">
         
         <span id="subtitle"></span>
@@ -149,129 +149,6 @@
     
     
     <article
-  id="post-攻防世界RE新手区wp"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/05/22/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CRE%E6%96%B0%E6%89%8B%E5%8C%BAwp/"
-    >攻防世界RE新手区wp</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/05/22/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CRE%E6%96%B0%E6%89%8B%E5%8C%BAwp/" class="article-date">
-  <time datetime="2022-05-22T10:47:32.000Z" itemprop="datePublished">2022-05-22</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="攻防世界reverse新手区wp"><a href="#攻防世界reverse新手区wp" class="headerlink" title="攻防世界reverse新手区wp"></a>攻防世界reverse新手区wp</h1><h2 id="1-csaw2013reversing2"><a href="#1-csaw2013reversing2" class="headerlink" title="1.csaw2013reversing2"></a>1.csaw2013reversing2</h2><p>题目描述：听说运行就能拿到Flag，不过菜鸡运行的结果不知道为什么是乱码。</p>
-<p>拿到题目，在Windows安全中心中选择信任此应用，双击运行，得到一个标题是“Flag”，内容是乱码的弹窗（应该是这个弹窗估计调用了某个Windows api函数导致Windows安全中心识别成木马）</p>
-<p>将文件放入IDA中查看发现为无壳32位PE文件，反编译后的main函数如下：<img src="/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CRE%E6%96%B0%E6%89%8B%E5%8C%BAwp/csaw2013reversing2/main%E5%87%BD%E6%95%B0.png" alt="初运行"></p>
-<p>不同的版本的IDA反编译的结果有所不同：<img src="/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CRE%E6%96%B0%E6%89%8B%E5%8C%BAwp/csaw2013reversing2/main%E5%87%BD%E6%95%B02.png" alt="main函数2"></p>
-<p>这里if的判断语句两者是相反的意思，同时执行也相反，所以理解起来是一样的。</p>
-<p>分析可知调用了很多<u>Windows api</u>函数，由题目描述和代码分析，题目中的变量&#x3D;&#x3D;IpMem&#x3D;&#x3D;即为Flag，也就是弹窗的内容。后面if的判断语句则是监测程序是否被调试。这里的&#x3D;&#x3D;sub_40102A&#x3D;&#x3D;打开查看发现返回值恒等于零，而&#x3D;&#x3D;IsDebuggerPresent&#x3D;&#x3D;则是判断是否处于调试状态，那就是说只有在调试状态下才会执行后续的操作指令。我们进入函数sub_40102A查看：<img src="D:\Hexo\kama\source_posts\csaw2013reversing2\解密函数.png" alt="解密函数"></p>
-<p>函数传入了&#x3D;&#x3D;IpMem&#x3D;&#x3D;参数，对他的数据进行二进制位移和异或等操作，由题目描述可知此函数应该为解密函数。主函数的&#x3D;&#x3D;memcpy_s&#x3D;&#x3D;函数给&#x3D;&#x3D;IpMem&#x3D;&#x3D;这个变量赋值，但由于调试的判断不通过，所以无法对原始数据进行解密，因而将原始数据的乱码输出。综上可认为函数的逻辑是相悖的，所以我们去汇编代码界面对程序的执行顺序进行修改。修改操作：选中要修改的那一行，然后一步一步选择<strong>Edit–&gt;Patch</strong> <strong>programe–&gt;Assamble</strong>对代码进行修改。并消除断点指令，即将断点指令的代码修改成nop。修改完成后保存覆盖掉原程序。选择<strong>Edit–&gt;Patch programe–&gt;Apply patches to input file</strong>完成操作。修改前后代码如下：<img src="/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CRE%E6%96%B0%E6%89%8B%E5%8C%BAwp/csaw2013reversing2/%E4%BF%AE%E6%94%B9%E5%89%8D.png" alt="修改前"></p>
-<p><img src="/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CRE%E6%96%B0%E6%89%8B%E5%8C%BAwp/csaw2013reversing2/%E4%BF%AE%E6%94%B9%E5%90%8E.png" alt="修改后"></p>
-<p>运行程序即可得到Flag（一定要关闭Windows安全中心运行！！！）<img src="D:\Hexo\kama\source_posts\csaw2013reversing2\Flag.png" alt="Flag"></p>
-<h2 id="maze"><a href="#maze" class="headerlink" title="maze"></a>maze</h2><p>题目描述：菜鸡想要走出菜狗设计的迷宫、</p>
-<p>拿到文件放入IDA中查看，发现为无壳64位ELF文件，main函数如下：<img src="D:\Hexo\kama\source_posts\maze\main函数.png" alt="main函数"></p>
-<p>根据题目描述此题为迷宫题，第一个判断语句限制flag为24字节长度且为nctf{ }的形式。向下分析代码，首先寻找迷宫的规格。第70行判断语句：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(asc_601060[<span class="number">8</span>*(<span class="type">signed</span> <span class="type">int</span>)v9+SHIDWORD(V9)])!=<span class="string">&#x27;#&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>可得知，终点为’#’，且8为行数。再查看&#x3D;&#x3D;asc_601060&#x3D;&#x3D;数据类型为*char[64]<em>，所以列数也为8，即为8</em>8的迷宫。&#x3D;&#x3D;SHIDWORD(v9)&#x3D;&#x3D;为&#x3D;&#x3D;&amp;v9+1&#x3D;&#x3D;，&#x3D;&#x3D;v9&#x3D;&#x3D;指向行数，&#x3D;&#x3D;SHIDWORD(v9)&#x3D;&#x3D;指向列数。用python将迷宫打印下来。为了方便观察，将空格替换成’<strong>-</strong>‘。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">str</span> = <span class="string">&#x27;  *******   *  **** * ****  * ***  *#  *** *** ***     *********&#x27;</span></span><br><span class="line"><span class="built_in">str</span>=<span class="built_in">str</span>.replace(<span class="string">&#x27; &#x27;</span>,<span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,<span class="built_in">len</span>(<span class="built_in">str</span>),<span class="number">8</span>):</span><br><span class="line">   	<span class="built_in">print</span>(<span class="built_in">str</span>[i:i+<span class="number">8</span>])</span><br></pre></td></tr></table></figure>
-
-<p><img src="D:\Hexo\kama\source_posts\maze\打印迷宫.png" alt="打印"></p>
-<p>继续分析函数，*while(1)<em>的循环里，</em>v3 &#x3D; 5LL；v4 &#x3D; *(&amp;s1 + v3);*所以v4从flag的第六号元素，即花括号里的第一位开始判断，并且后面的++v3使得v4每判断完一位以后向后位移一位。接着有四个判断语句，由v9和SHIDWORD(v9)的行列对应关系可知前两个判断代表左右位移，后两个判断代表上下位移。由此可知：</p>
-<ul>
-<li>上    下     左     右</li>
-<li>.       0      O       o</li>
-</ul>
-<p>由此按照迷宫走向，可填出内容：</p>
-<p><strong>nctf{o0oo00O000oooo..OO}</strong></p>
-<h2 id="gitit"><a href="#gitit" class="headerlink" title="gitit"></a>gitit</h2><p>题目描述：菜鸡发现这个程序偷偷摸摸在自己的机器上搞事情，它决定一探究竟</p>
-<p>将程序放入IDA中查看发现为无壳64位ELF文件，main函数如下：<img src="D:\Hexo\kama\source_posts\gitit\main函数.png" alt="main函数"></p>
-<p>双击变量查看发现<em><strong>t</strong></em>应该为flag<img src="D:\Hexo\kama\source_posts\gitit\t.png" alt="t"></p>
-<p>flag里的内容应用字符串<em><strong>s</strong></em>经过某种算法进行填充<img src="D:\Hexo\kama\source_posts\gitit\s.png" alt="s"></p>
-<p>后面的代码则是对循环控制变量<em><strong>i</strong></em>进行<b>二进制与运算</b>&gt;’<em><strong>&amp;</strong></em>‘然后对<em><strong>s</strong></em>字符串进行<b>ascll码</b>上的加减，即字母表上的位移。故可根据代码段：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); ++i )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( (i &amp; <span class="number">1</span>) != <span class="number">0</span> )</span><br><span class="line">      v3 = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      v3 = <span class="number">-1</span>;</span><br><span class="line">    *(&amp;t + i + <span class="number">10</span>) = s[i] + v3;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
-<p>用<em><strong>python</strong></em>写出相应脚本即可解出答案：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">str</span> = <span class="string">&#x27;c61b68366edeb7bdce3c6820314b7498&#x27;</span></span><br><span class="line">flag=<span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(<span class="built_in">str</span>)):</span><br><span class="line">    <span class="keyword">if</span> i &amp; <span class="number">1</span>:</span><br><span class="line">        t=<span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        t=-<span class="number">1</span></span><br><span class="line">    flag+=<span class="built_in">chr</span>(<span class="built_in">ord</span>(<span class="built_in">str</span>[i])+t)</span><br><span class="line"><span class="built_in">print</span>(flag)</span><br></pre></td></tr></table></figure>
-
-<p>得到结果</p>
-<p><img src="D:\Hexo\kama\source_posts\gitit\python运行结果.png" alt="结果"></p>
-<p>所以<strong>flag&#x3D;harifCTF{b70c59275fcfa8aebf2d5911223c6589}</strong></p>
-<p>由于后面代码涉及文件，是一个动态过程，故我们也可以采用调试来看这道题。在文件相关函数的<em>for</em></p>
-<p>函数那里下断点，然后一边单步运行，一边在Linux虚拟机里的<strong>tmp</strong>文件夹里查看文本内容<img src="D:\Hexo\kama\source_posts\gitit\循环内容.png" alt="内容"></p>
-<p>由此可知</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fseek(stream, p[j], <span class="number">0</span>);</span><br><span class="line">fputc(*(&amp;t + p[j]), stream);</span><br></pre></td></tr></table></figure>
-
-<p>前两行代码表现在实际就是给flag花括号里面的值全部赋上*****。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fseek(stream, <span class="number">0LL</span>, <span class="number">0</span>);</span><br><span class="line"><span class="built_in">fprintf</span>(stream, <span class="string">&quot;%s\n&quot;</span>, u);</span><br></pre></td></tr></table></figure>
-
-<p>后两行代码在实际表现为给花括号里的某一个元素赋上相应正确flag里的值，所以最初做这道题的时候用了最笨的一个方法：单步执行32个循环，一边一边记下flag中的某一个元素，然后拼成一整个flag。但其实直接观察内存就可以知道flag的值，因为在之前的运算函数执行完后，flag的值已经修改好并写入内存了，所以……</p>
-<p><img src="D:\Hexo\kama\source_posts\gitit\直接看答案.png" alt="看答案"></p>
-<p><strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> <strong>:laughing:</strong> </p>
-<h2 id="Re1"><a href="#Re1" class="headerlink" title="Re1"></a>Re1</h2><p>题目描述：菜鸡开始学习逆向工程，首先是最简单的题目</p>
-<p>相当简单的题目，放入ida中查看：<img src="D:\Hexo\kama\source_posts\Re1\main.png" alt="main"></p>
-<p>从比较字符串函数<em><strong>strcmp</strong></em>中可知此程序是将输入的字符串存储到<em>v7</em>然后与<em>v5</em>比较，<em>v5</em>即为正确flag。分析代码可知<em>v5</em>的赋值由代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v5 = _mm_loadu_si128((<span class="type">const</span> __m128i *)&amp;xmmword_FA3E34);</span><br></pre></td></tr></table></figure>
-
-<p>完成。查看内存中存储的值并关联此代码<img src="D:\Hexo\kama\source_posts\Re1\str.png" alt="str"></p>
-<p>可知此<u><strong>SSE指令</strong></u>：**_mm_load_si128**: 是将<em>xmmword_FA3E34</em>字符串的值拼接到qword_FA3E44后形成flag。故我们用python写一个脚本拼接并转换一下字符串，并且最后倒序输出就可以了。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line">str1=<span class="string">&#x27;3074656D30633165577B465443545544&#x27;</span></span><br><span class="line">str2=<span class="string">&#x27;7D465443545544&#x27;</span></span><br><span class="line">str2+=str1</span><br><span class="line"><span class="built_in">print</span>((base64.b16decode(str2))[::-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
-
-<p>得到结果：<img src="D:\Hexo\kama\source_posts\Re1\py结果.png" alt="结果"></p>
-<p>当然我们也可以在ida里面直接进行数据类型的转换。这里学习一些ida使用小技巧：</p>
-<blockquote>
-<p><strong>ida使用小技巧，当光标移动到数据时，可以点击快捷键进行数据类型的转化，</strong></p>
-<p><strong>a：将字符进行ascll编码，形成一个字符。</strong></p>
-<p><strong>r：将一串数据转化为字符串，但要注意数据大小端的储存方式，这里形成的字符串时逆序的。</strong></p>
-<p>*<strong>：将数据组合形成数组。</strong></p>
-<p><strong>u：消除对某段数据的分析，并呈现为十六进制数据。</strong></p>
-<p><strong>c：将选中的数据分析为代码。</strong></p>
-<p><strong>p：将选中的代码部分分析为一个函数。</strong></p>
-<p><strong>d：转化选中的数据的数据类型，主要有Byte、Word、Dword</strong></p>
-</blockquote>
-<p>所以我们使用<strong>r</strong>键将十六进制转化为字符串得到：<img src="D:\Hexo\kama\source_posts\Re1\快捷键转化数据类型.png" alt="结果"></p>
-<p>然后再用<em>python</em>拼接反向一下就可以了</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="string">&#x27;0tem0c1eW&#123;FTCTUD&#x27;</span>[::-<span class="number">1</span>]</span><br><span class="line">b = <span class="string">&#x27;&#125;FTCTUD&#x27;</span>[::-<span class="number">1</span>]</span><br><span class="line"><span class="built_in">print</span>(a+b)</span><br></pre></td></tr></table></figure>
-
-<p>当然，我们知道，由于<em><strong>strcmp</strong></em>为明文比较，所以我们可以在调试过程中直接查看明文获取flag。</p>
-<p>在第15行下断点并开启调试器，直接查看<em>v5</em>的内存即可获取flag。（用快捷键<strong>a</strong>将字符拼接成字符串）<img src="D:\Hexo\kama\source_posts\Re1\调试结果.png" alt="调试">   </p>
-<p><img src="D:\Hexo\kama\source_posts\Re1\a拼接.png" alt="拼接"></p>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-   
-    
-</article>
-
-    
-    <article
   id="post-hello-world"
   class="article article-type-post"
   itemscope
@@ -343,7 +220,7 @@
       <li>
         Copyrights &copy;
         2022
-        <i class="ri-heart-fill heart_icon"></i> Kama
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
       </li>
     </ul>
     <ul>
@@ -395,7 +272,7 @@
 <nav class="navbar">
   
   <div class="logo">
-    <a href="/"><img src="/images/ayer-side.svg" alt="Syclover"></a>
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
   </div>
   
   <ul class="nav nav-main">
