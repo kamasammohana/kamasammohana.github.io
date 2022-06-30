@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title> Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-normal"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+     
+    <div class="article-meta">
+      <a href="/2022/07/01/normal/" class="article-date">
+  <time datetime="2022-06-30T16:51:38.397Z" itemprop="datePublished">2022-07-01</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.1k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">13 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="normal"><a href="#normal" class="headerlink" title="normal"></a>normal</h1><h3 id="normal1"><a href="#normal1" class="headerlink" title="normal1"></a>normal1</h3><p><code>flag:C1CTF&#123;th1s_Bas364_is_qcjlCwgS&#125;</code></p>
+<p>运行题目文件：</p>
+<blockquote>
+<p>Welcome to C1CTF 2018!<br>Plz find the flag:</p>
+</blockquote>
+<p>使用<em>ExeinfoPe</em>查看，确认为无壳64位ELF文件。放入IDA中查看：</p>
+<blockquote>
+<p>int64 fastcall main(int a1, char a2, char a3)<br>{<br>  int i; &#x2F;&#x2F; [rsp+4h] [rbp-17Ch]<br>  char v5[64]; &#x2F;&#x2F; [rsp+20h] [rbp-160h] BYREF<br>  char s2[264]; &#x2F;&#x2F; [rsp+60h] [rbp-120h] BYREF<br>  unsigned __int64 v7; &#x2F;&#x2F; [rsp+168h] [rbp-18h]</p>
+<p>  v7 &#x3D; readfsqword(0x28u);<br>  puts(“Welcome to C1CTF 2018!”);<br>  printf(“Plz find the flag:”);<br>  isoc99_scanf(“%60s”, v5);<br>  for ( i &#x3D; 0; i &lt; strlen(v5); ++i )<br>  {<br>    if ( (i &amp; 1) !&#x3D; 0 )<br>      v5[i] ^&#x3D; 0x60u;<br>    else<br>      v5[i] ^&#x3D; 0x91u;<br>  }<br>  <strong>sub_A84</strong>(v5, s2);<br>  if ( !strcmp(“<strong>OBufaa21Td86rWS8Wob8iGhZYocbr5vxZfcCoWv3</strong>“, s2) )<br>    puts(“Well done!”);<br>  else<br>    puts(“Try again!”);<br>  return 0LL;<br>}</p>
+</blockquote>
+<p>程序大致为将输入存储到数组，然后根据数组下标奇偶进行异或，再放入加密函数<strong>sub_A84</strong>中进行加密，最后将加密结果与比较字符串<strong>OBufaa21Td86rWS8Wob8iGhZYocbr5vxZfcCoWv3</strong>进行比较，然后根据结果输出对错。</p>
+<p>我们跟进这个加密函数：</p>
+<blockquote>
+<p>_BYTE *__fastcall sub_A84(**int64 a1, _BYTE *a2)<br>{<br>  _BYTE *result; &#x2F;&#x2F; rax<br>  char v4; &#x2F;&#x2F; [rsp+19h] [rbp-7h]<br>  unsigned int8 v5; &#x2F;&#x2F; [rsp+1Ah] [rbp-6h]<br>  unsigned int8 i; &#x2F;&#x2F; [rsp+1Bh] [rbp-5h]<br>  int v7; &#x2F;&#x2F; [rsp+1Ch] [rbp-4h]</p>
+<p>  v4 &#x3D; 0;<br>  v5 &#x3D; 0;<br>  v7 &#x3D; 0;<br>  while ( *(_BYTE *)(v7 + a1) )<br>  {<br>    <em>a2++ &#x3D; <strong>sub_7FA</strong>((unsigned __int8)(((int)</em>(unsigned int8 *)(v7 + a1) &gt;&gt; (v5 + 2)) | v4));<br>    v5 &#x3D; (v5 + 2) &amp; 7;<br>    v4 &#x3D; 0;<br>    for ( i &#x3D; 0; i &lt; v5; ++i )<br>      v4 |&#x3D; ((1 &lt;&lt; i) &amp; *(unsigned int8 *)(v7 + a1)) &lt;&lt; (6 - v5);<br>    if ( v5 &lt;&#x3D; 5u )<br>      ++v7;<br>  }<br>  result &#x3D; a2;<br>  *a2 &#x3D; 0;<br>  return result;<br>}</p>
+</blockquote>
+<p>跟进函数<strong>sub_7FA</strong>：</p>
+<blockquote>
+<p>__int64 __fastcall sub_7FA(char a1)<br>{<br>  __int64 result; &#x2F;&#x2F; rax</p>
+<p>  switch ( a1 )<br>  {<br>    case 0:<br>      result &#x3D; 110LL;<br>      break;<br>    case 1:<br>      result &#x3D; 111LL;<br>      break;<br>    case 2:<br>      result &#x3D; 112LL;<br>      break;<br>    case 3:<br>      result &#x3D; 113LL;<br>      break;<br>    case 4:<br>      result &#x3D; 114LL;<br>      break;<br>    case 5:<br>      result &#x3D; 115LL;<br>      break;<br>    case 6:<br>      result &#x3D; 116LL;<br>      break;<br>    case 7:<br>      result &#x3D; 117LL;<br>      break;<br>    case 8:<br>      result &#x3D; 118LL;<br>      break;<br>    case 9:<br>      result &#x3D; 119LL;<br>      break;<br>    case 10:<br>      result &#x3D; 120LL;<br>      break;<br>    case 11:<br>      result &#x3D; 121LL;<br>      break;<br>    case 12:<br>      result &#x3D; 122LL;<br>      break;<br>    case 13:<br>      result &#x3D; 97LL;<br>      break;<br>    case 14:<br>      result &#x3D; 98LL;<br>      break;<br>    case 15:<br>      result &#x3D; 99LL;<br>      break;<br>    case 16:<br>      result &#x3D; 100LL;<br>      break;<br>    case 17:<br>      result &#x3D; 101LL;<br>      break;<br>    case 18:<br>      result &#x3D; 102LL;<br>      break;<br>    case 19:<br>      result &#x3D; 103LL;<br>      break;<br>    case 20:<br>      result &#x3D; 104LL;<br>      break;<br>    case 21:<br>      result &#x3D; 105LL;<br>      break;<br>    case 22:<br>      result &#x3D; 106LL;<br>      break;<br>    case 23:<br>      result &#x3D; 107LL;<br>      break;<br>    case 24:<br>      result &#x3D; 108LL;<br>      break;<br>    case 25:<br>      result &#x3D; 109LL;<br>      break;<br>    case 26:<br>      result &#x3D; 48LL;<br>      break;<br>    case 27:<br>      result &#x3D; 49LL;<br>      break;<br>    case 28:<br>      result &#x3D; 50LL;<br>      break;<br>    case 29:<br>      result &#x3D; 51LL;<br>      break;<br>    case 30:<br>      result &#x3D; 52LL;<br>      break;<br>    case 31:<br>      result &#x3D; 53LL;<br>      break;<br>    case 32:<br>      result &#x3D; 54LL;<br>      break;<br>    case 33:<br>      result &#x3D; 55LL;<br>      break;<br>    case 34:<br>      result &#x3D; 56LL;<br>      break;<br>    case 35:<br>      result &#x3D; 57LL;<br>      break;<br>    case 36:<br>      result &#x3D; 65LL;<br>      break;<br>    case 37:<br>      result &#x3D; 66LL;<br>      break;<br>    case 38:<br>      result &#x3D; 67LL;<br>      break;<br>    case 39:<br>      result &#x3D; 68LL;<br>      break;<br>    case 40:<br>      result &#x3D; 69LL;<br>      break;<br>    case 41:<br>      result &#x3D; 70LL;<br>      break;<br>    case 42:<br>      result &#x3D; 71LL;<br>      break;<br>    case 43:<br>      result &#x3D; 72LL;<br>      break;<br>    case 44:<br>      result &#x3D; 73LL;<br>      break;<br>    case 45:<br>      result &#x3D; 74LL;<br>      break;<br>    case 46:<br>      result &#x3D; 75LL;<br>      break;<br>    case 47:<br>      result &#x3D; 76LL;<br>      break;<br>    case 48:<br>      result &#x3D; 43LL;<br>      break;<br>    case 49:<br>      result &#x3D; 47LL;<br>      break;<br>    case 50:<br>      result &#x3D; 77LL;<br>      break;<br>    case 51:<br>      result &#x3D; 78LL;<br>      break;<br>    case 52:<br>      result &#x3D; 79LL;<br>      break;<br>    case 53:<br>      result &#x3D; 80LL;<br>      break;<br>    case 54:<br>      result &#x3D; 81LL;<br>      break;<br>    case 55:<br>      result &#x3D; 82LL;<br>      break;<br>    case 56:<br>      result &#x3D; 83LL;<br>      break;<br>    case 57:<br>      result &#x3D; 84LL;<br>      break;<br>    case 58:<br>      result &#x3D; 85LL;<br>      break;<br>    case 59:<br>      result &#x3D; 86LL;<br>      break;<br>    case 60:<br>      result &#x3D; 87LL;<br>      break;<br>    case 61:<br>      result &#x3D; 88LL;<br>      break;<br>    case 62:<br>      result &#x3D; 89LL;<br>      break;<br>    case 63:<br>      result &#x3D; 90LL;<br>      break;<br>    default:<br>      result &#x3D; 63LL;<br>      break;<br>  }<br>  return result;<br>}</p>
+</blockquote>
+<p>发现是一个映射表，传入的运算结果作为下标映射字符。我们再分析传参的表达式：</p>
+<blockquote>
+<p>(unsigned int8)(((int)*(unsigned __int8 *)(v7 + a1) &gt;&gt; (v5 + 2)) | v4)</p>
+</blockquote>
+<p><em>v5</em>为0，2，4，6的循环，(v7+a1)为传入的数组中的每一位元素，长度为八位。那么这个右移的位运算就是在取它的不同位。v4初值为零，，我们看之后改变v4值的式子：</p>
+<blockquote>
+<p>for ( i &#x3D; 0; i &lt; v5; ++i )<br>      v4 |&#x3D; ((1 &lt;&lt; i) &amp; *(unsigned __int8 *)(v7 + a1)) &lt;&lt; (6 - v5);</p>
+</blockquote>
+<p>发现v4取得是数组中在前面传参式子中未被取到的位，那么或运算会将v4补到下一次运算上。分析下来我们可以知道，这就是base64的加密特征，所以我们根据base64编码的基本原理还原加密前数组：</p>
+<blockquote>
+<p>[139,81,60,19,206,34,240,19,162,86,165,63,248,19,206,17,242,10,109,35,230,7,194,29]</p>
+</blockquote>
+<p>（做题尝试的时候发现前6位为<code>C1CTF&#123;</code>，所以偷个懒没有算^^）</p>
+<p>再根据奇偶异或回去就可以得到答案了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">arr=[<span class="number">229</span>,<span class="number">8</span>,<span class="number">160</span>,<span class="number">19</span>,<span class="number">206</span>,<span class="number">34</span>,<span class="number">240</span>,<span class="number">19</span>,<span class="number">162</span>,<span class="number">86</span>,<span class="number">165</span>,<span class="number">63</span>,<span class="number">248</span>,<span class="number">19</span>,<span class="number">206</span>,<span class="number">17</span>,<span class="number">242</span>,<span class="number">10</span>,<span class="number">253</span>,<span class="number">35</span>,<span class="number">230</span>,<span class="number">7</span>,<span class="number">194</span>,<span class="number">29</span>]</span><br><span class="line"><span class="built_in">str</span>=<span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(arr)):</span><br><span class="line">    <span class="keyword">if</span> (i &amp; <span class="number">1</span>)!=<span class="number">0</span>:</span><br><span class="line">        arr[i]^=<span class="number">0x60</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        arr[i]^=<span class="number">0x91</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;C1CTF&#123;&#x27;</span>+<span class="built_in">str</span>.join(<span class="built_in">map</span>(<span class="built_in">chr</span>,arr)))</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="normal2"><a href="#normal2" class="headerlink" title="normal2"></a>normal2</h3><p><code> flag：hxb2018&#123;853ecfe52aeb60989e8d3351&#125;</code></p>
+<p>IDA分析程序，有三个函数，先看第一个函数：<strong>sub_7FF65DF91000(String1)</strong></p>
+<p>传递进该函数的参数<em>String1</em>是个未初始化的字符数组，且该函数与输入无关。所以这是一个生成<em>String1</em>的值的函数。简单观察是将初始的16个值赋给<em>String1</em>在进行扩展，我们将其理解为一个密钥生成的过程。</p>
+<p>在看第二个函数：*<em>sub_7FF65DF912A0((unsigned int8 <em>)Buffer, (int64)String1)</em></em></p>
+<p>整体分析下来他进行了如下操作：先将输入到缓冲区<em>Buffer</em>的前16个字节与密钥<em>String1</em>前16字节异或，然后开始一个9轮的循环，每轮循环都先将<em>Buffer</em>的前16个字节映射到一个数组里面，然后进行行移位的操作，我们将16个字节的数据看成一个矩阵，从第一行开始每行元素依次向左位移0，1，2，3.接着执行一个函数：**sub_7FF65DF911B0((__int64)v2)**，分析他的函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> *__fastcall <span class="title function_">sub_7FF734C311B0</span><span class="params">(__int64 a1)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> *result; <span class="comment">// rax</span></span><br><span class="line">  __int64 v2; <span class="comment">// rbp</span></span><br><span class="line">  <span class="type">char</span> v3; <span class="comment">// si</span></span><br><span class="line">  <span class="type">char</span> v4; <span class="comment">// r9</span></span><br><span class="line">  <span class="type">char</span> v5; <span class="comment">// di</span></span><br><span class="line">  <span class="type">char</span> v6; <span class="comment">// r11</span></span><br><span class="line">  <span class="type">char</span> v7; <span class="comment">// bl</span></span><br><span class="line"></span><br><span class="line">  result = (<span class="type">char</span> *)(a1 + <span class="number">2</span>);</span><br><span class="line">  v2 = <span class="number">4</span>i64;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">  &#123;</span><br><span class="line">    v3 = *(result - <span class="number">2</span>);</span><br><span class="line">    v4 = *(result - <span class="number">1</span>);</span><br><span class="line">    v5 = result[<span class="number">1</span>];</span><br><span class="line">    v6 = *result;</span><br><span class="line">    result += <span class="number">4</span>;</span><br><span class="line">    v7 = v4 ^ v3 ^ v6 ^ v5;</span><br><span class="line">    *(result - <span class="number">6</span>) = v7 ^ v3 ^ (<span class="number">2</span> * (v4 ^ v3)) ^ (<span class="number">0x1B</span> * ((<span class="type">unsigned</span> __int8)(v4 ^ v3) &gt;&gt; <span class="number">7</span>));</span><br><span class="line">    *(result - <span class="number">5</span>) = v7 ^ v4 ^ (<span class="number">2</span> * (v6 ^ v4)) ^ (<span class="number">0x1B</span> * ((<span class="type">unsigned</span> __int8)(v6 ^ v4) &gt;&gt; <span class="number">7</span>));</span><br><span class="line">    *(result - <span class="number">4</span>) = v7 ^ v6 ^ (<span class="number">2</span> * (v6 ^ v5)) ^ (<span class="number">0x1B</span> * ((<span class="type">unsigned</span> __int8)(v6 ^ v5) &gt;&gt; <span class="number">7</span>));</span><br><span class="line">    *(result - <span class="number">3</span>) = v7 ^ v5 ^ (<span class="number">2</span> * (v5 ^ v3)) ^ (<span class="number">0x1B</span> * ((<span class="type">unsigned</span> __int8)(v5 ^ v3) &gt;&gt; <span class="number">7</span>));</span><br><span class="line">    --v2;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span> ( v2 );</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>是在对矩阵进行列操作，由前面分析基本确定这是一个**<u>AES加密</u>*<em>，比对AES加密的列混淆步骤的代码，确定这是列混淆过程，是将原数据矩阵左乘一个固定矩阵。这步直接逆向很困难，询问师傅得知，若比对得知是标准的列混淆就用脚本直接解，一般都是标准的，若不太一样则仔细分析加密。最后再和密钥</em>String1*的下一个16字节进行异或。9轮循环走完，还要再走一轮同样的操作，不过要省去列混淆的那一步。</p>
+<p>最后一个函数在一个32轮的循环里，循环执行前先给<em>String1</em>的64字节赋零，然后执行函数，最后再将<em>String1</em>与给定数据进行字符串比较。动态调试发现此函数就是将<em>Buffer</em>中加密过的16字节数据和未加密的16字节打印到<em>String1</em>上。</p>
+<p>分析结束我们知道这是一个标准的AES加密。我们用python的第三方库pycryptodome去求解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">from Crypto.Cipher import AES</span><br><span class="line">mode = AES.MODE_ECB</span><br><span class="line">key = b&#x27;\x1B\x2E\x35\x46\x58\x6E\x72\x86\x9B\xA7\xB5\xC8\xD9\xEF\xFF\x0C&#x27;</span><br><span class="line">text = b&#x27;\x93\x4d\x87\x06\xbe\xd7\x4c\xd6\xee\xa6\x83\xc7\xbe\x86\xb2\xeb&#x27;</span><br><span class="line">cryptos = AES.new(key,mode)</span><br><span class="line">cipher_text = cryptos.decrypt(text)</span><br><span class="line">arr=[]</span><br><span class="line">for i in cipher_text:</span><br><span class="line">    arr.append(i)</span><br><span class="line">SecondHalf=[0x32,0x61,0x65,0x62,0x36,0x30,0x39,0x38,0x39,0x65,0x38,0x64,0x33,0x33,0x35,0x31]</span><br><span class="line">for i in range(16):</span><br><span class="line">    arr.append(SecondHalf[i])</span><br><span class="line">flag=&#x27;&#x27;</span><br><span class="line">print(flag.join(map(chr,arr))+&#x27;&#125;&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p>由于后16字节数据未作任何处理，我们直接转化成字符串一起输出，最后加上’}’就可以了。这里我们选择的AES模式为：ECB模式。</p>
+<p>这里做一个笔记：</p>
+<blockquote>
+<p>AES有5种加密模式：<strong>CBC</strong>，<strong>ECB</strong>，<strong>CTR</strong>，<strong>CFB</strong>，<strong>OFB</strong></p>
+<p><em><strong>电码本模式（Electronic Codebook Book (ECB)</strong></em></p>
+<p>这种模式是将整个明文分成若干段相同的小段，然后对每一小段进行加密。</p>
+<p>　　优点:<br>　　1.简单；<br>　　2.有利于并行计算；<br>　　3.误差不会被传送；<br>　　缺点:<br>　　1.不能隐藏明文的模式；<br>　　2.可能对明文进行主动攻击；</p>
+<p><em><strong>密码分组链接模式（Cipher Block Chaining (CBC)）</strong></em></p>
+<p>这种模式是先将明文切分成若干小段，然后每一小段与初始块或者上一段的密文段进行异或运算后，再与密钥进行加密。</p>
+<p>　　优点：<br>　　1.不容易主动攻击,安全性好于ECB,适合传输长度长的报文,是SSL、IPSec的标准。<br>　　缺点：<br>　　1.不利于并行计算；<br>　　2.误差传递；<br>　　3.需要初始化向量IV</p>
+<p><em><strong>计算器模式（Counter (CTR)）</strong></em></p>
+<p>计算器模式不常见，在CTR模式中，<br>有一个自增的算子，这个算子用密钥加密之后的输出和明文异或的结果得到密文，相当于一次一密。这种加密方式简单快速，安全可靠，而且可以并行加密，但是在计算器不能维持很长的情况下，密钥只能使用一次。</p>
+<p><em><strong>密码反馈模式（Cipher FeedBack (CFB)）</strong></em></p>
+<p>优点：<br>　　1.隐藏了明文模式;<br>　　2.分组密码转化为流模式;<br>　　3.可以及时加密传送小于分组的数据;<br>　　缺点:<br>　　1.不利于并行计算;<br>　　2.误差传送：一个明文单元损坏影响多个单元;<br>　　3.唯一的IV;</p>
+<p><em><strong>输出反馈模式（Output FeedBack (OFB)）</strong></em></p>
+<p>　优点:<br>　　1.隐藏了明文模式;<br>　　2.分组密码转化为流模式;<br>　　3.可以及时加密传送小于分组的数据;<br>　　缺点:<br>　　1.不利于并行计算;<br>　　2.对明文的主动攻击是可能的;<br>　　3.误差传送：一个明文单元损坏影响多个单元;</p>
+<p><code> CFB和OFB较为复杂，这里不多赘述</code> </p>
+<p>标准AES加解密脚本;</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES</span><br><span class="line"></span><br><span class="line">key = <span class="string">b&#x27;&#x27;</span> <span class="comment">#秘钥，b就是表示为bytes类型</span></span><br><span class="line">text = <span class="string">b&#x27;&#x27;</span> <span class="comment">#需要加密的内容，bytes类型</span></span><br><span class="line">aes = AES.new(password,AES.MODE_ECB) <span class="comment">#创建一个aes对象</span></span><br><span class="line"><span class="comment"># AES.MODE_ECB 表示模式是ECB模式</span></span><br><span class="line">en_text = aes.encrypt(text) <span class="comment">#加密明文</span></span><br><span class="line"><span class="built_in">print</span>(en_text) <span class="comment">#bytes类型</span></span><br><span class="line">den_text = aes.decrypt(en_text) <span class="comment"># 解密密文</span></span><br><span class="line"><span class="built_in">print</span>(den_text)<span class="comment">#bytes类型</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="normal3"><a href="#normal3" class="headerlink" title="normal3"></a>normal3</h3><p><code>flag：nctf&#123;bc2e3b4c2eb03258c5102bf9de77f57dddad9edb70c6c20febc01773e5d81947&#125;</code></p>
+<p>放入IDA分析最关键的就是在输入后的*sub_400666(0)*函数。跟进查看函数的具体内容:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">__int64 __fastcall <span class="title function_">sub_400666</span><span class="params">(<span class="type">int</span> a1)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v1; <span class="comment">// eax</span></span><br><span class="line">  __int64 result; <span class="comment">// rax</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ( a1 &lt;= <span class="number">63</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v1 = dword_601064++;</span><br><span class="line">    *(&amp;s1 + v1) = byte_601100[a1];</span><br><span class="line">    sub_400666(<span class="number">2</span> * a1 + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> sub_400666(<span class="number">2</span> * (a1 + <span class="number">1</span>));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>很显然这是一个函数对自身的递归调用。<em>byte_601100</em>为存放着我们输入的那一段内存的首地址。所以这个递归函数的作用即通过递归改变下标<em>a1</em>的值然后将<em>byte_601100[a1]<em>赋给</em>s1</em>，也就是打乱输入，然后和给定字符串比较验证。<em>byte_601100</em>我在调试的时候查看他的值都只能查看到他这个首地址存储的值，无法看到内存中全部的值。解决方法是查看好<em>byte_601100</em>的地址，在<strong>Hex View</strong>窗口中摁<strong>G</strong>键，输入<em>byte_601100</em>的地址，跳转直接查看内存就好啦。这个递归算法大概是通过两步传参<code> (2 * a1 + 1)</code>，<code>(2 * (a1 + 1))</code>来改变下标，然后通过判断语句<code>if ( a1 &lt;= 63 )</code>来使得操作能覆盖64个输入的字节。0，1，3，7，15，31，63，到127，不满足判断，开始返回，直到返回到参数为15的那一层函数，再进行下一步<code>return sub_400666(2 * (a1 + 1))</code>（如果是31的话执行此式不满足判断会直接返回），然后以此类推，对输入的64进行打乱。其实对此递归算法的理解并不影响解题。因为算法固定，所以，打乱前和打乱后的下标所具有的一一对应的关系不变，所以只需要模拟出这个递归算法，然后将打乱后下标的顺序打印到数组里面来对给定的用来验证的字符串进行还原就好了。故写出脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">recursion</span>(<span class="params">a</span>):</span><br><span class="line">    <span class="keyword">global</span> arr2</span><br><span class="line">    <span class="keyword">if</span> a&lt;=<span class="number">63</span>:</span><br><span class="line">        arr2.append(a)</span><br><span class="line">        recursion(<span class="number">2</span>*a+<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> recursion(<span class="number">2</span>*(a+<span class="number">1</span>))</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">arr2=[]</span><br><span class="line">a=<span class="number">0</span></span><br><span class="line">recursion(a)</span><br><span class="line"><span class="built_in">print</span>(arr2) </span><br><span class="line">compare_data=<span class="string">&quot;bcec8d7dcda25d91ed3e0b720cbb6cf202b09fedbc3e017774273ef5d5581794&quot;</span></span><br><span class="line">flag_arr=[<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>)]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">    flag_arr[arr2[i]]=compare_data[i]</span><br><span class="line">flag=<span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;nctf&#123;&#x27;</span> + flag.join(flag_arr) + <span class="string">&#x27;&#125;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>后面还有一个验证也是一个道理，既然能通过第一个验证说明我们的输入就已经被固定了，由最后的输出又得到我们的输入直接就是flag，所以只用模拟还原一个递归算法就好。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/07/01/normal/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/05/31/Practice-md/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Practice.md</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">友链B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">友链C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">友链H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
