@@ -94,7 +94,7 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="normal"><a href="#normal" class="headerlink" title="normal"></a>normal</h1><h3 id="normal1"><a href="#normal1" class="headerlink" title="normal1"></a>normal1</h3><p><code>flag:C1CTF&#123;th1s_Bas364_is_qcjlCwgS&#125;</code></p>
+  <h1 id="normal"><a href="#normal" class="headerlink" title="normal"></a>normal</h1><h2 id="normal1"><a href="#normal1" class="headerlink" title="normal1"></a>normal1</h2><p><code>flag:C1CTF&#123;th1s_Bas364_is_qcjlCwgS&#125;</code></p>
 <p>运行题目文件：</p>
 <blockquote>
 <p>Welcome to C1CTF 2018!<br>Plz find the flag:</p>
@@ -133,7 +133,7 @@
 
 
 
-<h3 id="normal2"><a href="#normal2" class="headerlink" title="normal2"></a>normal2</h3><p><code> flag：hxb2018&#123;853ecfe52aeb60989e8d3351&#125;</code></p>
+<h2 id="normal2"><a href="#normal2" class="headerlink" title="normal2"></a>normal2</h2><p><code> flag：hxb2018&#123;853ecfe52aeb60989e8d3351&#125;</code></p>
 <p>IDA分析程序，有三个函数，先看第一个函数：<strong>sub_7FF65DF91000(String1)</strong></p>
 <p>传递进该函数的参数<em>String1</em>是个未初始化的字符数组，且该函数与输入无关。所以这是一个生成<em>String1</em>的值的函数。简单观察是将初始的16个值赋给<em>String1</em>在进行扩展，我们将其理解为一个密钥生成的过程。</p>
 <p>在看第二个函数：*<em>sub_7FF65DF912A0((unsigned int8 <em>)Buffer, (int64)String1)</em></em></p>
@@ -167,7 +167,7 @@
 <p>标准AES加解密脚本;</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES</span><br><span class="line"></span><br><span class="line">key = <span class="string">b&#x27;&#x27;</span> <span class="comment">#秘钥，b就是表示为bytes类型</span></span><br><span class="line">text = <span class="string">b&#x27;&#x27;</span> <span class="comment">#需要加密的内容，bytes类型</span></span><br><span class="line">aes = AES.new(password,AES.MODE_ECB) <span class="comment">#创建一个aes对象</span></span><br><span class="line"><span class="comment"># AES.MODE_ECB 表示模式是ECB模式</span></span><br><span class="line">en_text = aes.encrypt(text) <span class="comment">#加密明文</span></span><br><span class="line"><span class="built_in">print</span>(en_text) <span class="comment">#bytes类型</span></span><br><span class="line">den_text = aes.decrypt(en_text) <span class="comment"># 解密密文</span></span><br><span class="line"><span class="built_in">print</span>(den_text)<span class="comment">#bytes类型</span></span><br></pre></td></tr></table></figure>
 </blockquote>
-<h3 id="normal3"><a href="#normal3" class="headerlink" title="normal3"></a>normal3</h3><p><code>flag：nctf&#123;bc2e3b4c2eb03258c5102bf9de77f57dddad9edb70c6c20febc01773e5d81947&#125;</code></p>
+<h2 id="normal3"><a href="#normal3" class="headerlink" title="normal3"></a>normal3</h2><p><code>flag：nctf&#123;bc2e3b4c2eb03258c5102bf9de77f57dddad9edb70c6c20febc01773e5d81947&#125;</code></p>
 <p>放入IDA分析最关键的就是在输入后的*sub_400666(0)*函数。跟进查看函数的具体内容:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">__int64 __fastcall <span class="title function_">sub_400666</span><span class="params">(<span class="type">int</span> a1)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v1; <span class="comment">// eax</span></span><br><span class="line">  __int64 result; <span class="comment">// rax</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ( a1 &lt;= <span class="number">63</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v1 = dword_601064++;</span><br><span class="line">    *(&amp;s1 + v1) = byte_601100[a1];</span><br><span class="line">    sub_400666(<span class="number">2</span> * a1 + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> sub_400666(<span class="number">2</span> * (a1 + <span class="number">1</span>));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
