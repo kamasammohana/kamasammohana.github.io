@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">790</span>
+            <span class="post-count">1k</span>
         </span>
     </span>
 
@@ -89,7 +89,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">2 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
@@ -176,6 +176,31 @@
 </blockquote>
 <p>命令：<em><strong>git reset –hard HEAD~n</strong></em></p>
 <p><code>~</code>符号后跟的数字代表回退多少个版本。</p>
+<blockquote>
+<p><strong>关于reset命令的三个参数：</strong></p>
+<p><em><strong>soft</strong>参数</em>：</p>
+<p>​	仅在本地库移动HEAD指针</p>
+<p><em>mixed参数：</em></p>
+<p>​	在本地库移动HEAD指针</p>
+<p>​	重置暂存区</p>
+<p><em><strong>hard</strong>参数：</em></p>
+<p>​	在本地库移动HEAD指针</p>
+<p>​	重置暂存区</p>
+<p>​	重置工作区</p>
+</blockquote>
+<h4 id="9-删除文件并找回"><a href="#9-删除文件并找回" class="headerlink" title="9.删除文件并找回"></a>9.删除文件并找回</h4><blockquote>
+<p>前提：删除前，文件存在时的状态提交到了本地库。</p>
+</blockquote>
+<p>命令：<em><strong>git reset –hard [指针位置]</strong></em> （指针位置：历史记录或当期位置） </p>
+<p><code>原理：hard参数是通过记录的历史版本对工作区，本地库，暂存区进行重置</code></p>
+<h4 id="10-比较文件差异"><a href="#10-比较文件差异" class="headerlink" title="10.比较文件差异"></a>10.比较文件差异</h4><p>命令：<em><strong>git diff</strong></em></p>
+<p>将工作区中的文件和暂存区进行比较</p>
+<blockquote>
+<p>未提交过的文件无法参与比较</p>
+</blockquote>
+<p>命令：<em><strong>git diff [本地库中的历史版本] &lt;file&gt;</strong></em></p>
+<p>将工作区中的文件和本地库历史记录比较</p>
+<p><code>不带文件名将对多个文件进行比较</code></p>
  
       <!-- reward -->
       
