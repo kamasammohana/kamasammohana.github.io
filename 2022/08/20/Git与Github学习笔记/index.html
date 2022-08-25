@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1k</span>
+            <span class="post-count">1.7k</span>
         </span>
     </span>
 
@@ -89,7 +89,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">3 分钟</span>
+            <span class="post-count">6 分钟</span>
         </span>
     </span>
 </div>
@@ -201,6 +201,44 @@
 <p>命令：<em><strong>git diff [本地库中的历史版本] &lt;file&gt;</strong></em></p>
 <p>将工作区中的文件和本地库历史记录比较</p>
 <p><code>不带文件名将对多个文件进行比较</code></p>
+<h3 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h3><h4 id="1-分支"><a href="#1-分支" class="headerlink" title="1.分支"></a>1.分支</h4><p>在版本控制过程中，使用多条线同时推进多个任务。</p>
+<blockquote>
+<p><strong>好处：</strong></p>
+<p><strong>·</strong> 同时并行推进多个功能开发，提高开发效率。</p>
+<p><strong>·</strong> 各个分支在开发过程中，如果某一个分支开发失败，不会对其他分支有任何影响。失败的分支删除重新开始即可。</p>
+</blockquote>
+<h4 id="2-分支操作"><a href="#2-分支操作" class="headerlink" title="2.分支操作"></a>2.分支操作</h4><h5 id="查看分支"><a href="#查看分支" class="headerlink" title="查看分支"></a>查看分支</h5><p>命令：<em><strong>git branch -v</strong></em></p>
+<h5 id="创建分支"><a href="#创建分支" class="headerlink" title="创建分支"></a>创建分支</h5><p>命令：<em><strong>git branch &lt;分支名&gt;</strong></em></p>
+<h5 id="切换分支"><a href="#切换分支" class="headerlink" title="切换分支"></a>切换分支</h5><p>命令：<em><strong>git checkout &lt;分支名&gt;</strong></em></p>
+<h5 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h5><p>命令：<em><strong>git merge &lt;分支名&gt;</strong></em></p>
+<p><code>需切换至接受修改的分支上，用命令指定将合并过来的分支</code></p>
+<h5 id="解决冲突"><a href="#解决冲突" class="headerlink" title="解决冲突"></a>解决冲突</h5><blockquote>
+<p>删除git向文件中添加的提示性的特殊符号</p>
+<p>修改文件直至满意</p>
+<p><em><strong>git add &lt;文件名&gt;</strong></em>	</p>
+<p><em><strong>git commit</strong></em> <code>直接commit 不用指定文件名</code></p>
+</blockquote>
+<h3 id="Git基本原理"><a href="#Git基本原理" class="headerlink" title="Git基本原理"></a>Git基本原理</h3><h4 id="1-哈希"><a href="#1-哈希" class="headerlink" title="1.哈希"></a>1.哈希</h4><p>特点：</p>
+<ol>
+<li>不管输入数据的数据量有多大，输入同一个哈希算法，得到的加密结果长度固定。</li>
+<li>哈希算法确定，输入数据确定，输出数据也就确定。</li>
+<li>哈希算法不可逆</li>
+</ol>
+<p><code>Git底层采用的是SHA-1算法，Git通过哈希校验来验证数据完整性</code></p>
+<h4 id="2-Git保存版本的机制"><a href="#2-Git保存版本的机制" class="headerlink" title="2.Git保存版本的机制"></a>2.Git保存版本的机制</h4><blockquote>
+<p><strong>集中式版本控制工具的文件管理机制：</strong></p>
+<p>以文件变更列表的方式存储信息。这类系统将他们保存的信息看作是一组基本文件和每个文件随时间逐步累积的差异。</p>
+</blockquote>
+<h5 id="Git的文件管理机制"><a href="#Git的文件管理机制" class="headerlink" title="Git的文件管理机制"></a>Git的文件管理机制</h5><p>Git把数据看作是小型文件系统的一组快照。每次提交更新时Git都会对当前的全部文件制作一个快照并保存这个快照的索引。为了高效，如果文件没有修改，Git不再重新存储该文件，而是只保留一个链接指向之前存储的文件。所以Git的工作方式可以称之为快照流。</p>
+<h4 id="3-Git分支管理机制"><a href="#3-Git分支管理机制" class="headerlink" title="3. Git分支管理机制"></a>3. Git分支管理机制</h4><blockquote>
+<p>Git分支管理的本质是创建和移动指针</p>
+</blockquote>
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p>这里操作比较简单就不分级写了。</p>
+<p>Github创建个人仓库，在本地使用<em><strong>git init</strong></em>命令初始化一个本地仓库，然后使用<em><strong>git remote add &lt;远程仓库地址别名&gt;<em><strong>命令添加远程仓库，使用</strong></em>git remote -v</strong></em>可以查看已经添加的远程仓库。</p>
+<p>命令：<em><strong>git push &lt;远程仓库地址别名&gt; &lt;要上传的分支名&gt;</strong></em></p>
+<p>将本地库推送到远程库</p>
+<p>命令：<em><strong>git clone &lt;远程仓库地址&gt;</strong></em></p>
+<p>完整将远程仓库下载到本地，同时完成本地仓库初始化和远程仓库地址添加。</p>
  
       <!-- reward -->
       
