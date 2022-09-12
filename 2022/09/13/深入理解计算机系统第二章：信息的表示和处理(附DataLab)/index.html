@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>深入理解计算机系统第二章：信息的表示和处理（附DataLab实验） |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-深入理解计算机系统第二章：信息的表示和处理(附DataLab)"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  深入理解计算机系统第二章：信息的表示和处理（附DataLab实验）
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/09/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86(%E9%99%84DataLab)/" class="article-date">
+  <time datetime="2022-09-12T17:10:51.483Z" itemprop="datePublished">2022-09-13</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">6.1k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">24 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="深入理解计算机系统第二章：信息的表示和处理"><a href="#深入理解计算机系统第二章：信息的表示和处理" class="headerlink" title="深入理解计算机系统第二章：信息的表示和处理"></a>深入理解计算机系统第二章：信息的表示和处理</h1><blockquote>
+<p>现代计算机存储和处理的信息以二值信号表示。</p>
+</blockquote>
+<h2 id="2-1-信息存储"><a href="#2-1-信息存储" class="headerlink" title="2.1 信息存储"></a>2.1 信息存储</h2><blockquote>
+<p>由于在计算机中，十进制对位的转化很麻烦，二进制去表示又太冗长，所以用16进制表示来规避前两种表示法的缺点。		</p>
+</blockquote>
+<p>​		大多数计算机使用<strong>字节（byte）</strong>，也就时8位的块，作为最小的可寻址内存单位，而不是访问内存中单独的位。机器级程序将内存视为一个非常大的字节数组，称为虚拟内存（virtual memory）。内存的每个字节都由一个唯一的数字来标识，称为它的地址（address），所有可能地址的集合就称为虚拟地址空间（virtual address space）。每台计算机都有一个<strong>字长（word size）</strong>，指明指针数据的标称大小。因为虚拟地址是以这样的一个字来编码的，所以字长决定的最重要的参数就是虚拟地址空间大小。也就是说对于一个字长为Ω位的机器而言，虚拟地址的范围为0 ~ 2^Ω^ - 1，程序最多访问2^Ω^个字节。64位字长的计算机可以向下兼容32位字长的计算机，但是反向却不行。为了避免由于依赖典型大小和不同编译器设置带来的奇怪行为，ISO C99引入了一类固定大小的数据类型，不随编译器和机器设置而变化，如int32_t和int64_t。在内存中，有两种不同存储字节的顺序，最低有效字节在最前面的方式，称为<strong>小端法</strong>；最高有效字节在最前面的方式称为<strong>大端法</strong>。</p>
+<p>​		字符串是一个以null（值为\x00）字符结尾的字符数组，每个字符通过ASCII编码（最常见，后面整合为Unicode字符集）。C语言使用布尔代数来表示逻辑判断的结果，也就是0，1。0代表false，1代表true。c语言支持按位<strong>布尔运算</strong>，也就是<code>|、&amp;、~、^</code>，也支持<strong>逻辑运算</strong><code>&amp;&amp;、!、||</code>和移位运算<code>&lt;&lt;、&gt;&gt;</code>，右移分为<strong>逻辑右移</strong>和<strong>算术右移</strong>，逻辑右移是在左端补0，而算术右移是在左端补最高有效位的值。一般对有符号数都使用算术右移。</p>
+<h2 id="2-2-整数表示"><a href="#2-2-整数表示" class="headerlink" title="2.2 整数表示"></a>2.2 整数表示</h2><p>​		在C语言中，整数有多种数据类型，来表示有无符号和不同大小的取值范围。无符号数是常规的编码，而有符号数往往使用补码编码。对于正整数，补码与原码相同，对于负整数，补码则是将原数按位取反，符号位填一，末位加一。所以这也是我们有时能在内存中看到一个较大数的原因。有符号数和无符号数的转换在C语言中是直接解释位的。也就是将补码当作源码去解释。也就是所谓的一般规则：数值可能会改变，但是位模式不变。在C语言中创建一个无符号常量需要在末尾加上后缀字符’U’或者’u’。</p>
+<p>​		一个整数的位是确定的，若想对其位进行扩展，则无符号为<strong>零扩展</strong>，也就是在开头补零，补齐扩展的位数即可。而有符号数因为是补码表示，所以其扩展是<strong>符号扩展</strong>也就是在表示中添加最高有效位的值来补足扩展的位数，逻辑类似于算术右移，即正数同零扩展，负数时扩展位补1。当我们想减少一个数字的位数时，对于无符号数则直接截断，截断有符号数，即补码数则在截断后需将最高位转化为符号位。</p>
+<h2 id="2-3-整数运算"><a href="#2-3-整数运算" class="headerlink" title="2.3 整数运算"></a>2.3 整数运算</h2><p>​		首先是加法。无符号数加法直接相加，但若出现溢出情况则是用相加结果减去2^Ω^（Ω为位数）。模数加法形成了一种数学结构，称为<strong>阿贝尔群</strong>（Abelian group）, 这是以丹麦数学家 Niels Henrik Abel(1802<del>1829) 的名字命名。也就说，它是可交换的（这就是为什么叫”abelian“的地方）和可结合的。它有一个单位元 0, 并且每个元素有一个加法逆元。让我 们考虑 w 位的无符号数的集合，执行加法运算+^u^</del>w<del>对于每个值 x， 必然有某个值-^u^</del>w~ 满 足 -^u^<del>w</del>+^u^<del>w</del>&#x3D;0。若是补码加法则需要讨论正溢出和负溢出的情况，正溢出同无符号数加法，负溢出则是用相加结果加上2^Ω^（Ω为位数），其实想想是一样的。</p>
+<p>​		补码的非也就是对每一位求补在加一，也就是相反数的转换。</p>
+<p>​		对于乘法来说，很容易出现溢出，也就是对于一个Ω位的数可能乘法结果需要2Ω的位数才能表示，这种时候计算机会使用低Ω位来作为结果。对于有符号数乘法溢出的情况，则是将这个数先模2^Ω^，也就是阶段为Ω位，再把无符号数转换为补码。</p>
+<p>​		当乘以常数时，计算机为了提高效率，减少执行所需的时钟周期，会使用移位和加法运算的组合来代替乘以常数因子的乘法。举个例子就明白了：比如算式为<code>x * 14</code>，14  &#x3D; 2^3^ + 2^2^ + 2^1^,而二的指数运算可以通过对一进行左移来完成，这样就算短了执行所需的时钟周期。而除法里除以二的幂则会使用右移，无符号数使用逻辑右移，有符号数使用算术右移。关于舍入的化都是舍入到零，也就是正数向下舍入，负数向上舍入。</p>
+<h2 id="2-4-浮点数"><a href="#2-4-浮点数" class="headerlink" title="2.4 浮点数"></a>2.4 浮点数</h2><p>​		浮点数为何叫浮点数是因为他的值是近似来的，所以漂浮不定。学习浮点数一定要牢记<strong>IEEE 浮点表示</strong>。我们可以通过科学计数法来理解这种表示方式，一个十进制数比如12345，它用科学计数法表示是1.2345 * 10^4^，同理对于二进制小数比如1001.001，用科学计数法来表示就是1.001001 * 2^3^，IIEEE 浮点标准用这样的形式来表示一个数。</p>
+<pre><code>    * 符号（sign) s 决定这数是负数（s=l）还是正数（s=0），而对于数值 0 的符号位解释作为特殊情况处理。
+    *  尾数(significand) M 是一个二进制小数，它的范围是 1~2-e，或者是 0~1-e。 
+    * 阶码（exponent) E的作用是对浮点数加权，这个权重是 2 的 E次幂(可能是负数)。
+</code></pre>
+<p>​		在单精度浮点格式（C 语言 中的 float)中，s、exp 和 frac 字段分别为 1 位、k&#x3D;8 位和n&#x3D;23 位，得到一个 32 位的 表示 。 在双精度浮点格式(C 语言中的 double)中，s、exp 和 frac 字段分别为 1 位、k&#x3D;11 位和n&#x3D;52 位，得到一个 64 位的表示。</p>
+<p>​		表示一个数用该精度的偏置加上科学计数法的指数去填充阶码，再加上符号位和小数部分即可组成该数的IEEE 浮点表示。</p>
+<p>​		浮点表示中分为规格化和非规格化的数值，也就是阶码是否为零，阶码为零实际上也是给我们带来一种新的对于+-0.0的表示方式，去在需要做区分的时候区分。当阶码全为一，尾数部分为0时，则表示INF（无穷），根据符号位确定是正无穷还是负无穷。当阶码全为一，尾数部分非零时则表示NaN，表示未定义或不可表示的值。</p>
+<p>​		浮点数有四种舍入方式，向偶数舍入，向零舍入，向下舍入，向上舍入，向偶数舍入就是除开正常舍入，中间值向偶数（整数）舍入。</p>
+<p>​		在浮点运算中，要不断考虑溢出的情况，也要考虑舍入造成的精度的丢失。在位模式中，规格化非规格化，NaN，无穷都是需要讨论的地方，这在DataLab中都有具体的实现。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>​		本篇正如它的标题一样介绍了计算机如何表示和处理信息。阅读此章节也是系统性的回顾了自己在逆向过程中所遇到过的一些问题：比如两正数相乘得到了一个负数，将浮点数强制类型转换成整数，数值发生很大的变化等等。这都是因为计算机对不同的数据类型有不同的存储方式，比如有符号数使用<strong>补码</strong>存储、字符串使用<strong>ASCII码</strong>记录，并且使用<code>&#39;\x00&#39;</code>去截断来代表字符串结尾、浮点数使用<strong>IEEE 浮点表示</strong>等等。而对于一个数来说，它所能表示的最大位数是固定的，所以在处理的过程中肯定避免不了结果超出位数的情况，那就需要对溢出情况进行处理。而当我们需要改变它能表示的最大位数时，也需要对原来的数值进行处理。</p>
+<p>​		C语言出了提供基础的运算外，也提供位运算、逻辑运算还有移位运算（虽然计算机是以字节为单位操作的，但是C语言提供的运算符可以直接操作位，来更精细化地达到我们想要地效果）。这些运算不仅帮助我们实现了更多的功能，也可以帮助计算机增加计算效率：通过位运算等这些消耗较少时钟周期地运算符来代替乘除运算等，这在以后地编程中也可以有所运用，因为效率是程序工作所需要注意地一个很重要地方面。</p>
+<p>​		本篇中最拗人的就是浮点数的部分，因为首先浮点数的表示就是反常理的，因为IEEE 浮点表示是一个使用类似科学计数法的方式。并且浮点运算只有有限的范围和精度，而且并不遵守普遍的算术属性，所以使用浮点运算必须非常小心，若发生错误，务必在位模式下，根据浮点数的表示方式和性质理性的分析错误产生原因。</p>
+<h1 id="DataLab"><a href="#DataLab" class="headerlink" title="DataLab"></a>DataLab</h1><blockquote>
+<p>CSAPP第二章：信息的表示和处理</p>
+</blockquote>
+<h2 id="bitxor"><a href="#bitxor" class="headerlink" title="bitxor"></a>bitxor</h2><p>题目要求：</p>
+<ul>
+<li>bitXor - x^y using only ~ and &amp; </li>
+<li>Example: bitXor(4, 5) &#x3D; 1</li>
+<li>Legal ops: ~ &amp;</li>
+<li>Max ops: 14</li>
+<li>Rating: 1</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">bitXor</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;	</span><br><span class="line">  <span class="keyword">return</span> ~(x&amp;y)&amp;~(~x&amp;~y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>题目要求用<code>&amp;</code>和<code>~</code>两个位运算符来实现异或，则需先理解异或运算。我认为异或运算实际上是在用1标记二者的不同位。我们再来看与运算，实际上是保留相同位的值，值不同的位取0，那么我们使用非运算将其取反，则可以用0去标记同为一的位，其余位为1。而将两个操作数取反进行与运算，则跟之前相反，相同位取反，不同位仍取0，再使用非运算，这样的话原本两操作数中的同为零的位置就被0标记了，其余位为1。这样两个与非运算得到的结果互相对比可以发现，同一和同零的位置，标记是相反的，只有不相同位标记都为一。二者与运算则只会保留标记为1的不同位，就实现了异或运算。</p>
+<h2 id="tmin"><a href="#tmin" class="headerlink" title="tmin"></a>tmin</h2><ul>
+<li>tmin - return minimum two’s complement integer </li>
+<li>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 4</li>
+<li>Rating: 1</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">tmin</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0x1</span>&lt;&lt;<span class="number">31</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>题目要求也就是返回最小的二进制补码整数。二进制补码最高位为符号位，那么最小的二进制补码就是符号位为1，其他位置全零。所以只需要右移运算将1移至最高位即可。补码的负数表示是符号位取一，其他位置取反，再加一，所以其他位置是全零。由之前的知识也可以体现，补码的范围是**[-int<del>max</del>-1,int<del>max</del>]**。</p>
+<h2 id="isTmax"><a href="#isTmax" class="headerlink" title="isTmax"></a>isTmax</h2><ul>
+<li>isTmax - returns 1 if x is the maximum, two’s complement number,</li>
+<li><pre><code>and 0 otherwise 
+</code></pre>
+</li>
+<li>Legal ops: ! ~ &amp; ^ | +</li>
+<li>Max ops: 10</li>
+<li>Rating: 1</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isTmax</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">	<span class="type">int</span> i=x+<span class="number">1</span>;</span><br><span class="line">	x=x+i;</span><br><span class="line">	x=~x;</span><br><span class="line">	i=!i;</span><br><span class="line">	x=x+i;</span><br><span class="line">  <span class="keyword">return</span> !x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>这题其实入手的思路就是题目中描述的返回0，1来代表判断结果，并且允许我们使用<code>!</code>逻辑运算符。说明要通过<code>!</code>来判断非零值来返回布尔变量0，1来实现函数。题目要求判断是否为32为最大二进制补码数。最大二进制补码数为符号位为0，其余位数全一，即<code>01111111111111111111111111111111</code>，我们只需要将其转化成全1，再取反即可通过<code>~</code>来转化成0，然后<code>!x</code>即可返回true，也就是1。所以我们将其加1再加上其本身，即可得到全一。此时取反，再逻辑运算即可完成。但是我们会发现11111111111111111111111111111111<del>2</del>也会符合这种情况，所以我们需要排除这种特殊情况。所以我们对<code>x+1</code>进行<code>!</code>逻辑运算，因为11111111111111111111111111111111<del>2</del>+1的实际的值并不为零，所以先对此值进行布尔运算，即可规避此种例外。</p>
+<h2 id="allOddBits"><a href="#allOddBits" class="headerlink" title="allOddBits"></a>allOddBits</h2><ul>
+<li>allOddBits - return 1 if all odd-numbered bits in word set to 1</li>
+<li>where bits are numbered from 0 (least significant) to 31 (most significant)</li>
+<li>Examples allOddBits(0xFFFFFFFD) &#x3D; 0, allOddBits(0xAAAAAAAA) &#x3D; 1</li>
+<li>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 12</li>
+<li>Rating: 2</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">allOddBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line"><span class="type">int</span> mask = (<span class="number">0xaa</span> &lt;&lt; <span class="number">8</span>) + <span class="number">0xaa</span>;</span><br><span class="line">mask = (<span class="number">0xaa</span> &lt;&lt; <span class="number">16</span>)+mask;</span><br><span class="line">  <span class="keyword">return</span> !(mask ^ x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>根据他给定的运算符，可知最后肯定还是通过逻辑运算符返回布尔代数来代表判断结果。题目中的示例中已经给出提示：<code>allOddBits(0xAAAAAAAA) = 1</code>。实验要求使用的整数最大不超过0xFF，所以我们使用0xAA构造0xAAAAAAAA这样一个掩码。0xAA的二进制形式是10101010<del>2</del>，通过左移相加的方法构造出掩码，用掩码与传入参数进行异或再进行逻辑运算即可。</p>
+<h2 id="negate"><a href="#negate" class="headerlink" title="negate"></a>negate</h2><ul>
+<li>negate - return -x </li>
+<li>Example: negate(1) &#x3D; -1.</li>
+<li>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 5</li>
+<li>Rating: 2</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">negate</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> ~x+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>负数的补码就是他的正数形式的二进制码各位取反再加一，符号位填一。正数的符号位是零，符号位填一和取反是一样的。反过来同理。</p>
+<h2 id="isAsciiDigit"><a href="#isAsciiDigit" class="headerlink" title="isAsciiDigit"></a>isAsciiDigit</h2><ul>
+<li>isAsciiDigit - return 1 if 0x30 &lt;&#x3D; x &lt;&#x3D; 0x39 (ASCII codes for characters ‘0’ to ‘9’)</li>
+<li>Example: isAsciiDigit(0x35) &#x3D; 1.</li>
+<li><pre><code>       isAsciiDigit(0x3a) = 0.
+</code></pre>
+</li>
+<li><pre><code>       isAsciiDigit(0x05) = 0.
+</code></pre>
+</li>
+<li>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 15</li>
+<li>Rating: 3</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isAsciiDigit</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">	<span class="type">int</span> negative_minimum = ~<span class="number">0x30</span> + <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> negative_maximum = ~<span class="number">0x39</span> + <span class="number">1</span>;</span><br><span class="line">	negative_minimum = (negative_minimum + x)&gt;&gt;<span class="number">31</span>;</span><br><span class="line">	negative_maximum = (negative_maximum + x)&gt;&gt;<span class="number">31</span>;</span><br><span class="line">	<span class="keyword">return</span> !(negative_minimum^negative_maximum);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>题目要求验证参数是否处在’0’~’9’之间，所以我们只需构造上下界的相反数与参数相加通过位运算取符号位异或判断是否相同即可。</p>
+<h2 id="conditional"><a href="#conditional" class="headerlink" title="conditional"></a>conditional</h2><ul>
+<li>Example: conditional(2,4,5) &#x3D; 4</li>
+<li>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 16</li>
+<li>Rating: 3</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">conditional</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">int</span> z)</span> &#123;</span><br><span class="line">	x = !!x;</span><br><span class="line">	x = ~x + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">return</span> (x&amp;y)|(~x&amp;z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>此题让我们模拟三目运算符，判断参数x是否为0。那么最简单用于判断的方式即是使用逻辑运算符<code>!</code>返回0或1。该函数是要根据0，1返回参数y或者z中的一个。很容易想到通过全零和全一来与y，z进行与运算。全一与y与运算可以保留y，那么他的非去和z与就可获得全零的结果，两式通过<code>|</code>关联起来即可。所以在逻辑运算符<code>!</code>返回运算结果后，我们通过补码的原理使其转换成相反数，返回1则转换成-1，也就是全一，返回0则转换成0，即全零。再用先前提到的与或运算构造返回值即可。</p>
+<h2 id="isLessOrEqual"><a href="#isLessOrEqual" class="headerlink" title="isLessOrEqual"></a>isLessOrEqual</h2><ul>
+<li>isLessOrEqual - if x &lt;&#x3D; y  then return 1, else return 0 </li>
+<li>Example: isLessOrEqual(4,5) &#x3D; 1.</li>
+<li>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 24</li>
+<li>Rating: 3</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isLessOrEqual</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;</span><br><span class="line">	<span class="type">int</span> negative = ~x + <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> plus_result = negative + y;</span><br><span class="line">	<span class="type">int</span> sign = (plus_result&gt;&gt;<span class="number">31</span>)&amp;<span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> sign_diff_x = (x&gt;&gt;<span class="number">31</span>)&amp;<span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> sign_diff_y = (y&gt;&gt;<span class="number">31</span>)&amp;<span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> sign_diff = sign_diff_x^sign_diff_y;</span><br><span class="line">	<span class="keyword">return</span> (sign_diff&amp;((x&gt;&gt;<span class="number">31</span>)&amp;<span class="number">1</span>))|((!sign_diff)&amp;sign);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>既然是大小判断，那肯定少不了分类讨论：同号和异号。同号情况很好讨论，我们只需要取反对x相加即可。若异号的话，那么需要对符号位进行异或判断，一定是正数大。所以用异或判断的结果和x的符号位与运算即可讨论完成异号的情况。当然，判断是否异号的那个变量要当作一个因子类似的东西，同样要去参加对同号情况的讨论，在异号时，<code>!</code>因子为零，与讨论同号的式子与运算即可直接在异号时无视同号情况的讨论。</p>
+<h2 id="logicalNeg"><a href="#logicalNeg" class="headerlink" title="logicalNeg"></a>logicalNeg</h2><ul>
+<li>logicalNeg - implement the ! operator, using all of </li>
+<li><pre><code>         the legal operators except !
+</code></pre>
+</li>
+<li>Examples: logicalNeg(3) &#x3D; 0, logicalNeg(0) &#x3D; 1</li>
+<li>Legal ops: ~ &amp; ^ | + &lt;&lt; &gt;&gt;</li>
+<li>Max ops: 12</li>
+<li>Rating: 4</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">logicalNeg</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> ((x|(~x+<span class="number">1</span>))&gt;&gt;<span class="number">31</span>)+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p><code>!</code>是用来判断是否为零，为零返回一，非零返回零。一个非零的数，非负即正，那么他和他的相反数一定为0和1，那么两者或运算再左移取符号位一定为-1，再加一即可返回零。零与零的相反数符号位都是0，所以加一返回一。</p>
+<h2 id="howManyBits"><a href="#howManyBits" class="headerlink" title="howManyBits"></a>howManyBits</h2><ul>
+<li><p>howManyBits - return the minimum number of bits required to represent x in</p>
+</li>
+<li><pre><code>        two&#39;s complement
+</code></pre>
+</li>
+<li><p>Examples: howManyBits(12) &#x3D; 5</p>
+</li>
+<li><pre><code>       howManyBits(298) = 10
+</code></pre>
+</li>
+<li><pre><code>       howManyBits(-5) = 4
+</code></pre>
+</li>
+<li><pre><code>       howManyBits(0)  = 1
+</code></pre>
+</li>
+<li><pre><code>       howManyBits(-1) = 1
+</code></pre>
+</li>
+<li><pre><code>       howManyBits(0x80000000) = 32
+</code></pre>
+</li>
+<li><p>Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</p>
+</li>
+<li><p>Max ops: 90</p>
+</li>
+<li><p>Rating: 4</p>
+</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">	<span class="type">int</span> c0,c1,c2,c4,c8,c16;</span><br><span class="line">	<span class="type">int</span> sign = x&gt;&gt;<span class="number">31</span>;</span><br><span class="line">	x = (sign&amp;~x)|(~sign&amp;x);</span><br><span class="line">	c16 = (!!(x&gt;&gt;<span class="number">16</span>))&lt;&lt;<span class="number">4</span>;</span><br><span class="line">	x = x&gt;&gt;c16;</span><br><span class="line">	c8 = (!!(x&gt;&gt;<span class="number">8</span>))&lt;&lt;<span class="number">3</span>;</span><br><span class="line">	x = x&gt;&gt;c8;</span><br><span class="line">	c4 = (!!(x&gt;&gt;<span class="number">4</span>))&lt;&lt;<span class="number">2</span>;</span><br><span class="line">	x = x&gt;&gt;c4;</span><br><span class="line">	c2 = (!!(x&gt;&gt;<span class="number">2</span>))&lt;&lt;<span class="number">1</span>;</span><br><span class="line">	x = x&gt;&gt;c2;</span><br><span class="line">	c1 = !!(x&gt;&gt;<span class="number">1</span>);</span><br><span class="line">	x = x&gt;&gt;c1;</span><br><span class="line">	c0 = x;</span><br><span class="line">	<span class="keyword">return</span> (c0+c1+c2+c4+c8+c16+<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>该函数实现的功能是返回表示传入参数的最小二进制位数。也就是数值位加1（符号位）。我们的思路是使用二分查找法去找除开符号位为一的最高位。但是由于补码的特性，我们并不是很容易实现。所以我们先要对负数按位取反，正数保持不变。所以我们构造<code>sign = x&gt;&gt;31</code>去记录符号位。用与非运算，构造出当正数时不变，负数时按位取反的算式：<code>x = (sign&amp;~x)|(~sign&amp;x)</code>。接下来按步实施二分查找。先确定最高位是在高16位还是低16位，最高位确定落在任意一16位区间后，在确定是落在高八位还是第八位。范围不断缩小。最后将记录的位数相加再加上符号位所占的1即可。</p>
+<h2 id="floatScale2"><a href="#floatScale2" class="headerlink" title="floatScale2"></a>floatScale2</h2><ul>
+<li>floatScale2 - Return bit-level equivalent of expression 2*f for</li>
+<li>floating point argument f.</li>
+<li>Both the argument and result are passed as unsigned int’s, but</li>
+<li>they are to be interpreted as the bit-level representation of</li>
+<li>single-precision floating point values.</li>
+<li>When argument is NaN, return argument</li>
+<li>Legal ops: Any integer&#x2F;unsigned operations incl. ||, &amp;&amp;. also if, while</li>
+<li>Max ops: 30</li>
+<li>Rating: 4</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="title function_">floatScale2</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">	<span class="type">int</span> index = (uf&amp;<span class="number">0x7f800000</span>)&gt;&gt;<span class="number">23</span>;</span><br><span class="line">	<span class="type">int</span> sign = uf&amp;(<span class="number">1</span>&lt;&lt;<span class="number">31</span>);</span><br><span class="line">	<span class="keyword">if</span> (index == <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> uf&lt;&lt;<span class="number">1</span>|sign;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (index == <span class="number">255</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> uf;</span><br><span class="line">	&#125;</span><br><span class="line">	index++;</span><br><span class="line">	<span class="keyword">if</span> (index == <span class="number">255</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> sign|<span class="number">0x7f800000</span>;</span><br><span class="line">	&#125;</span><br><span class="line">  <span class="keyword">return</span> (index&lt;&lt;<span class="number">23</span>)|(uf&amp;<span class="number">0x807fffff</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>浮点数这边有很多的分类讨论。首先对于规格化的浮点数，我们只需要对其阶数加1，再与齐其他部分组合即可完成乘二操作。但若加一是无穷大，则需要将其小数部分清楚返回无穷大。对于非规格化的浮点数只需要左移一位即可。若输入为NaN则也需单独判断阶码是否全为1，返回NaN。</p>
+<h2 id="floatFloat2Int"><a href="#floatFloat2Int" class="headerlink" title="floatFloat2Int"></a>floatFloat2Int</h2><ul>
+<li>floatFloat2Int - Return bit-level equivalent of expression (int) f</li>
+<li>for floating point argument f.</li>
+<li>Argument is passed as unsigned int, but</li>
+<li>it is to be interpreted as the bit-level representation of a</li>
+<li>single-precision floating point value.</li>
+<li>Anything out of range (including NaN and infinity) should return</li>
+<li>0x80000000u.</li>
+<li>Legal ops: Any integer&#x2F;unsigned operations incl. ||, &amp;&amp;. also if, while</li>
+<li>Max ops: 30</li>
+<li>Rating: 4</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">floatFloat2Int</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">  <span class="type">int</span> sign = uf&gt;&gt;<span class="number">31</span>;</span><br><span class="line">  <span class="type">int</span> <span class="built_in">exp</span>  = ((uf&amp;<span class="number">0x7f800000</span>)&gt;&gt;<span class="number">23</span>)<span class="number">-127</span>;</span><br><span class="line">  <span class="type">int</span> frac = (uf&amp;<span class="number">0x007fffff</span>)|<span class="number">0x00800000</span>;</span><br><span class="line">  <span class="keyword">if</span>(!(uf&amp;<span class="number">0x7fffffff</span>)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">exp</span> &gt; <span class="number">31</span>) <span class="keyword">return</span> <span class="number">0x80000000</span>;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">exp</span> &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">exp</span> &gt; <span class="number">23</span>) frac &lt;&lt;= (<span class="built_in">exp</span><span class="number">-23</span>);</span><br><span class="line">  <span class="keyword">else</span> frac &gt;&gt;= (<span class="number">23</span>-<span class="built_in">exp</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!((frac&gt;&gt;<span class="number">31</span>)^sign)) <span class="keyword">return</span> frac;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(frac&gt;&gt;<span class="number">31</span>) <span class="keyword">return</span> <span class="number">0x80000000</span>;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">return</span> ~frac+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>首先考虑特殊情况：如果原浮点值为0则返回0；如果指数大于31的话，frac部分是大于等于1的，所以1&lt;&lt;31位就会覆盖符号位，返回规定的溢出值0x80000000；如果 exp&lt;0，说明该浮点数整数部分为0，所以返回0。剩下的情况：把小数部分转化为整数，大于23则左移，小于23则右移。然后异或判断是否溢出：如果和原符号相同则直接返回frac，否则如果符号位为一说明为负，与原数符号相反，则原数为正值，符号位为0，说明溢出改变了符号位，所以返回越界规定的溢出值0x80000000，再否则原来为负，结果为正，则需要返回其相反数（因为我们在生成frac的时候对符号做了处理，为了方便接下来浮点数向整数的转换）。</p>
+<h2 id="floatPower2"><a href="#floatPower2" class="headerlink" title="floatPower2"></a>floatPower2</h2><ul>
+<li>floatPower2 - Return bit-level equivalent of the expression 2.0^x</li>
+<li>(2.0 raised to the power x) for any 32-bit integer x. </li>
+<li>The unsigned value that is returned should have the identical bit</li>
+<li>representation as the single-precision floating-point number 2.0^x.</li>
+<li>If the result is too small to be represented as a denorm, return</li>
+<li><ol start="0">
+<li>If too large, return +INF.</li>
+</ol>
+</li>
+<li>Legal ops: Any integer&#x2F;unsigned operations incl. ||, &amp;&amp;. Also if, while </li>
+<li>Max ops: 30 </li>
+<li>Rating: 4</li>
+</ul>
+<p>答案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="title function_">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> INF = <span class="number">0xff</span>&lt;&lt;<span class="number">23</span>;</span><br><span class="line">  <span class="type">int</span> <span class="built_in">exp</span> = <span class="number">127</span>+x;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">exp</span> &lt;= <span class="number">0</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">exp</span>&gt;=<span class="number">255</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">return</span> INF;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">exp</span>&lt;&lt;<span class="number">23</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思路：</p>
+<p>让我们求2.0^x^,先来看2.0的位级表示，2.0可以看作2.0^1^阶码为127+1，frac部分舍去1是全零，也就是说，处理2.0^x^我们只需要改变阶码，并对阶码exp做溢出一类的判断即可。若<code>exp&lt;=0</code>则返回0，因为当等于零时值就已经为零了。当<code>exp&gt;=255</code>时，满足无穷大或溢出条件，返回<code>+INF</code>。这些判断都不满足，那么直接对构造好的阶码进行移位即可。</p>
+<h2 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h2><p>DataLab整个实验是在感受位运算的强大，通过位运算代替我们从小学到大的那些基本运算符，实现逻辑判断，最小表示位统计等功能。在读CSAPP第二章时多少都有些磕磕绊绊，看不懂的或者看漏的可能都一眼带过了，通过实验，加强理解和运用。做实验一定要不断翻书，做题目中没有的思路，可能就是看书遗漏的点，反复翻阅，巩固细碎的知识。做实验卡壳的时候也去翻阅了很多别人写的博客，别人写的思路自己也要理解半天，但是做完了回过头来看，也能发现这东西会者不难难者不会，通过做实验去锻炼自己的位级运算的思维，计算机的学习必须需要从以前的十进制运算思维转换成二进制中对位级的运算思维。之后的实验一定要加强自己思考的过程，加深理解。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/09/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86(%E9%99%84DataLab)/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/08/20/Git%E4%B8%8EGithub%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Git与Github学习笔记（持续更新）</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
