@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>深入理解计算机系统第三章：程序的机器级表示 |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-深入理解计算机系统第三章：程序的机器级表示"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  深入理解计算机系统第三章：程序的机器级表示
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/09/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/" class="article-date">
+  <time datetime="2022-09-15T16:38:46.120Z" itemprop="datePublished">2022-09-16</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">10k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">35 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="CSAPP第三章：程序的机器级表示"><a href="#CSAPP第三章：程序的机器级表示" class="headerlink" title="CSAPP第三章：程序的机器级表示"></a>CSAPP第三章：程序的机器级表示</h1><blockquote>
+<p>本章表述基于x86-64</p>
+</blockquote>
+<h2 id="3-1-历史观点"><a href="#3-1-历史观点" class="headerlink" title="3.1 历史观点"></a>3.1 历史观点</h2><blockquote>
+<p> <strong>Intel</strong>处理器系列俗称<strong>x86</strong>，经历了一个长期的、不断进化的发展过程。在接下来描述晶体管数量中，“<strong>K</strong>”代表1000，“<strong>M</strong>”代表1 000 000，而“<strong>G</strong>”表示1 000 000 000。</p>
+</blockquote>
+<p>​		<strong>8086</strong>(1978 年，29K 个晶体管）。它是第一代单芯片、16 位微处理器之一。<strong>8088</strong> 是 8086 的一个变种，在 8086 上增加了一个 8 位外部总线，构成最初的 IBM 个人计算机的心脏。</p>
+<p>​		<strong>80286</strong>(1982 年，134K 个晶体管）。增加了更多的寻址模式（现在已经废弃了），构成 了IBM PC-AT 个人计算机的基础，这种计算机是 MS Windows 最初的使用平台。 </p>
+<p>​		<strong>i386</strong>(1985 年，275K 个晶体管）。将体系结构扩展到 32 位。增加了平坦寻址模式（flat addressing model)。</p>
+<p>​		<strong>i486</strong>(1989 年，1.2M 个晶体管）改善了性能，同时将浮点单元集成到了处理器芯片上, 但是指令集没有明显的改变。</p>
+<p>​		<strong>Pentium</strong>(1993 年，3.1M 个晶体管）。改善了性能，不过只对指令集进行了小的扩展。</p>
+<p>​		<strong>PentiumPro</strong>(1995 年，5.5M 个晶体管）。引人全新的处理器设计，在内部被称为 P6 微体系结构。指令集中増加了一类“条件传送(conditional move)” 指令。</p>
+<p>​		<strong>Pentium&#x2F;MMX</strong>(1997 年，4. 5M 个晶体管）。在 Pentium 处理器中增加了一类新的处理整数向量的指令。每个数据大小可以是 1、2 或 4 字节。每个向量总长 64 位。</p>
+<p>​		<strong>Pentium II</strong>(1997 年，7M 个晶体管），P6微体系结构的延伸。</p>
+<p>​		<strong>Pentium III</strong>(1999 年，8.2M 个晶体管）。引入了 <strong>SSE</strong>, 这是一类处理整数或浮点数向量的指令。</p>
+<p>​		<strong>Pentium 4</strong>(2000 年，42M 个晶体管）。SSE 扩展到了 <strong>SSE2</strong>, 增加了新的数据类型（包括双精度浮点数），以及针对这些格式的 144 条新指令。</p>
+<p>​		<strong>Pentium 4E</strong>(2004 年，125M 个晶体管）。 增加了**超线程（hyperthreading)**，这种技术可以在一个处理器上同时运行两个程序；还增加了 <strong>EM64T</strong>, 它是 Intel 对 AMD 提出的对 IA32 的 64 位扩展的实现，我们称之为 <strong>x86-64</strong>。</p>
+<p>​		<strong>Core 2</strong>(2006 年，291M 个晶体管）。回归到类似于 P6 的微体系结构。Intel 的<strong>第一个多核微处理器</strong>，即多处理器实现在一个芯片上。但不支持超线程。</p>
+<p>​		<strong>Corei7,Nehalem</strong>(2008 年，781M 个晶体管）。既支持超线程，也有多核，最初的版本支持每个核上执行两个程序，每个芯片上最多四个核。</p>
+<p>​		<strong>Corei7, SandyBridge</strong>(2011 年，1.17G 个晶体管）。引入了 <strong>AVX</strong>，这是对 SSE 的扩展，支持把数据封装进 256 位的向量。</p>
+<p>​		<strong>Corei7, Haswell</strong>(2013年，1.4G 个晶体管）。将 AVX 扩展至 AVX2, 增加了更多的指令和指令格式。</p>
+<p>​		每个后继处理器的设计都是后向兼容的——较早版本上编译的代码可以在较新的处理器上运行。</p>
+<blockquote>
+<p><strong>摩尔定律（Moore’s Law）</strong>：</p>
+<p>​		1965 年，Gordon Moore, Intel 公司的创始人，根据当时的芯片技术（那时他们能够在 一个芯片上制造有大约 64 个晶体管的电路）做出推断，预测在未来 10 年，芯片上的晶体管数量每年都会翻一番。这个预测就称为摩尔定律。</p>
+</blockquote>
+<h2 id="3-2-程序编码"><a href="#3-2-程序编码" class="headerlink" title="3.2 程序编码"></a>3.2 程序编码</h2><p>​		对待编译的C程序<code>（test.c）</code>,使用gcc编译它。gcc即是<strong>GCC C 编译器</strong>，是Linux上默认的编译器。</p>
+<p>​		<code>linux&gt; gcc -Og -o p test.c</code></p>
+<p>​		编译选项 -Og 告诉编译器使用会生成符合原始 C 代码整体结构的机器代码的优化等级。使用较髙级别优化产生的代码会严重变形，以至于产生的机器代码和 初始源代码之间的关系非常难以理解。所以我们使用 -Og 选项作为学习工具，在实际使用中，从得到的程序的性能考虑，较高级别的优化(如，以选项 -O1或 -O2 指定)被认为是较好的选择。</p>
+<p>​		gcc 命令调用了一整套的程序，将源代码转化成可执行代码。首先，<strong>C 预处理器</strong>扩展源代码，插人所有用<code>#include</code>命令指定的文件，并扩展所有声明指定的宏。其次，<strong>编译器</strong>产生源文件的汇编代码.接下来，<strong>汇编器</strong>会将汇编代码转化成二进制目标代码文件，目标代码是机器代码的一种形式，它包含所有指令的二进制表示，但是还没有填入全局值的地址。最后，<strong>链接器</strong>将目标代码文件与实现库函数（例如 printf)的代码合并，并产生最终的可执行代码文件 p (由命令行指示符-o p指定的）。可执行代码是我们要考虑的机器代码的第二种形式，也就 是处理器执行的代码格式。</p>
+<p>​		在之前所说，计算机系统使用多种不同形式的抽象，利用更简单的抽象模型来隐藏实现的细节。对于机器级编程来说，有两种尤为重要的抽象，其一是由<strong>指令集体系结构</strong>或<strong>指令集架构（Instruction Set Architecture, ISA)<strong>来定义机器级程序的格式和行为，它定义了处理器状态、指令的格式，以及每条指令对状态的影响。处理器硬件</strong>并发</strong>地执行许多指令，并采取措施保证整体行为与ISA指定地顺序执行的行为完全一致。其二便是机器级程序使用的内存地址是<strong>虚拟地址</strong>，提供的内存模型看上去是一个非常大的字节数组。</p>
+<p>​		x86-64的机器代码与C代码差别非常大，但一些对程序员所隐藏的处理器状态在这里都是可见的：</p>
+<ul>
+<li><strong>程序计数器</strong>（通常称为“PC”， 在 x86-64 中用％rip表示）给出将要执行的下一条指令在内存中的地址。</li>
+<li><strong>整数寄存器</strong>文件包含 16 个命名的位置，分别存储 64 位的值。这些寄存器可以存储地址 (对应于 C 语言的指针)或整数数据。有的寄存器被用来记录某些重要的程序状态，而其他的寄存器用来保存临时数据，例如过程的参数和局部变量，以及函数的返回值。</li>
+<li><strong>条件码寄存器</strong>保存着最近执行的算术或逻辑指令的状态信息。它们用来实现控制或 数据流中的条件变化，比如说用来实现 if 和 while 语句。</li>
+<li>一组<strong>向量寄存器</strong>可以存放一个或多个整数或浮点数值。</li>
+</ul>
+<p>​		虽然 C 语言提供了一种模型，可以在内存中声明和分配各种数据类型的对象，但是机器代码只是简单地将内存看成一个很大的、按字节寻址的数组。所以，汇编代码不区分各种类型的指针，甚至不区分指针和整数。</p>
+<p>​		程序内存包含：程序的可执行机器代码，操作系统需要的一些信息，用来管理过程调 用和返回的运行时栈，以及用户分配的内存块（比如说用 malloc 库函数分配的）。程序内存用虚拟地址来寻址，在任意给定的时刻，只有有限的一部分虚拟地址被认为是合法的。较为典型的程序只会访问几兆字节或几千兆字节的数据。操作系统负责管理虚拟地址空间，将虚拟地址翻译成实际处理器内存中的物理地址。</p>
+<p>​		<strong>一条机器指令</strong>只执行<strong>一个非常基本的操作</strong>。</p>
+<p>​		对于一个<code>.c</code>文件，我们使用命令<code>linux&gt; gcc -Og -S test.c</code>命令可以看到编译器产生的汇编代码，使用 -c 指令GCC会编译并汇编此代码，即可以看到二进制格式的<code>.o</code>文件。这就是机器执行的字节序列，是对一系列指令的编码。机器对产生这些指令的源代码是完全未知的。</p>
+<p>​		关于机器代码和它的反汇编表示的特性：</p>
+<ul>
+<li>x86-64 的指令长度从 1 到 15 个字节不等。常用的指令以及操作数较少的指令所需的字节数少，而那些不太常用或操作数较多的指令所需字节数较多。</li>
+<li>设计指令格式的方式是，从某个给定位置开始，可以将字节唯一地解码成机器指令。例如，只有指令 pushq %rbx 是以字节值 53 开头的。</li>
+<li>反汇编器只是基于机器代码文件中的字节序列来确定汇编代码。它不需要访问该程序的源代码或汇编代码。</li>
+</ul>
+<p>​		GCC生成的汇编代码中，所有以 ‘ . ’ 开头的行都是知道汇编器和链接器工作的伪指令，在阅读中可以忽略。</p>
+<blockquote>
+<p><strong>ATT</strong>与<strong>Intel</strong>汇编代码格式</p>
+<p><strong>ATT</strong>是 GCC、OBJDUMP 和其他一些我们使用的工具的默认格式。</p>
+<p>其他一些编程工具，包括 Microsoft 的工具，以及来自 Intel 的文档，其 汇编代码都是 Intel 格式的。</p>
+<ul>
+<li>Intel 代码省略了指示大小的后缀。</li>
+<li>Intel 代码省略了寄存器名字前面的 ‘ ％ ’ 符号 。</li>
+<li>Intel 代码用不同的方式来描述内存中的位置，例如是 ‘QWORD PTR [rbx]‘ 而不是 ‘( ％rbx )’ 。</li>
+</ul>
+</blockquote>
+<p>​		使用链接器链接目标文件我们使用指令：<code>linux&gt; gcc -0g -o result test1.c test2.c</code>。链接器的任务之一是为函数调用找到匹配的函数的可执行代码的位置。</p>
+<p>​		使用命令：<code>linux&gt; objdump -d result</code>可以反汇编最终生成的可执行文件。</p>
+<blockquote>
+<p>在编写代码的有些时候，往往使用汇编会更容易地达到目的，这就需要我们往C语言中插入汇编代码。如此有两种方法：</p>
+<ol>
+<li>我们可以编写完整的函数，放进 一个独立的汇编代码文件中，让汇编器和链接器把它和用 C 语言书写的代码合并起来。</li>
+<li>我们可以使用 GCC 的内联汇编（inline assembly)特性，用 以在 C 程序中 包含简 短的汇编代码。</li>
+</ol>
+</blockquote>
+<h2 id="3-3-数据格式"><a href="#3-3-数据格式" class="headerlink" title="3.3 数据格式"></a>3.3 数据格式</h2><p>​		由于Intel用术语“ 字（word）”表示 16 位数据类型，因此称 32 位数为 ” 双字（double words）“ 称 64 位数为 “ 四字”（quad words) “。标准 int 值存储为双字（32 位）。 指针(在此用 char* 表示)存储为 8 字节的四字（64位）。浮点数主要有两种形式：单精度（4 字节）值，对应于 C 语言数据类型 float; 双精度 (8 字节)值，对应于 C 语言数据类型 double。大多数 GCC 生成的汇编代码指令都有一个字符的后缀，表明操作数的大 小。例如，数据传送指令有四个变种：movb（传送字节）、 movw（传送字）、 movl（传送双字）和 movq（传送四字）。 后缀‘ l ’用来表示双字，因为 32 位数被看成是“长字“（long word）”。 汇编代码也使用后缀 来表示 4 字节整数和 8 字节双精度浮点数。这不会产生歧义，因为浮点数使用的是一组完全不同的指令和寄存器。</p>
+<h2 id="3-4-访问信息"><a href="#3-4-访问信息" class="headerlink" title="3.4 访问信息"></a>3.4 访问信息</h2><p>​		一个 X86-64 的中央处理单元（CPU）包含一组 16 个存储 64 位值的通用目的寄存器，用来存储整数数据和指针。指令可以对这 16 个寄存器的低位字节中存放的不同 大小的数据进行操作。字节级操作可以访问最低的字节，16 位操作可以访问最低的 2 个字节，32 位操作可以访问最低的 4 个字节，而 64 位操作可以访问整个寄存器。</p>
+<p>​		大多数指令有一个或多个操作数。操作数被分为三种类型，第一种类型是<strong>立即数（immediate）</strong>，用来表示常数值。在 ATT 格式的汇编代码中，立即数的书写方式是 <strong>’$‘</strong> 后面跟一个标准 C 表示法表示的整数，不同的指令允许的立即数值范围不同，汇编器会自动选择最紧凑的方式进行数值编码。第二种类型是<strong>寄存器（register）</strong>，它表示某个寄 存器的内容，16 个寄存器的低位 1 字节、2 字节、4 字节或 8 字节中的一个作为操作数， 这些字节数分别对应于 8 位、16 位、32 位或 64 位。第三类是内存引用，它会根据计算出来的地址（通常称为有效地址）访问某个内存位置。</p>
+<p>​		<strong>MOV</strong> 类是最简单的数据传送指令，这些指令把数据从源位置 复制到目的位置，不做任何变化，后面跟的字母代表操作的数据大小。源操作数指定的值是一个立即数，存储在寄存器中或者内存中。目的操作数指定一个位置，要么是一个寄存器或者，要么是一个内存地址。X86-64 加了一条限制，传送指令的两个操作数不能都指向内存位置。将一个值从一个内存位置复制到另一个内存位置需要两条指令——第一条指令将源值加载到寄存器中，第二条将该寄存器值写人目的位置。大多数情况 中，MOV 指令只会更新目的操作数指定的那些寄存器字节或内存位置。唯一的例外是 movl 指令以寄存器作为目的时，它会把该寄存器的高位 4 字节设置为 0。造成这个例外的原因是 X86-64 采用的惯例，即任何为寄存器生成 32 位值的指令都会把该寄存器的高位部分置成0。</p>
+<p>​		<strong>push</strong> 和 <strong>pop</strong>指令可以将数据压人程序栈中，以及从程序栈中弹出数据。栈是一种数据结构，可以在表的一端添加或者删除值，要遵循“后进先出”（FILO）的原则。通过 push 操作把数据压人栈中，通过 pop 操作删除数据。它具有一个属性：弹出的值永远是最近被压入而且仍然在 栈中的值。栈可以实现为一个数组，总是从数组的一端插人和删除元素。这一端被称为栈顶 。相对的另一端称为栈底。栈指针 ％rsp 保存着栈顶元素的地址。栈是从高地址向低地址生长，栈顶元素的地址是所有栈中元素地址中最低的。</p>
+<h2 id="3-5-算术和逻辑操作"><a href="#3-5-算术和逻辑操作" class="headerlink" title="3.5 算术和逻辑操作"></a>3.5 算术和逻辑操作</h2><p>​		算术和逻辑操作的，每个指令类都对字节、字、双子、四字这四种不同大小的数据进行操作。这些操作被分为四组：加载有效地址、一元操作、二元操作和移位。二元操作有两个操作数， 而一元操作有一个操作数。</p>
+<p>​		<strong>lea</strong>指令加载有效地址（load effective address）指令，将有效地址写入到目的操作数，目的操作数必须是一个寄存器。并且还可以简洁地描述简单的描述普通的算术操作，如：<code>leaq 7 (%rdx,%rdx,4) ,%rax </code>将设置寄存器 ％rax 的值为 5x + 7。</p>
+<p>​		一元操作只有一个操作数，既是源又是目的，二元操作的第二个操作数既是源又是目的。</p>
+<p>​		移位操作左移指令SAL 和 SHL，两者是一样的，都是将 右边填上0。右移指令不同，SAR 执行算术移位（填上符号位）, 而 SHR 执行逻辑移位（填 上0） 移位操作的目的操作数可以是一个寄存器或是一个内存位置。</p>
+<p>​		大多数指令，既可以用于无符号运算，也可以用于补码运算，只有右移操作要求区分有符号和无符号数。这个特性也使得补码运算称为实现有符号整数运算的一种比较好的方法的原因之一。</p>
+<p>​		两个64位整数相乘得到的乘积需要128位来表示，因此 x86-64 指令集对 128 位（16 字节）数的操作提供有限的支持。Intel 把 16 字节的数称为八字（oct word）。对于位的扩展，使用指令 <strong>clto</strong> 将四字转化为八字。有无符号的乘法都要求一个参数存放在寄存器 %rax 中，另一个作为指令的源操作数给出，然后乘积存放在寄存器 ％rdx (高 64 位）和 %rax（低 64 位）中。</p>
+<p>​		有符号除法指令 idivl 将寄存器 %rdx（高 64 位） 和 %rax（低 64 位）中的 128 位数作为被除数，而除数作为指令的操作数给出。指令将商存储在寄存器 ％rax 中，将余数存储在寄存器 %rdx 中。无符号除法使用 divq 指令。通常，寄存器 %rdx 会事先设置为0。</p>
+<p>​		</p>
+<h2 id="3-6-控制"><a href="#3-6-控制" class="headerlink" title="3.6 控制"></a>3.6 控制</h2><p>​		除了整数寄存器，CPU 还维护着一组单个位的<strong>条件码（condition code）寄存器</strong>，它们 描述了最近的算术或逻辑操作的属性。可以检测这些寄存器来执行条件分支指令。</p>
+<p>​		<strong>CF</strong>: 进位标志。最近的操作使最高位产生了进位。可用来检査无符号操作的溢出。</p>
+<p>​		<strong>ZF</strong>: 零标志。最近的操作得出的结果为 0。 </p>
+<p>​		<strong>SF</strong>: 符号标志。最近的操作得到的结果为负数。 </p>
+<p>​		<strong>OF</strong>: 溢出标志。最近的操作导致一个补码溢出——正溢出或负溢出。</p>
+<blockquote>
+<p>lea 指令不改变任何条件码，因为它是用来进行地址计算的。</p>
+</blockquote>
+<p>​		<strong>CMP</strong> 和 <strong>TEST</strong> 指令在不修改任何寄存器的值的情况下，只设置条件码。CMP 与 SUB 指令的行为是 一样的，指令根据两个操作数之差来设置条件码。但是CMP指令由于ATT格式，给出的操作数顺序和比较顺序是相反的。如果两个操作数相等，这些指令会将零标志设置为 1，而其他的标志可以用来确定两个操作数之间的大小关系。TEST 指 令的行为与 AND 指令一样，同样只设置条件码而不改变目的寄存器的值。</p>
+<p>​		条件码通常不会直接读取，常用的使用方法有三种：</p>
+<ol>
+<li>可以根据条件码的某种组合， 将一个字节设置为 0 或者 1。使用 <strong>SET</strong> 指令，后缀表示不同的操作条件，如 sete 就是相等时设置（set equal），诸如 setg (表示“设置大于”）和 setnle（表示“设置不小于等于”）指的是同一条机器指令，他们是同义名。	</li>
+<li>可以条件跳转到程序的某个其他的部分。使用<strong>跳转</strong>指令。在诸多跳转指令中，<strong>jmp</strong> 是<strong>无条件跳转</strong>，他可以是<strong>直接跳转</strong>，即跳转目标是作为指令的一部分编码的；也可以是<strong>间接跳转</strong>，即跳转目标是从寄存器或内存位置中读出的。汇编语言中，直接跳转是给出一个标号作为跳转目标的，例如上 ”.L1“ 间接跳转的写法是 ‘ * ’ 后面跟一个操作数指示符，例如 jmp *%rax 。</li>
+<li>可以有条件地传送数据。例如 jl，je（小于，等于）。</li>
+</ol>
+<p>​		跳转指令有几种不同的编码，但是最常用都是 <strong>PC 相对的（PC-relative）</strong>。也就是，它们会将目标指令的地址与紧跟在跳转指令后面那条指令的地址之间的差作为编码。这些地址偏移量可以编码为 1、2 或 4 个字节。第二种编码方法是给出“绝对”地址，用 4 个字节直接指定目标。 汇编器和链接器会选择适当的跳转目的编码。</p>
+<blockquote>
+<p>用差值硬编码地址可以绕过重定位对地址的影响。</p>
+</blockquote>
+<p>​		实现条件分支有两种方法，一种是条件控制，一种是条件传送。条件传送使用指令 cmov，后面加上条件后缀。条件控制很容易理解，程序沿着一条执行路径执行，当条件不满足时，就走一条路径。这种机制虽然简单且通用，但是可能会很低效，所以产生了一种替代策略：使用数据的条件转移。这种方法计算一个条件操作的两种结果，然后再根据条件是否满足从中选取一个。只有在一些受限制的情况中，这种策略才可行，但是如果可行，就可以用一条简单的条件传送指令来实现它，条件传送指令更符合现代处理器的性能特性。处理器通过使用<strong>流水线（pipelining）</strong>来获得高性能，在流水线中，一 条指令的处理要经过一系列的阶段，每个阶段执行所需操作的一小部分。这种方法通过重叠连续指令的步骤来获得高性能。因此需要事先确定要执行的指令序列，使得流水线中充满了待执行的指令。当遇到分支时，处理器采用非常精密的<strong>分支预测逻 辑</strong>来猜测每条跳转指令是否会执行。但是一旦猜错则会有严重的惩罚导致性能下降。条件控制需要等待判断结果完成计算，才会继续执行后面的代码，且编码花费大，惩罚高，条件传送则是先把不同的结果执行，再根据条件值选择结果值，所以很多时候条件传送的性能要高于条件控制。但条件传送性能更高也不绝对，比如对结果的求值较为复杂，则会招致更大的性能浪费。而且编译器并不具备足够的信息去判断和选择。所以一般来说，只有当两个表达式都很容易计算时，才会使用条件传送，即使许多分支预测错误的开销会超 过更复杂的计算，GCC 还是会使用条件控制转移。	</p>
+<p>​		C语言提供了多种循环结构，即 <strong>do-while</strong>、<strong>while</strong> 和 <strong>for</strong>。我理解的 do-while 和 while 的区别是 do-while 是先执行一遍循环体再判断循环条件，而while是先判断循环条件，再执行循环体，所以可能在第一遍循环体执行之前就终止循环。while循环有两种翻译方法，第一种称之为跳转到中间（jump to middle），先执行无条件跳转到结尾处的测试部分，再根据测试结果执行循环体。第二种方法称为 guarded-do，首先用条件分支，如果初始条件不成立就跳过循环，把代码变换为 do-while 循环。for循环的执行是先对第一个参数求值，也就是循环变量初始化，再在每一次循环开始之前执行第二个参数的表达式，对循环条件进行判断，接着根据结果决定是否执行循环体，在每次循环体执行结束后，执行第三个参数的表达式，更新循环变量。综上，C 语言中三种形式的所有的循环都可以用一种简单的策略来翻译，产生包含一个或多个条件分支的代码。控制的条件转移提供了 将循环翻译成机器代码的基本机制。</p>
+<blockquote>
+<p>逆向工程循环：理解产生的汇编代码与原始源代码之间的关系，关键是找到程序值和寄存器之间的映射关系。</p>
+</blockquote>
+<p>​		**switch(开关)<strong>语句可以根据一个整数索引值进行</strong>多重分支(multiway branching)<strong>。不仅提高了 C 代码的可读性，而且通过使用</strong>跳转表(jump table)**这种数据结构使得实现更加高效。 跳转表是一个数组，表项 i 是一个代码段的地址，这个代码段实现当开关索引值等于 i 时程序应该采取的动作。程序代码用开关索引值来执行一个跳转表内的数组引用，确定跳转指令的目标。和使用一组很长的 if-else 语句相比，使用跳转表的优点是执行开关语句的时间与开关情况的数量无关。GCC 的作者们创造了一个新的运算符 **&amp;&amp;**，这个运算符创建一个指向代码位置的指针。通过这些指针和跳转表的索引来完成switch语句高效的跳转。</p>
+<h2 id="3-7-过程"><a href="#3-7-过程" class="headerlink" title="3.7 过程"></a>3.7 过程</h2><blockquote>
+<p>过程是软件中一种很重要的抽象。它提供了一种封装代码的方式，用一组指定的参数和一个可选的返回值实现了某种功能。然后，可以在程序中不同的地方调用这个函数。</p>
+</blockquote>
+<p>​		C语言过程调用机制的一个关键特性(大多数其他语言也是如此)在于使用了栈数据结构提供的**先进后出(FILO)**的内存管理原则。程序用栈来管理它的过程所需要的存储空间，栈和程序寄存器存放着传递控制和数据、分配内存所需要的信息。</p>
+<p>​		当 X86-64 过程需要的存储空间超出寄存器 能够存放的大小时，就会在栈上分配空间。这 个部分称为过程的<strong>栈帧（stack fram）</strong>。为了提髙空间和时间效率，X86-64 过程只分配自己所需要的栈帧部分。栈帧通过rbp和rsp两个寄存器去维护，rbp存储指向当前栈帧底部的指针，rsp存储栈顶指针。</p>
+<p>​		我们平时所说的函数调用，函数返回，他们也称作转移控制，使用 <strong>call</strong> 指令将下一条要执行的指令地址记录下来，也就是push入栈，再跳转到目标函数位置执行。	使用 <strong>ret</strong> 指令将先前压入栈中的地址pop指令出栈，然后将PC（rip寄存器）设置为该地址跳转执行。			</p>
+<p>​		 数据传送 当调用一个过程时，除了要把控制传递给它并在过程返回时再传递回来之外，过程调用还可能包括把数据作为参数传递，而从过程返回还有可能包括返回一个值。X86-64 中， 小于6个整形参数通过寄存器传递，大于6个的部分通过栈传递。使用寄存器的顺序为 <strong>rdi、rsi、rdx、rcx、r8、r9</strong>。通过栈传递参数时，所有的数据大小都向 8 的倍数对齐。通过栈传递参数时，通过减小栈顶指针 rsp 来扩展栈帧存放局部变量。</p>
+<p>​		寄存器组是唯一被所有过程共享的资源。 根据惯例，寄存器％rbx、％rbp 和 ％r12~％r15 被划分为<strong>被调用者保存寄存器</strong>，即调用一个新过程时，新过程必须保存这些寄存器的值以便后续恢复。所有其他的寄存器，除了栈指针％rsp，都分类为<strong>调用者保存寄存器</strong>，任何函数都能修改他们。</p>
+<p>​		每个过程调用在栈中都有它自己的私有空间，因此多个未完成调用的局部变量不会相互影响。 此外，栈的原则很自然地就提供了适当的策略，当过程被调用时分配局部存储，当返回时释放存储。因此产生一种递归调用的方式，即自己调用自己的方式来编码。这样可以减小代码量，创新编程思维（我认为的）。	</p>
+<h2 id="3-8-数组分配和访问"><a href="#3-8-数组分配和访问" class="headerlink" title="3.8 数组分配和访问"></a>3.8 数组分配和访问</h2><blockquote>
+<p>C 语言中的数组是一种将标量数据聚集成更大数据类型的方式。</p>
+</blockquote>
+<p>数组声明：<code>T A[N]</code><br>        其效果为在内存中分配一个 字节的连续区域，这里 L 是数据类型 T 的大小（单位为字节）。 其次，它引人了标识符 A， 可以用 A 来作为指向数组开头的指针，这个指针就是x<del>A</del>可以用 0<del>N-1 的整数索引来访问该数组元素。数组元素 i 会被存放在地址为 x</del>A~+L*i 的地方。</p>
+<p>​		单操作数操作符 ‘ &amp; ’ 和 ‘ * ’ 可以产生指针和间接引用指针。也就是，对于一个表示某 个对象的表达式 Expr，&amp;Expr 是给出该对象地址的一个指针。对于一个表示地址的表达式 AExpr，*AExpr 给出该地址处的值。因此，表达式 Expr 与 * &amp;Expr 是等价的。可以对数组和指针应用数组下标操作。数组引用等同于表达式 * (A + i) 。它计算第 i 个数组元素的地址，然后访问这个内存位置。</p>
+<p>​		同样我们也可以声明嵌套数组，也就是所谓的二维数组：<code>T A[M][N]</code> ,数组元素在内存中遵循”行优先“的顺序排列，即A [M]意味着M行的所有元素。</p>
+<blockquote>
+<p>当程序要用一个常数作为数组的维度或者缓冲区 的大小时，最好通过# define 声明将这个常数与一个名字联系起来，然后在后面一直使用这个名字代替常数的数值。这样一来，如果需要修改这个值，只用简单地修改这个# define 声明就可以了，这是一个很好的编程习惯。</p>
+</blockquote>
+<p>​		在编译数组时，编译器会使用很多优化，比如用指针间接引用替换数组引用等。</p>
+<p>​		对于所谓的定长数组，也就是将行列下标的位置写成变量，在该数组被分配时先行计算。在一个循环中引用变长数组时，编译器常常可以利用访问模式的规律性来优化索引的计算。</p>
+<h2 id="3-9-异质的数据结构"><a href="#3-9-异质的数据结构" class="headerlink" title="3.9 异质的数据结构"></a>3.9 异质的数据结构</h2><p>​		C语言的 <strong>struct</strong> （结构体）声明创建一个数据类型，将可能不同类型的对象聚合到一个对象中。 用名字来引用结构的各个组成部分。当引用结构体成员时可以使用<code>(*struct_name).member_name</code>的方式引用，也可以使用<code>struct_name-&gt;member_name</code>的方式，因为本质上结构体名也就是一个指向结构体首字节的指针，这点和数组类似。要产生一个指向结构内部对象的指针，我们只需将结构的地址加上该字段的偏移量。</p>
+<p>​		<strong>联合</strong>提供了一种方式，能够规避 C 语言的类型系统，允许以多种类型来引用一个对象，一个联合的总的大小等于它最大字段的大小。也就是方便我们引用同一个对象的不同类型。引用方式与结构体类似。</p>
+<p>​		许多计算机系统对基本数据类型的合法地址做出了一些限制，要求某种类型对象的地址必须是某个值 K(通常是 2、4 或 8)的倍数。这种对齐限制简化了形成处理器和内存系统之间接口的硬件设计。如汇编代码中的<code>.align 8</code>即是从它开始后面的元素遵循8字节对齐。</p>
+<h2 id="3-10-在机器级程序中将控制与数据结合起来"><a href="#3-10-在机器级程序中将控制与数据结合起来" class="headerlink" title="3.10 在机器级程序中将控制与数据结合起来"></a>3.10 在机器级程序中将控制与数据结合起来</h2><p>​		指针是 C 语言的一个核心特色。它们以一种统一方式，对不同数据结构中的元素产生引用。</p>
+<p>指针映射到机器代码的一些关键性原则：</p>
+<ul>
+<li>每个指针都对应一个类型。这个类型表明该指针指向的是哪一类对象。</li>
+<li>每个指针都有一个值。这个值是某个指定类型的对象的地址。特殊的 NULL(O)值表 示该指针没有指向任何地方。</li>
+<li>指针用‘&amp;’运算符创建。这个运算符可以应用到任何 lvalue 类的 C 表达式上， lvalue 意指可以出现在赋值语句左边的表达式。</li>
+<li>* 操作符用于间接引用指针。其结果是一个值，它的类型与该指针的类型一致。</li>
+<li>数组与指针紧 密联系。数组名即指向该连续内存第一个字节的指针，即一个数组的名字可以像一个指针变量一样引用（但不能修改）</li>
+<li>将指针从一种类型强制转换成另一种类型，只改变它的类型 ，而不改变它的值。</li>
+<li>指针也可以指向函数。<code>注意函数指针要打括号，否则‘*’会和函数返回类型联想</code></li>
+</ul>
+<p>​		C语言的许多函数类如：gets、strcpy、strcat 和 sprintf等都不会对<strong>缓冲区溢出</strong>做检查，因此会产生严重的程序错误（因为局部变量和状态信息都存放在栈中）。栈溢出攻击即是溢出数据覆盖返回地址使攻击者拿到程序执行的控制权。</p>
+<p>​		为了对抗栈溢出，有三种不影响程序性能的防护方式：</p>
+<ol>
+<li><strong>栈随机化</strong>，使栈每次运行的地址都发生变化，在 Linux 系统中，栈随机化已经变成了标准行为。它是更大的一类技术中的一种，这类技术称为<strong>地址空间布局随机化（Address-Space Layout Randomization)</strong>, 或者简称 <strong>ASLR</strong> 。采用 ASLR, 每次运行时程序的不同部分，包括程序代码、库代码、栈、全局变量和堆数据，都会被加载到内存的不同区域。这就意味着在一台机器上运行一个程序，与在其他机器上运行同样的程序，它们的地址映射大相径庭。但是头铁的攻击者也会去构造大量的nop-sled去赌命中的概率，但此方法也极大的限制了其命中的难度。</li>
+<li><strong>栈破坏检测</strong>，即在返回地址前插入一段检测代码，称为<strong>金丝雀（canary</strong>）值，也称为哨兵值。在函数返回前，先校验金丝雀是否发生改变。金丝雀值存放在一个特殊的段中，状态标记为只读，使用时通过<strong>段寻址（segmented addressing）</strong>方式从内存中读入。</li>
+<li><strong>限制可执行代码区域</strong>，最为我们熟知的便是”NX（No-Execute）保护“，将读和执行访问模式分开（以前，x86 体系结构将读和执行访问控制合并成一个 1 位的标志，这样任何被标记为可读的页也都是可执行的），使得栈可以被标记为可读和可写，但是不可执行。</li>
+</ol>
+<h2 id="3-11-浮点代码"><a href="#3-11-浮点代码" class="headerlink" title="3.11 浮点代码"></a>3.11 浮点代码</h2><blockquote>
+<p>Intel 和 AMD 都引人了持续数代的媒体（media)指令，支持图形和图像处理。这些 指令本意是允许多个操作以并行模式执行，称为<strong>单指令多数据</strong>或 <em><strong>SIMD</strong></em>(读作 sim-dee)。 在这种模式中，对多个不同的数据并行执行同一个操作。寄存器组在 MMX 中称 为 “MM” 寄存器，SSE 中称为 “XMM” 寄存器，而在 AVX 中称为 “YMM” 寄存器； MM 寄存器是 64 位的，XMM 是 128 位的，而 YMM 是 256 位的。所以，每个 YMM 寄 存器可以存放 8 个 32 位值，或 4 个 64 位值，这些值可以是整数，也可以是浮点数。</p>
+</blockquote>
+<p>​		浮点传送指令类似MOV，写作<strong>VMOV</strong>加上不同的后缀，例如：vmovss（传送单精度数）、vmovsd（传送双精度数）、vmovaps（传送对齐的封装好的双精度数，其中的a代表align，对其的）。</p>
+<p>​		把浮点值转换成整数时，指令会执行截断（truncation)，把值向 0 进行舍入。例如：vcvttss2si（用截断的方法把单精度数转换成整数）、vcvttsd2siq（用截断的方法把双精度数转换成四字整数）等等。把整数转换为浮点数只要更改”2“前后的内容即可，例如：vcvtsi2ss（把整数转换成单精度数）。把整数转换成浮点数使用的是不太常见的三操作数格式，有 两个源和一个目的。第一个操作数读自于内存或一个通用目的寄存器。这里可以忽略第二个操作数，因为它的值只会影响结果的高位字节。而我们的目标必须是 XMM 寄存器。</p>
+<p>​		<strong>vunpcklps</strong> 指令通常用来交叉放置来自两个 XMM 寄存器的值，把它们存储到第三个寄存器中。如果两个源寄存器内容分别是[s<del>3</del>, s<del>2</del>, s<del>1</del>, s<del>0</del>],[d<del>3</del>, d<del>2</del>, d<del>2</del>, d<del>1</del>],那么目的寄存器的值会是[s<del>1</del>, d<del>1</del>, s<del>0</del>, d<del>0</del>]。</p>
+<p>​		XMM 寄存器用来向函数传递浮点参数，以及从函数返回浮点值，有如下规则：</p>
+<ul>
+<li>XMM 寄存器 ％xmm0~％xmm7 最多可以传递 8 个浮点参数。按照参数列出的顺序使用这些寄存器。可以通过栈传递额外的浮点参数。</li>
+<li>函数使用寄存器 ％xmm0 来返回浮点值。</li>
+<li>所有的 XMM 寄存器都是调用者保存的。被调用者可以不用保存就覆盖这些寄存器中任意一个。</li>
+</ul>
+<p>​		当函数包含指针、整数和浮点数混合的参数时，指针和整数通过通用寄存器传递，而 浮点值通过 XMM 寄存器传递。也就是说，参数到寄存器的映射取决于它们的类型和排列 的顺序。</p>
+<p>​		浮点数运算指令为<code>v+操作指令+精度</code>的格式，每个操作都有一 条针对单精度的指令和一条针对双精度的指令，结果存放在目的寄存器中。</p>
+<p>​		和整数运算操作不同，AVX 浮点操作不能以立即数值作为操作数。相反，编译器必须为所有的常量值分配和初始化存储空间。然后代码在把这些值从内存读人。</p>
+<p>​		对于浮点数也可以使用位级操作，构成大致为：<code>v+操作指令+精度</code>。使用比较操作ucomiss、ucomisd比较单精度与双精度。浮点比较指令会设置三个条件码：零标志位 ZF、进位标志位 CF 和奇偶标志位 PF。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>​		这一章东西非常多，如作者所说，我们在这一章窥视了C语言提供的抽象层下面的东西，通过对底层知识的学习让我们对C语言代码的编译，优化过程有了更清晰的理解，对于不用的指令理解，也不仅仅停留在文字意思表面。学会了在程序中对可能而来的攻击的防护意识，这个在今后的章节一定还会有更深入的学习。</p>
+<p>​		本章节不断地反汇编二进制文件来向我们展示底层地原理，自己意识到一定要好好利用好反汇编这一强大的手段去逆向分析程序，更加认识到学习汇编的重要性，学长说过，汇编虽然很冗杂，但是它表达的意思相当明确，学习好汇编更有助于加深对程序的理解，以便今后更好的学习。	</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/09/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/09/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E8%A1%A8%E7%A4%BA%E5%92%8C%E5%A4%84%E7%90%86(%E9%99%84DataLab)/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">深入理解计算机系统第二章：信息的表示和处理（附DataLab实验）</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
