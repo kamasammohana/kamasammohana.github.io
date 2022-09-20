@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>ARM 汇编学习 |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-ARM 汇编学习"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  ARM 汇编学习
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/09/21/ARM%20%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0/" class="article-date">
+  <time datetime="2022-09-20T17:43:45.542Z" itemprop="datePublished">2022-09-21</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">7.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">31 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="ARM-汇编学习"><a href="#ARM-汇编学习" class="headerlink" title="ARM 汇编学习"></a>ARM 汇编学习</h1><blockquote>
+<p>ARM 处理器已经在生活中有了广泛应用，随之而来也有许多的安全问题，所以对于二进制方向，学习ARM 汇编是必须且有必要的。</p>
+</blockquote>
+<h2 id="ARM-汇编基础知识"><a href="#ARM-汇编基础知识" class="headerlink" title="ARM 汇编基础知识"></a>ARM 汇编基础知识</h2><h3 id="ARM-与-Intel-的区别"><a href="#ARM-与-Intel-的区别" class="headerlink" title="ARM 与 Intel 的区别"></a>ARM 与 Intel 的区别</h3><p>​		Intel 和 ARM之间区别有很多，最主要的区别在于指令集。</p>
+<p>​		Intel 是一个<strong>CISC（复杂指令集计算）</strong>处理器，具有<u>更大，功能更丰富的指令集</u>，并<u>允许许多复杂指令访问内存</u>。因此，它比ARM具有更多的操作，寻址模式，但寄存器更少。CISC处理器主要用于普通PC，工作站和服务器。</p>
+<p>​		ARM 是<strong>RISC（简化指令集计算）</strong>处理器，因此具有<u>简化的指令集（100条或更少）</u>和<u>比CISC更通用的寄存器</u>。与英特尔不同，ARM 使用<u>仅在寄存器上运行的指令</u>，并使用加载&#x2F;存储内存模型进行内存访问，这意味着<u>只有加载&#x2F;存储指令才能访问内存</u>。这意味着在 ARM 上增加特定内存地址的 32 位值需要三种类型的指令（加载、递增和存储）首先将特定地址处的值加载到寄存器中，在寄存器中递增该值，然后将其从寄存器存储回存储器。</p>
+<blockquote>
+<p>简化的指令集有其优点和缺点。其中一个优点是指令可以更快地执行，可能允许更高的速度（RISC系统通过减少每条指令的时钟周期来缩短执行时间）。缺点是更少的指令意味着更加强调使用有限的可用指令有效地编写软件。另外需要注意的是ARM有两种模式，<strong>ARM模式</strong>和<strong>Thumb模式</strong>。 Thumb 指令可以是 2 个或 4 个字节。</p>
+</blockquote>
+<p>ARM 和 x86 的更多区别：</p>
+<ul>
+<li>在 ARM 中，大多数指令都可用于条件执行。</li>
+<li>Intel x86 和 x86-64 系列处理器使用小端格式，而在版本 3 之前，ARM 体系结构是小端序的。从版本3开始，ARM处理器成为<strong>BI-Endian</strong>，具有允许<em>可切换</em>字节序的设置。</li>
+</ul>
+<h3 id="理解汇编语言"><a href="#理解汇编语言" class="headerlink" title="理解汇编语言"></a>理解汇编语言</h3><p>​		电路上存在着信号，也就是电压的高低，我们可视地将高低点位转换成1和0去编写，通过01序列来形成机器代码指令来操控机器。这就是机器语言。而对于我们来说，我们没办法向机器一样快速理解这些0，1序列的含义，所以创造了一种与机器语言高度对应的助记符来代表机器指令。早些时候，人们通过使用汇编语言作为指令编写程序，称为汇编语言程序。要记住，汇编语言是人类用来对计算机进行编程的最低级别，指令的操作数位于助记符之后。</p>
+<p>​		汇编语言程序实际上只是一个文本程序，我们需要将其转换为机器代码让计算机执行。在 ARM 汇编的情况下，<a target="_blank" rel="noopener" href="https://www.gnu.org/software/binutils/">GNU Binutils</a>项目为我们提供了一个名为 **as **的工具，使用汇编器将（ARM）汇编语言转换为（ARM）机器语言，该过程称为汇编。</p>
+<h2 id="数据类型与寄存器"><a href="#数据类型与寄存器" class="headerlink" title="数据类型与寄存器"></a>数据类型与寄存器</h2><h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><p>​		与高级语言类似，ARM 支持对不同数据类型的操作，可以是有符号、无符号的字（Word，无扩展名），半字（Half Word，扩展名为 -h 或 -sh ）和字节（Byte，扩展名为 -b 或 -sb ）。这里的字是32位，半字是16位，字节是8位，无符号数比有符号数能够表示数的范围更大，因为符号位不参与数值大小的计算。</p>
+<blockquote>
+<p>以下是如何将这些数据类型与“加载和存储”说明一起使用的一些示例：（帮助记忆）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">## 加载</span><br><span class="line">ldr = Load Word</span><br><span class="line">ldrh = Load unsigned Half Word</span><br><span class="line">ldrsh = Load signed Half Word</span><br><span class="line">ldrb = Load unsigned Byte</span><br><span class="line">ldrsb = Load signed Bytes</span><br><span class="line">## 存储</span><br><span class="line">str = Store Word</span><br><span class="line">strh = Store unsigned Half Word</span><br><span class="line">strsh = Store signed Half Word</span><br><span class="line">strb = Store unsigned Byte</span><br><span class="line">strsb = Store signed Byte</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a>字节序</h3><p>​		查看内存中的字节有两种基本方法：小端 （Little-Endian） 或大端 （Big-Endian）。不同之处在于对象的每个字节存储在内存中的字节顺序。在像 Intel x86 这样的小端机器上，最低有效字节存储在最低地址（最接近零的地址），例如0x12345678用小端存储则为78 56 34 12（地址从低到高）。在大端机器上，最高有效字节存储在最低地址（最接近零的地址），例如0x1245678用大端存储则为12 34 56 78（地址从低到高）。在版本3之前，ARM架构是小端的，从那个版本起它是双端的，这意味着它具有允许可切换字节序的设置。例如，在 ARMv6 上，指令是固定的小端，数据访问可以是小端或大端，由程序状态寄存器 （CPSR） 的位 9（E 位）控制。</p>
+<h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h3><p>​		寄存器的数量取决于 ARM 版本。根据 ARM 参考手册，有 30 个通用 32 位寄存器，但基于 ARMv6-M 和 ARMv7-M 的处理器除外。前 16 个寄存器可在用户级模式下访问，其他寄存器可在特权软件执行中使用（ARMv6-M 和 ARMv7-M 除外）。</p>
+<p>这 16 个寄存器可以分为两组：通用寄存器和专用寄存器：</p>
+<table>
+<thead>
+<tr>
+<th align="center">#</th>
+<th align="left">别名</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">R0</td>
+<td align="left">–</td>
+<td align="left">General purpose（相当于 x86 的eax）</td>
+</tr>
+<tr>
+<td align="center">R1</td>
+<td align="left">–</td>
+<td align="left">General purpose（相当于 x86 的ebx）</td>
+</tr>
+<tr>
+<td align="center">R2</td>
+<td align="left">–</td>
+<td align="left">General purpose（相当于 x86 的ecx）</td>
+</tr>
+<tr>
+<td align="center">R3</td>
+<td align="left">–</td>
+<td align="left">General purpose（相当于 x86 的edx）</td>
+</tr>
+<tr>
+<td align="center">R4</td>
+<td align="left">–</td>
+<td align="left">General purpose（相当于 x86 的esi）</td>
+</tr>
+<tr>
+<td align="center">R5</td>
+<td align="left">–</td>
+<td align="left">General purpose（相当于 x86 的edi）</td>
+</tr>
+<tr>
+<td align="center">R6</td>
+<td align="left">–</td>
+<td align="left">General purpose</td>
+</tr>
+<tr>
+<td align="center">R7</td>
+<td align="left">–</td>
+<td align="left">Holds Syscall Number（系统调用号）</td>
+</tr>
+<tr>
+<td align="center">R8</td>
+<td align="left">–</td>
+<td align="left">General purpose</td>
+</tr>
+<tr>
+<td align="center">R9</td>
+<td align="left">–</td>
+<td align="left">General purpose</td>
+</tr>
+<tr>
+<td align="center">R10</td>
+<td align="left">–</td>
+<td align="left">General purpose</td>
+</tr>
+<tr>
+<td align="center">R11</td>
+<td align="left">FP</td>
+<td align="left">Frame Pointer（帧指针寄存器，相当于 x86 的 ebp ）</td>
+</tr>
+<tr>
+<td align="center">Special Purpose Registers</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">R12</td>
+<td align="left">IP</td>
+<td align="left">Intra Procedural Call（过程内调用）</td>
+</tr>
+<tr>
+<td align="center">R13</td>
+<td align="left">SP</td>
+<td align="left">Stack Pointer（栈指针寄存器，相当于 x86 的 esp ）</td>
+</tr>
+<tr>
+<td align="center">R14</td>
+<td align="left">LR</td>
+<td align="left">Link Register（链接寄存器）</td>
+</tr>
+<tr>
+<td align="center">R15</td>
+<td align="left">PC</td>
+<td align="left">Program Counter（程序计数器，相当于 x86 的 eip ）</td>
+</tr>
+<tr>
+<td align="center">CPSR</td>
+<td align="left">–</td>
+<td align="left">Current Program Status Register（当前程序状态寄存器，相当于 x86 的 EFLAGS ）</td>
+</tr>
+</tbody></table>
+<p><strong>R0-R12</strong>：可在常见操作期间<u>用于存储临时值、指针（内存地址）</u>等。R0 在算术运算期间可称为<u>累加器</u>或用于<u>存储先前调用函数的结果</u>。 R7 <u>存储了系统调用号</u>，在处理系统调用时相当有用。R11 帧指针<u>指向当前栈帧底部</u>。 此外，ARM 上的函数调用约定指定函数的前四个参数存储在寄存器 r0-r3 中。</p>
+<p><strong>R13</strong>：SP（栈指针）。 <u>栈指针指向当前栈帧的顶部，也是整个栈的顶部</u>。 堆栈是用于特定于函数的存储的内存区域，当函数返回时会被回收。 堆栈指针用于在堆栈上分配空间，方法是从堆栈指针中减去我们想要分配的值（以字节为单位）。 换句话说，如果我们要分配一个 32 位的值，我们从堆栈指针中减去 4。</p>
+<p><strong>R14</strong>：LR（链接寄存器）。 进行函数调用时，链接寄存器会<u>更新为引用下一条指令的内存地址</u>。简单来说就是存储着函数的返回地址，相当于存储着 x86 汇编中 call 指令入栈的值。</p>
+<p><strong>R15</strong>：PC（程序计数器）。 程序计数器<u>根据所执行指令的大小自动递增</u>。 此大小在 ARM 状态下始终为 4 个字节，在 THUMB 模式下为 2 个字节。 当执行分支指令时，PC 保存目标地址。 在执行过程中，PC 将当前指令地址加 8（两条 ARM 指令）存放在 ARM 状态，将当前指令地址加 4（两条 Thumb 指令）存放在 Thumb(v1) 状态。 这与 x86 不同，x86中 PC 总是指向下一条要执行的指令。</p>
+<p><strong>$cpsr</strong> 显示当前程序状态寄存器 (CPSR) 的值，在其下您可以看到标志拇指、快速、中断、溢出、进位、零和负。 这些标志代表 CPSR 寄存器中的某些位，并根据 CPSR 的值设置，并在激活时变为粗体。 <u>N、Z、C 和 V 位与 x86 上 EFLAG 寄存器中的 SF、ZF、CF 和 OF 位相同</u>。 这些位用于支持汇编级别的条件和循环中的条件执行。 我们将介绍第 6 部分中使用的条件代码：条件执行和分支。</p>
+<table>
+<thead>
+<tr>
+<th align="left">Flag</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">N (Negative)</td>
+<td align="left">Enabled if result of the instruction yields a negative number.</td>
+</tr>
+<tr>
+<td align="left">Z (Zero)</td>
+<td align="left">Enabled if result of the instruction yields a zero value.</td>
+</tr>
+<tr>
+<td align="left">C (Carry)</td>
+<td align="left">Enabled if result of the instruction yields a value that requires a 33rd bit to be fully represented.</td>
+</tr>
+<tr>
+<td align="left">V (Overflow)</td>
+<td align="left">Enabled if result of the instruction yields a value that cannot be represented in 32 bit two’s complement.</td>
+</tr>
+<tr>
+<td align="left">E (Endian-bit)</td>
+<td align="left">ARM can operate either in little endian, or big endian. This bit is set to 0 for little endian, or 1 for big endian mode.</td>
+</tr>
+<tr>
+<td align="left">T (Thumb-bit)</td>
+<td align="left">This bit is set if you are in Thumb state and is disabled when you are in ARM state.</td>
+</tr>
+<tr>
+<td align="left">M (Mode-bits)</td>
+<td align="left">These bits specify the current privilege mode (USR, SVC, etc.).</td>
+</tr>
+<tr>
+<td align="left">J (Jazelle)</td>
+<td align="left">Third execution state that allows some ARM processors to execute Java bytecode in hardware.</td>
+</tr>
+</tbody></table>
+<h2 id="ARM-指令集"><a href="#ARM-指令集" class="headerlink" title="ARM 指令集"></a>ARM 指令集</h2><h3 id="ARM-amp-Thumb"><a href="#ARM-amp-Thumb" class="headerlink" title="ARM &amp; Thumb"></a>ARM &amp; Thumb</h3><p>​		ARM 处理器有两个可以运行的主要状态（这里不计算 Jazelle），<strong>ARM</strong> 和 <strong>Thumb</strong>。这些状态<u>与特权级别无关</u>。这两种状态的主要区别在于指令集，其中 ARM 状态的指令始终是 32 位的，而 Thumb 状态的指令是 16 位的（但也可以是 32 位的）。</p>
+<p>​		Thumb有不同的版本：</p>
+<ul>
+<li>Thumb-1（16 位指令）：用于 ARMv6 和更早的架构。</li>
+<li>Thumb-2（16 位和 32 位指令）：通过添加更多指令并允许它们为 16 位或 32 位宽（ARMv6T2、ARMv7）来扩展 Thumb-1。</li>
+<li>ThumbEE：包括针对动态生成的代码（在执行前不久或执行期间在设备上编译的代码）的一些更改和添加。</li>
+</ul>
+<p>​		ARM 和 Thumb 的区别：</p>
+<ul>
+<li><strong>条件执行</strong>：ARM 状态下的所有指令都支持条件执行。某些 ARM 处理器版本允许使用 IT 指令在 Thumb 中进行条件执行。条件执行导致更高的代码密度，因为它减少了要执行的指令数量并减少了昂贵的分支指令的数量。</li>
+<li>32 位 ARM 和 Thumb 指令：32 位 Thumb 指令具有 .w 后缀。</li>
+<li>桶形移位器是另一个独特的 ARM 模式功能。它可用于将多条指令压缩为一条。例如，不要使用两条指令进行乘法（将寄存器乘以 2 并使用 MOV 将结果存储到另一个寄存器中），可以使用（左移） 1 -&gt; MOV R1、R0、LSL 将乘法包含在 MOV 指令中#1 ; R1 &#x3D; R0 * 2</li>
+</ul>
+<p>要切换处理器执行的状态，必须满足以下两个条件之一：</p>
+<ul>
+<li><u>我们可以使用分支指令 BX（分支和交换）或 BLX（分支、链接和交换）并将目标寄存器的最低有效位设置为 1，CPSR寄存器会根据最低有效位的值去设置T位来切换模式来解释分支跳转后的地址后的内容。</u>这可以通过在偏移量上加 1 来实现，例如 0x5530 + 1。这不会导致偏移问题，因为处理器将忽略最低有效位。 </li>
+<li>如果当前程序状态寄存器（$cpsr）中的 T 位被置位，我们就知道我们处于 Thumb 模式。</li>
+</ul>
+<h3 id="ARM指令介绍"><a href="#ARM指令介绍" class="headerlink" title="ARM指令介绍"></a>ARM指令介绍</h3><p>ARM 指令通常为指令后跟一到两个操作数这样的形式。模板大致为：</p>
+<p><code>MNEMONIC&#123;S&#125;&#123;condition&#125; &#123;Rd&#125;, Operand1, Operand2</code></p>
+<p>（由于 ARM 指令集的灵活性，并非所有指令都使用模板中提供的所有字段。）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MNEMONIC     - 指令的简称（助记符）</span><br><span class="line">&#123;S&#125;          - 可选后缀。 如果指定了 S，则条件标志会根据操作结果更新</span><br><span class="line">&#123;condition&#125;  - 执行指令需要满足的条件</span><br><span class="line">&#123;Rd&#125;         - 用于存储指令结果的寄存器（目标）</span><br><span class="line">Operand1     - 第一个操作数。 寄存器或立即数</span><br><span class="line">Operand2     - 第二个（灵活的）操作数。 可以是立即数（数字）或带有可选移位的寄存器</span><br></pre></td></tr></table></figure>
+
+<p>{<strong>condition</strong>} 与 CPSR 寄存器的值密切相关，或者更准确地说，是寄存器中特定位的值。</p>
+<p><strong>Operand2</strong> 被称为灵活操作数，因为可以以各种形式使用它——作为立即值（具有有限的值集）、寄存器或移位寄存器，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#123                    - Immediate value (with limited set of values). </span><br><span class="line">Rx                      - 寄存器 x（如 R1、R2、R3 ...）</span><br><span class="line">Rx, ASR n               - 寄存器 x 算术右移 n 位 (1 = n = 32)</span><br><span class="line">Rx, LSL n               - 寄存器 x 逻辑左移 n 位 (0 = n = 31)</span><br><span class="line">Rx, LSR n               - 寄存器 x 逻辑右移 n 位 (1 = n = 32)</span><br><span class="line">Rx, ROR n               - 寄存器 x 逻辑右移 n 位 (1 = n = 32)</span><br><span class="line">Rx, RRX                 - 寄存器 x 右移一位，扩展</span><br></pre></td></tr></table></figure>
+
+<p>下面是指令使用示例：（’#’ 用于立即数的前缀）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ADD R0, R1, R2 - 将 R1 (Operand1) 和 R2 (Operand2 的寄存器形式) 的内容相加并将结果存储到 R0 (Rd)</span><br><span class="line">ADD R0, R1, #2 - 将 R1 (Operand1) 的内容与值 2 (Operand2 的立即数形式) 相加并将结果存储到 R0 (Rd)</span><br><span class="line">MOVLE R0, #5 - 仅当满足条件 LE（小于或等于）时，将数字 5（操作数 2，因为编译器将其视为 MOVLE R0，R0，#5）移动到 R0（Rd）</span><br><span class="line">MOV R0, R1, LSL #1 - 将 R1 的内容（操作数 2 采用逻辑左移的寄存器形式）左移一位到 R0 (Rd)。 因此，如果 R1 的值为 2，它会左移一位并变为 4。然后将 4 移至 R0。</span><br></pre></td></tr></table></figure>
+
+<p>接下来是一些常用指令（助记符）：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Instruction</th>
+<th align="left">Description</th>
+<th align="center">Instruction</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">MOV</td>
+<td align="left">Move data</td>
+<td align="center">EOR</td>
+<td align="left">Bitwise XOR</td>
+</tr>
+<tr>
+<td align="center">MVN</td>
+<td align="left">Move and negate</td>
+<td align="center">LDR</td>
+<td align="left">Load</td>
+</tr>
+<tr>
+<td align="center">ADD</td>
+<td align="left">Addition</td>
+<td align="center">STR</td>
+<td align="left">Store</td>
+</tr>
+<tr>
+<td align="center">SUB</td>
+<td align="left">Subtraction</td>
+<td align="center">LDM</td>
+<td align="left">Load Multiple</td>
+</tr>
+<tr>
+<td align="center">MUL</td>
+<td align="left">Multiplication</td>
+<td align="center">STM</td>
+<td align="left">Store Multiple</td>
+</tr>
+<tr>
+<td align="center">LSL</td>
+<td align="left">Logical Shift Left</td>
+<td align="center">PUSH</td>
+<td align="left">Push on Stack</td>
+</tr>
+<tr>
+<td align="center">LSR</td>
+<td align="left">Logical Shift Right</td>
+<td align="center">POP</td>
+<td align="left">Pop off Stack</td>
+</tr>
+<tr>
+<td align="center">ASR</td>
+<td align="left">Arithmetic Shift Right</td>
+<td align="center">B</td>
+<td align="left">Branch</td>
+</tr>
+<tr>
+<td align="center">ROR</td>
+<td align="left">Rotate Right</td>
+<td align="center">BL</td>
+<td align="left">Branch with Link</td>
+</tr>
+<tr>
+<td align="center">CMP</td>
+<td align="left">Compare</td>
+<td align="center">BX</td>
+<td align="left">Branch and eXchange</td>
+</tr>
+<tr>
+<td align="center">AND</td>
+<td align="left">Bitwise AND</td>
+<td align="center">BLX</td>
+<td align="left">Branch with Link and eXchange</td>
+</tr>
+<tr>
+<td align="center">ORR</td>
+<td align="left">Bitwise OR</td>
+<td align="center">SWI&#x2F;SVC</td>
+<td align="left">System Call</td>
+</tr>
+</tbody></table>
+<h2 id="内存操作"><a href="#内存操作" class="headerlink" title="内存操作"></a>内存操作</h2><h3 id="LDR-x2F-STR"><a href="#LDR-x2F-STR" class="headerlink" title="LDR&#x2F;STR"></a>LDR&#x2F;STR</h3><p><strong>LDR（load）</strong>，唯二可对内存操作的指令，通常用于将内容从内存加载到寄存器中。</p>
+<p>指令格式为：<code>LDR Ra, [Rb]</code></p>
+<p>将数据从Rb所记录的内存位置加载到寄存器Ra中，Rb可以是立即数，也可以是寄存器。</p>
+<p><strong>STR（store）</strong>，唯二可对内存操作的指令，通常用于将内容从寄存器加载到内存中。</p>
+<p>指令格式为：<code>STR RA, [Rb]</code></p>
+<p>将数据从Ra寄存器存储到Rb所记录的内存位置，Rb可以是立即数，也可以是寄存器。</p>
+<p>下面对一些用法用示例做说明：</p>
+<ol>
+<li><code> ldr  r0, [pc, #2]</code></li>
+</ol>
+<p>​	将 PC + 2 的地址处的数据加载到 r0 寄存器中。同样这里的 #2 的立即数位置换成寄存器也没有问题。下同。</p>
+<ol start="2">
+<li><code>ldr r3, [r1], #2</code></li>
+</ol>
+<p>​	将 r1 + 2 的地址处的数据加载到 r3 寄存器中，并将 r1 寄存器的值修改为 r1 + 2。</p>
+<ol start="3">
+<li><code>ldr r3, [r1], r2, LSL#2</code></li>
+</ol>
+<p>​	将 r1 的地址处的数据加载到 r3 寄存器中，并将 r1 寄存器的值修改为 r1 + (r2 LSL #2)。</p>
+<ol start="4">
+<li><code> str r2, [r1, #2]</code></li>
+</ol>
+<p>​	将 r2 寄存器中的数据存储到 r1 + 2 的地址处。 </p>
+<ol start="5">
+<li><code>str r2, [r1, #2]!</code></li>
+</ol>
+<p>​	将 r2 寄存器中的数据存储到 r1 + 2 的地址处，并将 r1 寄存器的值修改为 r1 + 2。 </p>
+<ol start="6">
+<li><code>str r2, [r1, r2, LSL#2]</code></li>
+</ol>
+<p>​	将 r2 寄存器中的数据存储到 r1 + (r2 LSL #2) 的地址处。</p>
+<ol start="7">
+<li><code>str r2, [r1, r2, LSL#2]!</code></li>
+</ol>
+<p>​	将 r2 寄存器中的数据存储到 r1 + (r2 LSL #2) 的地址处，并将 r1 寄存器的值修改为 r1 + (r2 LSL #2)。</p>
+<h3 id="用于-PC-相对寻址的-LDR"><a href="#用于-PC-相对寻址的-LDR" class="headerlink" title="用于 PC 相对寻址的 LDR"></a>用于 PC 相对寻址的 LDR</h3><p>这里列举两种用法：</p>
+<p><code>ldr r0, =jump</code></p>
+<p><code>ldr r1, =0x68DB00AD</code></p>
+<p>首先，LDR指令既可以是大范围的地址读取伪指令，也可以内存访问指令。当它的第二个参数前面有“&#x3D;”时，表示伪指令，否则表示内存访问指令。</p>
+<p>我们可以使用伪指令来引用文字池中的数据。 文字池是同一节中的一个内存区域（因为文字池是代码的一部分），用于存储常量、字符串或偏移量。 在上面的示例中，我们使用这些伪指令来引用函数的偏移量，并在一条指令中将 32 位常量移动到寄存器中。</p>
+<h3 id="在-ARM-上使用立即数"><a href="#在-ARM-上使用立即数" class="headerlink" title="在 ARM 上使用立即数"></a>在 ARM 上使用立即数</h3><p>​		我们知道每条 ARM 指令都是 32 位长的，并且所有的指令都是有条件的。我们可以使用 16 个条件代码，一个条件代码占用指令的 4 位。然后我们需要 2 位作为目标寄存器。 2 位用于第一个操作数寄存器，1 位用于设置状态标志，以及用于其他事项（如实际操作码）的各种位数。所以，这里的重点在于，在为指令类型、寄存器和其他字段分配位之后，只剩下 12 位用于立即数，所以在 ARM 中使用 MOV 指令将只能使用有限范围的立即数。实际上，ARM 并不是直接使用这12位去引用立即数，而是将这 12 位拆分为一个 8 位数字，即能够加载 0-255 范围内的任何 8 位值，以及一个 4 位的循环位移字段 ，在 0 到 30 之间以2的倍数为次数循环右移。所以完整的立即数的公式为：<code>v = n ror 2 * r</code>，所以这里的立即数是有要求的，立即数可以由一个8位的常数循环右移偶数位得到。</p>
+<p>​		在这里对于超过 0 - 255 范围的32位立即数，有如下几种引用方式：</p>
+<ol>
+<li>将该数拆分然后相加</li>
+</ol>
+<p>例：我们想要实现	<code>MOV  r0, #511</code> </p>
+<p>​		则可以使用：	<code> MOV r0, #256</code>      <code>ADD r0, #255</code></p>
+<ol start="2">
+<li>使用 LDR 伪指令：</li>
+</ol>
+<blockquote>
+<p>LDR 伪指令用于加载32位的立即数或一个地址值到指定寄存器。在汇编编译源程序时，LDR伪指令被编译器替换成一条合适的指令。若加载的常数未超出 MOV 的范围，则使用 MOV 或指令代替该 LDR 伪指令，否则汇编器将常量放入文字池，并使用一条程序相对偏移的ldr指令从文字池读出常量。</p>
+</blockquote>
+<p>​	<code>ldr r1, =511</code></p>
+<h2 id="存储多个数据"><a href="#存储多个数据" class="headerlink" title="存储多个数据"></a>存储多个数据</h2><h3 id="LOAD-x2F-STORE-MULTIPLE"><a href="#LOAD-x2F-STORE-MULTIPLE" class="headerlink" title="LOAD&#x2F;STORE MULTIPLE"></a>LOAD&#x2F;STORE MULTIPLE</h3><p>​		ARM 中使用 <strong>LDM</strong> 和 <strong>STM</strong> 指令对多个数据进行加载或存储的操作。这里要注意 LDM&#x2F;STM 与 LDR&#x2F;STR 的操作数顺序是反的。</p>
+<p>​		<code>LDM Ra Rb</code>	将Ra加载到Rb</p>
+<p>​		<code>STM Ra Rb</code>	将Rb存储到Ra</p>
+<p>​		LDM 与 STM 在不做指定的情况下一次操作的数据都是四个字节。也就是一个 word。</p>
+<p>​		这两个指令可以伴随一些后缀一起使用，使用的后缀有：-IA（之后增加）、-IB（之前增加）、-DA（之后减少）、-DB（之前减少）。 这些变体的不同之处在于它们访问由第一个操作数（存储源地址或目标地址的寄存器）指定的内存的方式。</p>
+<p>这里举例子说明：</p>
+<blockquote>
+<p> (r0 -&gt; word[3], r1 -&gt; word[0], r2 -&gt; word[2])</p>
+</blockquote>
+<p><strong>-IA：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldmia r0, &#123;r4-r6&#125; /* words[3] -&gt; r4, words[4] -&gt; r5; words[5] -&gt; r6; */ </span><br><span class="line">stmia r1, &#123;r4-r6&#125; /* r4 -&gt; array_buff[0]; r5 -&gt; array_buff[1]; r6 -&gt; array_buff[2] */</span><br></pre></td></tr></table></figure>
+
+<p><strong>-IB：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldmib r0, &#123;r4-r6&#125;            /* words[4] -&gt; r4 = 0x04; words[5] -&gt; r5 = 0x05; words[6] -&gt; r6 = 0x06 */</span><br><span class="line">stmib r1, &#123;r4-r6&#125;            /* r4 -&gt; array_buff[1] = 0x04; r5 -&gt; array_buff[2] = 0x05; r6 -&gt; array_buff[3] = 0x06 */</span><br></pre></td></tr></table></figure>
+
+<p><strong>-DA：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldmda r0, &#123;r4-r6&#125; /* words[3] -&gt; r6; words[2] -&gt; r5; words[1] -&gt; r4 */</span><br><span class="line">stmda r2, &#123;r4-r6&#125; /* r6 -&gt; array_buff[2]; r5 -&gt; array_buff[1]; r4 -&gt; array_buff[0] */</span><br></pre></td></tr></table></figure>
+
+<p><strong>-DB：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ldmdb r0, &#123;r4-r6&#125; /* words[2] -&gt; r6; words[1] -&gt; r5; words[0] -&gt; r4 */</span><br><span class="line">stmdb r2, &#123;r4-r5&#125; /* r5 -&gt; array_buff[1]; r4 -&gt; array_buff[0] */</span><br></pre></td></tr></table></figure>
+
+<p>总结一下就是D和I的区别在于寄存器的执行方向，I 是从左到右，D 是从右到左。A 和 B 的区别在于是先操作还是先变化地址。  </p>
+<h3 id="PUSH-AND-POP"><a href="#PUSH-AND-POP" class="headerlink" title="PUSH AND POP"></a>PUSH AND POP</h3><p>​		在 x86 中，通过POP PUSH 指令对栈中的元素进行修改，在 ARM 中同样也可以使用这两个指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">push &#123;r0, r1&#125;</span><br><span class="line">pop  &#123;r2, r3&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于栈的数据结构是后进先出，所以存储数据会先减少栈指针，然后先存储低位寄存器再存储高位寄存器（地址由低到高增长），同样的从栈中弹出数据就是先将低地址数据弹出到高位寄存器，再增加栈指针。这就与 STRDB 和 LDMIA 十分相像。实际上这两种表示方法是一样的，可以将 pop，push 写成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">stmdb sp!, &#123;r0, r1&#125;</span><br><span class="line">ldmia sp!, &#123;r2, r3&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在汇编器对我们写的汇编语言进行编译时，也会将如上的指令翻译成 push 和 pop。</p>
+<h2 id="条件执行和分支"><a href="#条件执行和分支" class="headerlink" title="条件执行和分支"></a>条件执行和分支</h2><h3 id="条件执行"><a href="#条件执行" class="headerlink" title="条件执行"></a>条件执行</h3><p>在程序运行的时候我们通过条件来控制程序的流程，在 ARM 中，条件被描述为了 <strong>CPSR</strong> 寄存器中特定位的状态。</p>
+<p>下表列出了可用的条件代码、它们的含义以及测试的标志的状态：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Condition Code</th>
+<th align="left">Meaning (for cmp or subs)</th>
+<th align="center">Status of Flags</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">EQ</td>
+<td align="left">Equal</td>
+<td align="center">Z&#x3D;&#x3D;1</td>
+</tr>
+<tr>
+<td align="center">NE</td>
+<td align="left">Not Equal</td>
+<td align="center">Z&#x3D;&#x3D;0</td>
+</tr>
+<tr>
+<td align="center">GT</td>
+<td align="left">Signed Greater Than</td>
+<td align="center">(Z=&#x3D;0) &amp;&amp; (N&#x3D;&#x3D;V)</td>
+</tr>
+<tr>
+<td align="center">LT</td>
+<td align="left">Signed Less Than</td>
+<td align="center">N!&#x3D;V</td>
+</tr>
+<tr>
+<td align="center">GE</td>
+<td align="left">Signed Greater Than or Equal</td>
+<td align="center">N&#x3D;&#x3D;V</td>
+</tr>
+<tr>
+<td align="center">LE</td>
+<td align="left">Signed Less Than or Equal</td>
+<td align="center">(Z&#x3D;&#x3D;1) || (N!&#x3D;V)</td>
+</tr>
+<tr>
+<td align="center">CS or HS</td>
+<td align="left">Unsigned Higher or Same (or Carry Set)</td>
+<td align="center">C&#x3D;&#x3D;1</td>
+</tr>
+<tr>
+<td align="center">CC or LO</td>
+<td align="left">Unsigned Lower (or Carry Clear)</td>
+<td align="center">C&#x3D;&#x3D;0</td>
+</tr>
+<tr>
+<td align="center">MI</td>
+<td align="left">Negative (or Minus)</td>
+<td align="center">N&#x3D;&#x3D;1</td>
+</tr>
+<tr>
+<td align="center">PL</td>
+<td align="left">Positive (or Plus)</td>
+<td align="center">N&#x3D;&#x3D;0</td>
+</tr>
+<tr>
+<td align="center">AL</td>
+<td align="left">Always executed</td>
+<td align="center">–</td>
+</tr>
+<tr>
+<td align="center">NV</td>
+<td align="left">Never executed</td>
+<td align="center">–</td>
+</tr>
+<tr>
+<td align="center">VS</td>
+<td align="left">Signed Overflow</td>
+<td align="center">V&#x3D;&#x3D;1</td>
+</tr>
+<tr>
+<td align="center">VC</td>
+<td align="left">No signed Overflow</td>
+<td align="center">V&#x3D;&#x3D;0</td>
+</tr>
+<tr>
+<td align="center">HI</td>
+<td align="left">Unsigned Higher</td>
+<td align="center">(C=&#x3D;1) &amp;&amp; (Z&#x3D;&#x3D;0)</td>
+</tr>
+<tr>
+<td align="center">LS</td>
+<td align="left">Unsigned Lower or same</td>
+<td align="center">(C=&#x3D;0) || (Z&#x3D;&#x3D;0)</td>
+</tr>
+</tbody></table>
+<p>这里再贴一遍CPSR寄存器的各位详情方便对照理解：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Flag</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">N (Negative)</td>
+<td align="left">Enabled if result of the instruction yields a negative number.</td>
+</tr>
+<tr>
+<td align="left">Z (Zero)</td>
+<td align="left">Enabled if result of the instruction yields a zero value.</td>
+</tr>
+<tr>
+<td align="left">C (Carry)</td>
+<td align="left">Enabled if result of the instruction yields a value that requires a 33rd bit to be fully represented.</td>
+</tr>
+<tr>
+<td align="left">V (Overflow)</td>
+<td align="left">Enabled if result of the instruction yields a value that cannot be represented in 32 bit two’s complement.</td>
+</tr>
+<tr>
+<td align="left">E (Endian-bit)</td>
+<td align="left">ARM can operate either in little endian, or big endian. This bit is set to 0 for little endian, or 1 for big endian mode.</td>
+</tr>
+<tr>
+<td align="left">T (Thumb-bit)</td>
+<td align="left">This bit is set if you are in Thumb state and is disabled when you are in ARM state.</td>
+</tr>
+<tr>
+<td align="left">M (Mode-bits)</td>
+<td align="left">These bits specify the current privilege mode (USR, SVC, etc.).</td>
+</tr>
+<tr>
+<td align="left">J (Jazelle)</td>
+<td align="left">Third execution state that allows some ARM processors to execute Java bytecode in hardware.</td>
+</tr>
+</tbody></table>
+<p>​		之前提到过，存在不同版本的 Thumb，如允许条件执行的 Thumb 版本 (Thumb-2)。 某些 ARM 处理器版本支持“IT”指令，该指令允许在 Thumb 状态下有条件地执行多达 4 条指令。</p>
+<p>语法结构：<code>IT&#123;x&#123;y&#123;z&#125;&#125;&#125; cond</code> </p>
+<ul>
+<li>cond 指定 IT 块中第一条指令的条件 </li>
+<li>x 指定 IT 块中第二条指令的条件切换 </li>
+<li>y 指定 IT 块中第三条指令的条件切换 </li>
+<li>z 指定 IT 块中第四条指令的条件切换</li>
+</ul>
+<p>IT 指令的结构是“IF-Then-(Else)”，语法是两个字母 T 和 E 的结构： </p>
+<ul>
+<li>IT 指 If-Then（下一条指令是有条件的） </li>
+<li>ITT 指 If-Then-Then（接下来的 2 条指令是有条件的） </li>
+<li>ITE 指 If-Then-Else（接下来的 2 条指令是有条件的） </li>
+<li>ITTE 指 If-Then-Then-Else（接下来的 3 条指令是有条件的） </li>
+<li>ITTEE 指 If-Then-Then-Else-Else（接下来的 4 条指令是有条件的）</li>
+</ul>
+<p>讲白了 x y z 的可选值就是T（Then）或者E（Else）。I后面有几个字母，接下来的几条指令就属于此条件操作。</p>
+<p>举个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cmp r0, #10      </span><br><span class="line">   ite eq           @ if R0 is equal 10...</span><br><span class="line">   addeq r1, #2     @ ... then R1 = R1 + 2</span><br><span class="line">   addne r1, #3     @ ... else R1 = R1 + 3</span><br></pre></td></tr></table></figure>
+
+<p>那么第一个add代表then的执行命令，第二个add代表else的执行命令。</p>
+<p>IT 块内的每条指令都必须指定一个条件后缀，该条件后缀可以是相同的，也可以是逻辑逆的。 这意味着如果您使用 ITE，则第一条和第二条指令 (If-Then) 必须具有相同的条件后缀，而第三条 (Else) 必须具有前两条的逻辑逆。</p>
+<p>错误示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmp r0, #2</span><br><span class="line">IT     NE           ; Next instruction is conditional     </span><br><span class="line">ADD    R0, R0, R1   ; Syntax error: no condition code used in IT block.</span><br></pre></td></tr></table></figure>
+
+<p>以下是条件代码及其对立面：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Condition Code</th>
+<th align="center"></th>
+<th align="center">Opposite</th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Code</td>
+<td align="center">Meaning</td>
+<td align="center">Code</td>
+<td align="center">Meaning</td>
+</tr>
+<tr>
+<td align="center">EQ</td>
+<td align="center">Equal</td>
+<td align="center">NE</td>
+<td align="center">Not Equal</td>
+</tr>
+<tr>
+<td align="center">HS (or CS)</td>
+<td align="center">Unsigned higher or same (or carry set)</td>
+<td align="center">LO (or CC)</td>
+<td align="center">Unsigned lower (or carry clear)</td>
+</tr>
+<tr>
+<td align="center">MI</td>
+<td align="center">Negative</td>
+<td align="center">PL</td>
+<td align="center">Positive or Zero</td>
+</tr>
+<tr>
+<td align="center">VS</td>
+<td align="center">Signed Overflow</td>
+<td align="center">VC</td>
+<td align="center">No Signed Overflow</td>
+</tr>
+<tr>
+<td align="center">HI</td>
+<td align="center">Unsigned Higher</td>
+<td align="center">LS</td>
+<td align="center">Unsigned Lower or Same</td>
+</tr>
+<tr>
+<td align="center">GE</td>
+<td align="center">Signed Greater Than or Equal</td>
+<td align="center">LT</td>
+<td align="center">Signed Less Than</td>
+</tr>
+<tr>
+<td align="center">GT</td>
+<td align="center">Signed Greater Than</td>
+<td align="center">LE</td>
+<td align="center">Signed Less Than or Equal</td>
+</tr>
+<tr>
+<td align="center">AL (or omitted)</td>
+<td align="center">Always Executed</td>
+<td align="center">There is no opposite to AL</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>​		分支（又名跳转）允许我们跳转到另一个代码段。 当我们需要跳过（或重复）代码块或跳转到特定函数时，就会用到分支。 经常配合条件语句和循环使用。</p>
+<h4 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h4><p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.global main</span><br><span class="line"></span><br><span class="line">main:</span><br><span class="line">        mov     r1, #2     /* setting up initial variable a */</span><br><span class="line">        mov     r2, #3     /* setting up initial variable b */</span><br><span class="line">        cmp     r1, r2     /* comparing variables to determine which is bigger */</span><br><span class="line">        blt     r1_lower   /* jump to r1_lower in case r2 is bigger (N==1) */</span><br><span class="line">        mov     r0, r1     /* if branching/jumping did not occur, r1 is bigger (or the same) so store r1 into r0 */</span><br><span class="line">        b       end        /* proceed to the end */</span><br><span class="line">r1_lower:</span><br><span class="line">        mov r0, r2         /* We ended up here because r1 was smaller than r2, so move r2 into r0 */</span><br><span class="line">        b end              /* proceed to the end */</span><br><span class="line">end:</span><br><span class="line">        bx lr              /* THE END */</span><br></pre></td></tr></table></figure>
+
+<p>这个例子就是比较两个整数的大小并且返回较大数。这里我们可以看到 blt 即小于跳转。</p>
+<p>这里单独说一下最后的bx lr，其作用等同于 mov pc,lr </p>
+<p>lr 就是<strong>连接寄存器(Link Register, LR)，</strong>在ARM体系结构中LR的特殊用途有两种：一是用来<u>保存子程序返回地址</u>；二是当异常发生时，LR中保存的值等于<u>异常发生时PC的值减4（或者减2）</u>，因此在各种异常模式下可以根据LR的值返回到异常发生前的相应位置继续执行。　　</p>
+<p>当通过BL或BLX指令调用子程序时，硬件自动将子程序返回地址保存在R14（LR）寄存器中。在子程序返回时，把LR的值复制到程序计数器PC即可实现子程序返回。</p>
+<h4 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h4><p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.global main</span><br><span class="line"></span><br><span class="line">main:</span><br><span class="line">        mov     r0, #0     /* setting up initial variable a */</span><br><span class="line">loop:</span><br><span class="line">        cmp     r0, #4     /* checking if a==4 */</span><br><span class="line">        beq     end        /* proceeding to the end if a==4 */</span><br><span class="line">        add     r0, r0, #1 /* increasing a by 1 if the jump to the end did not occur */</span><br><span class="line">        b loop             /* repeating the loop */</span><br><span class="line">end:</span><br><span class="line">        bx lr              /* THE END */</span><br></pre></td></tr></table></figure>
+
+<p>通过不断向前跳转实现数据的累加。</p>
+<h4 id="不同的分支指令"><a href="#不同的分支指令" class="headerlink" title="不同的分支指令"></a>不同的分支指令</h4><p>B：简单跳转到函数	</p>
+<p>BL：在 LR 中保存 (PC+4) 并跳转到函数</p>
+<p>BX&#x2F;BLX：需要一个寄存器作为第一个操作数，跳转并且交换指令集（ARM&#x2F;Thumb）</p>
+<h2 id="堆栈和函数"><a href="#堆栈和函数" class="headerlink" title="堆栈和函数"></a>堆栈和函数</h2><h3 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h3><p>​		一般来说，堆栈是程序&#x2F;进程内的一个内存区域。这部分内存是在创建进程时分配的。我们使用堆栈来存储临时数据，例如某些函数的局部变量、帮助我们在函数之间转换的环境变量等。我们使用 PUSH 和 POP 指令与堆栈交互。PUSH 和 POP 是其他一些与内存相关的指令的别名，而不是真正的指令，但出于简单的原因，我们使用 PUSH 和 POP。 </p>
+<p>​		存储器堆栈可分为两种：<br>​          向高地址方向生长，称为<strong>递增堆栈</strong><br>​          向低地址方向生长，称为<strong>递减堆栈</strong></p>
+<p>​	栈指针指向最后压入的堆栈的有效数据项，称为<strong>满堆栈</strong>；</p>
+<p>​	堆栈指针指向下一个要放入的空位置，称为<strong>空堆栈</strong>。</p>
+<p>这样就有4中类型的堆栈表示递增和递减的满堆栈和空堆栈的各种组合。</p>
+<p><strong>满递增</strong>：堆栈通过增大存储器的地址向上增长，堆栈指针指向内含有效数据项的最高地址。指令如<strong>LDMFA</strong>，<strong>STMFA</strong>等。(Ascending 递增)</p>
+<p><strong>空递增</strong>：堆栈通过增大存储器的地址向上增长，堆栈指针指向堆栈上的第一个空位置。指令如<strong>LDMEA</strong>，<strong>STMEA</strong>等。</p>
+<p><strong>满递减</strong>：堆栈通过减小存储器的地址向下增长，堆栈指针指向内含有效数据项的最低地址。指令如<strong>LDMFD</strong>，<strong>STMFD</strong>等。(Descending 递减)</p>
+<p><strong>空递减</strong>：堆栈通过减小存储器的地址向下增长，堆栈指针指向堆栈下的第一个空位置。指令如<strong>LDMED</strong>，<strong>STMED</strong>等。</p>
+<table>
+<thead>
+<tr>
+<th align="center">Stack Type</th>
+<th align="left">Store</th>
+<th align="center">Load</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Full descending</td>
+<td align="left">STMFD (STMDB, Decrement Before)</td>
+<td align="center">LDMFD (LDM, Increment after)</td>
+</tr>
+<tr>
+<td align="center">Full ascending</td>
+<td align="left">STMFA (STMIB, Increment Before)</td>
+<td align="center">LDMFA (LDMDA, Decrement After)</td>
+</tr>
+<tr>
+<td align="center">Empty descending</td>
+<td align="left">STMED (STMDA, Decrement After)</td>
+<td align="center">LDMED (LDMIB, Increment Before)</td>
+</tr>
+<tr>
+<td align="center">Empty ascending</td>
+<td align="left">STMEA (STM, Increment after)</td>
+<td align="center">LDMEA (LDMDB, Decrement Before)</td>
+</tr>
+</tbody></table>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><p>这里其实和 x86 中十分类似，理解起来可以去类比函数栈帧。</p>
+<p>在ARM中函数由如下三个部分组成：</p>
+<ul>
+<li><strong>Prologue</strong> 为函数设置环境 </li>
+<li><strong>Body</strong> 实现函数的逻辑并将结果存储到 R0 </li>
+<li><strong>Epilogue</strong> 恢复状态，以便程序可以在调用函数之前从其离开的位置恢复</li>
+</ul>
+<p>ARM 中，无论函数内部如何调用，如何跳转，最后的返回值都会存储在 r0 寄存器中，若返回64位结果，则将同时使用 r0 和 r1 去记录返回值。</p>
+<p>关于函数的另一个关键点是它们的类型：<strong>叶子函数</strong>和<strong>非叶函数</strong>：</p>
+<ul>
+<li><p>叶函数是一种不会从自身调用&#x2F;分支到另一个函数的函数。 </p>
+</li>
+<li><p>非叶函数是一种函数，除了它自己的逻辑之外，它还调用&#x2F;分支到另一个函数。</p>
+</li>
+</ul>
+<p>​		简而言之，他俩的主要区别是会不会调用其他函数。就如我们的 main 函数一般都要调用一些子函数，那 main 函数无疑就是非叶函数，而一般较为简单的子函数由于不调用其他函数，其就为叶子函数。</p>
+<p>另一个关键区别是 Prologue 和 Epilogue 的实现方式，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/* A prologue of a non-leaf function */</span><br><span class="line">push   &#123;r11, lr&#125;    /* Start of the prologue. Saving Frame Pointer and LR onto the stack */</span><br><span class="line">add    r11, sp, #0  /* Setting up the bottom of the stack frame */</span><br><span class="line">sub    sp, sp, #16  /* End of the prologue. Allocating some buffer on the stack */</span><br><span class="line"></span><br><span class="line">/* A prologue of a leaf function */</span><br><span class="line">push   &#123;r11&#125;        /* Start of the prologue. Saving Frame Pointer onto the stack */</span><br><span class="line">add    r11, sp, #0  /* Setting up the bottom of the stack frame */</span><br><span class="line">sub    sp, sp, #12  /* End of the prologue. Allocating some buffer on the stack */</span><br></pre></td></tr></table></figure>
+
+<p>​		这里的主要区别在于非叶函数中的 Prologue 条目将更多的寄存器保存到堆栈中。 这背后的原因是，由于非叶函数的性质，LR 在执行此类函数期间会被修改，因此需要保留该寄存器的值，以便以后可以恢复。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> /* An epilogue of a leaf function */</span><br><span class="line">add    sp, r11, #0  /* Start of the epilogue. Readjusting the Stack Pointer */</span><br><span class="line">pop    &#123;r11&#125;        /* restoring frame pointer */</span><br><span class="line">bx     lr           /* End of the epilogue. Jumping back to main via LR register */</span><br><span class="line"></span><br><span class="line">/* An epilogue of a non-leaf function */</span><br><span class="line">sub    sp, r11, #0  /* Start of the epilogue. Readjusting the Stack Pointer */</span><br><span class="line">pop    &#123;r11, pc&#125;    /* End of the epilogue. Restoring Frame pointer from the stack, jumping to previously saved LR via direct load into PC */</span><br></pre></td></tr></table></figure>
+
+<p>叶子函数直接跳转到 lr 寄存器存储的返回地址返回，而非叶函数则是将栈上的返回地址弹出到 PC 寄存器实现返回。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/09/21/ARM%20%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/09/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">深入理解计算机系统第三章：程序的机器级表示</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
