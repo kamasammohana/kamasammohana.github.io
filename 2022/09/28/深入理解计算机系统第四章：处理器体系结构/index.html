@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>深入理解计算机系统第四章：处理器体系结构 |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-深入理解计算机系统第四章：处理器体系结构"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  深入理解计算机系统第四章：处理器体系结构
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/09/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%A4%84%E7%90%86%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" class="article-date">
+  <time datetime="2022-09-27T19:09:53.665Z" itemprop="datePublished">2022-09-28</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">9.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">34 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="深入理解计算机系统第四章：处理器体系结构"><a href="#深入理解计算机系统第四章：处理器体系结构" class="headerlink" title="深入理解计算机系统第四章：处理器体系结构"></a>深入理解计算机系统第四章：处理器体系结构</h1><blockquote>
+<p>一个处理器支持的指令和指令的字节级编码称为它的指令 集体 系结构（Instruction-Set Architecture，ISA)不同的处理器“家族”，例如 Intel IA32 和 x86-64、IBM&#x2F;FreescalePowei 和 ARM 处理器家族，都有不同的 ISA。</p>
+</blockquote>
+<h2 id="4-1-Y86-64-指令集体系架构"><a href="#4-1-Y86-64-指令集体系架构" class="headerlink" title="4.1 Y86-64 指令集体系架构"></a>4.1 Y86-64 指令集体系架构</h2><p>定义一个<strong>指令集体系结构</strong>包括定义：</p>
+<ul>
+<li>各种状态单元</li>
+<li>指令集</li>
+<li>指令集的编码</li>
+<li>一组编程规范</li>
+<li>异常事件处理</li>
+</ul>
+<p>​	指令的层次：</p>
+<ul>
+<li>指令系统处在软&#x2F;硬件交界面，同时被硬件设计者和系统程序员看到</li>
+<li>硬件设计者角度：指令系统为CPU提供功能需求，要求易于硬件设计</li>
+<li>系统程序员角度：通过指令系统来使用硬件，要求易于编写编译器</li>
+<li>指令系统设计的好坏还决定了：计算机的性能和成本</li>
+</ul>
+<p>​		Y86-64 的状态类似 于 X86-64， 有 15 个程序寄存器 ：％rax、％rcx、％rdx、%rbx、%rsp、%rbp、%rsi、%rdi 和 %r8 到 %r14。（省略了 x86-64 的寄存器%r15以简 化指令的编码。）每个程序寄存器存储一个 64 位的字。寄存器 %rsp 被入栈、出栈、调用和返回指令作为栈指针。除此之外，寄存器没有固定的含义或固定值。有 3 个一位的条件码： ZF、SF 和 OF。它们保存着最近的算术或逻辑指令所造成影响的有关信息。程序计数器（PC） 存放当前正在执行指令的地址。内存从概念上来说就是一个很大的字节数组，保存着程序和数据。Y86-64 程序用虚拟地址来引用内存位置。硬件和操作系统软件联合起来将虚拟地址翻译成实际或物理地 址，指明数据实际存在内存中哪个地方。</p>
+<p> Y86-64 指令的一些细节：</p>
+<ul>
+<li><p>x86-64 的 movq 指令分成了 4 个不同的指令：imovq、rrmovq、mrmovq 和 rmmovq。 分别显式地指明源和目的的格式。源可以是立即数（i）、寄存器（r）或内存（m）。指令名字的第一个字母就表明了源的类型。目的可以是寄存器（r）或内存（m）。指令名字的第二个字母指明了目的的类型。两个内存传送指令中的内存引用方式是简单的基址和偏移量形式。在地址计算中，不支持第二变址寄存器（second index register）和任何寄存器值的伸缩 (scaling）。 同 X86-64 —样，不允许从一个内存地址直接传送到另一个内存地址。另外，也不允许将立即数传送到内存。</p>
+</li>
+<li><p>有 4 个整数操作指令，如图 4-2 中的 OPq。它们是 addq、subq、andq 和 xorq。它们只对寄存器数据进行操作，而 X86-64 还允许对内存数据进行这些操作。这些指令会设置 3 个条件码 ZF、SF 和 OF(零、符号和溢出）。</p>
+</li>
+<li><p>7 个跳转指令，jmp、jle、jl、je、jne、 jge 和 jg。根据分支 指令的类型和条件代码的设置来选择分支。</p>
+</li>
+<li><p>有 6 个条件传送指令: cmovle、cmovl、 cmovge 和 cmovg。这些指令的格式与寄存器-寄存器传送指令 rrmovq —样，但是只有当条件码满足所需要的约束时，才会更新目的寄存器的值。</p>
+</li>
+<li><p>call 指令将返回地址人栈，然后跳到目的地址。ret 指令从这样的调用中返回。</p>
+</li>
+<li><p>pushq 和 popq 指令实现了入栈和出栈，就像在 x86-64 中一样。</p>
+</li>
+<li><p>halt 指令停止指令的执行。X86-64 中有一个与之相当的指令 hit。x86-64 的应用程序不允许使用这条指令，因为它会导致整个系统暂停运行。对于 Y86-64 来说， 执行 halt 指令会导致处理器停止，并将状态码设置为 HLT。</p>
+</li>
+</ul>
+<blockquote>
+<p>Y86-64 指令集。指令编码长度从 1 个字节到 10 个字节不等。一条指令含有一个单字节的 指令指示符，可能含有一个单字节的寄存器指示符，还可能含有一个 8 字节的常数字。字段 fn 指明是某个整数操作（OPq）、数据传送条件（cmovXX）或是分支条件（jXX）。所有的数值都用十六进制表示。</p>
+</blockquote>
+<p>​		Y86-64的指令，每个指令1~10个字节不等，第一个字节高四位是代码部分，低四位是功能部分。程序寄存器存在CPU的一个寄存器文件中，这个寄存器文件就是一个小的、以寄存器ID作为地址的随机访问存储器。在指令编码中以及在我们的硬件设计中，当需要指明不应访问任何寄存器时，就用ID值0xF表示。</p>
+<p>​		有的指令只有一个字节长，而有的需要操作数的指令编码就更长一些。包括寄存器指示符字节、立即数数据等。</p>
+<p>​		指令集的一个<strong>重要性质</strong>就是字节编码必须有<strong>唯一的解释</strong>。任意一个字节序列要么是一 个唯一的指令序列的编码，要么就不是一个合法的字节序列。Y86-64 就具有这个性质， 因为每条指令的第一个字节有唯一的代码和功能组合，给定这个字节，就可以决定所有其他附加字节的长度和含义。这个性质保证了处理器可以无二义性地执行目标代码程序。</p>
+<p>​		Y86-64通过状态码 Stat 向程序员描述程序执行的总体状态：</p>
+<table>
+<thead>
+<tr>
+<th align="center">值</th>
+<th align="center">名字</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">AOK</td>
+<td align="center">正常操作</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">HLT</td>
+<td align="center">遇到器执行 halt 指令</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">ADR</td>
+<td align="center">遇到非法地址</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">INS</td>
+<td align="center">遇到非法指令</td>
+</tr>
+</tbody></table>
+<p>​		对于 Y86-64, 当遇到这些异常的时候，我们就简单地让处理器停止执行指令。在更完整的设计中，处理器通常会调用一个<strong>异常处理程序 (exception handler）</strong>, 这个过程被指定用来处理遇到的某种类型的异常。</p>
+<h2 id="4-2-逻辑设计和硬件控制语言HCL"><a href="#4-2-逻辑设计和硬件控制语言HCL" class="headerlink" title="4.2 逻辑设计和硬件控制语言HCL"></a>4.2 逻辑设计和硬件控制语言HCL</h2><p>​		实现一个数字系统要三个主要组成部分：<strong>计算对位进行操作的函数的组合逻辑</strong>、<strong>存储位的存储单元</strong>、<strong>控制存储器单元更新的时钟信号</strong>。</p>
+<p>​		逻辑门是数字电路的基本计算单元。它们产生的输出，等于它们输人位值的某个布尔函数，且仅对单个位进行操作，而不是整个字。逻辑门总是活动的（active）, —旦一个门的输人变化了，在很短的时间内，输出就会相应地变化。</p>
+<p>​		将很多的逻辑门组合成一个网，就能构建<strong>计算块（computational block）</strong>, 称为<strong>组合电路（combinational circuits）</strong>。 </p>
+<p>构建这些网有几个限制：</p>
+<ul>
+<li>每个逻辑门的输入必须连接到下述选项之一：1)一个系统输入（称为主输人），2)某 个存储器单元的输出，3)某个逻辑门的输出。 </li>
+<li>两个或多个逻辑门的输出不能连接在一起。否则它们可能会使线上的信号矛盾，可能会导致一个不合法的电压或电路故障。 </li>
+<li>这个网必须是无环的。也就是在网中不能有路径经过一系列的门而形成一个回路， 这样的回路会导致该网络计算的函数有歧义。</li>
+</ul>
+<p>HCL 表达式和 C 语言中的逻辑表达式有以下区别：</p>
+<ul>
+<li>因为组合电路是由一系列的逻辑门组成，它的属性是输出会持续地响应输人的变 化。如果电路的输人变化了，在一定的延迟之后，输出也会相应地变化。相比之 下，C 表达式只会在程序执行过程中被遇到时才进行求值。 </li>
+<li>C 的逻辑表达式允许参数是任意整数，0 表示 FALSE，其他任何值都表示 TRUE。 而逻辑门只对位值 0 和 1 进行操作。 </li>
+<li>C 的逻辑表达式有个属性就是它们可能只被部分求值。如果一个 AND 或 OR 操作 的结果只用对第一个参数求值就能确定，那么就不会对第二个参数求值了。例</li>
+</ul>
+<p>举一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">work Out4 = [</span><br><span class="line"></span><br><span class="line">				! s1 &amp;&amp; ! s0 : A;</span><br><span class="line"></span><br><span class="line">				! s1 : B;</span><br><span class="line"></span><br><span class="line">				!s0 : C;</span><br><span class="line"></span><br><span class="line">				1 : D;</span><br><span class="line"></span><br><span class="line">];				</span><br><span class="line">##这个电路根据控制信号 s1 和 sO, 从 4个输入字 A、 B、 C 和 D 中选择一个，将控制信号看作一个两位的二进制数。</span><br></pre></td></tr></table></figure>
+
+<p>​		在处理器设计中，很多时候都需要将一个信号与许多可能匹配的信号做比较，以此来检测正在处理的某个指令代码是否属于某一类指令代码，这就用到了<strong>集合关系</strong>。</p>
+<p>举例理解：</p>
+<p><code>bool s1 = code in &#123; 2, 3 &#125;;</code></p>
+<p><code>bool sO = code in &#123; 1, 3 &#125;;</code></p>
+<p>当 code 在集合{2, 3}中时 s1 为 1, 而 code 在集合{1, 3}中时 s0 为 1.</p>
+<p>​		组合电路从本质上讲，不存储任何信息。相反，它们只是简单地响应输人信号，产生等于输入的某个函数的输出。所以我们引入按位存储信息的设备来产生**时序电路(sequential circuit)**，也就是有状态并且在这个状态上进行计算的系统。存储设备都是由同一个时钟控制的，时钟是一个周期性信号，决定什么时候要把新值加载到设备中。考虑两类存储器设备：</p>
+<ul>
+<li>时钟寄存器（简称寄存器）存储单个位或字。时钟信号控制寄存器加载输入值。大多数时候，寄存器都保持在稳定状态， 产生的输出等于它的当前状态。只要时钟是低电位的，寄存器的输出就仍然保持不变。当时钟变成高电位的时候，输人信号就加载到寄存器中，成为下一个状态。直到下一个时钟上升沿，这个状态就一直是寄存器的新输出。	</li>
+<li>随机访问存储器（简称内存）存储多个字，用地址来选择该读或该写哪个字。随机访问存储器的例子包括：1)处理器的虚拟内存系统，硬件和操作系统软件结合起来使处理器可以在一个很大的地址空间内访问任意的字；2)寄存器文件，在此，寄存器标识符作为地址。寄存器文件有两个读端口, 还有一个写端口。这样一个多端口随机访问存储器允许词时进行多个读和写操作。在实现中，从寄存器文件读数据就好像它是一个以地址为输人、数据为输出的一个组合逻辑块。</li>
+</ul>
+<h2 id="4-3-Y86-64-的顺序实现"><a href="#4-3-Y86-64-的顺序实现" class="headerlink" title="4.3 Y86-64 的顺序实现"></a>4.3 Y86-64 的顺序实现</h2><blockquote>
+<p>我们描述一个称为 SEQ（“sequemial” 顺序的）的处理器。每个时钟周期上，SEQ 执行处理一条完整指令所需的所有步骤。</p>
+</blockquote>
+<p>​		处理一条指令包括很多操作。将它们组织成某个特殊的阶段序列，即使指令的动作差异很大，但所有的指令都遵循统一的序列。每一步的具体处理取决于正在执行的指令。</p>
+<p>将处理指令分为以下阶段：</p>
+<ul>
+<li>**取指(fetch)**：取指阶段从内存读取指令字节，地址为程序计数器（PC）的值。从指令中抽取出指令指示符字节的两个四位部分，称为 icode（指令代码）和 ifun（指令功能）。它可能取出一个寄存器指示符字节，指明一个或两个寄存器操作数指示符 rA 和 rB。它还可能取出一个四字节常数字 valC，它按顺序方式计算当前指令的下 一条指令的地址 valP。</li>
+<li>**译码(decode)**：译码阶段从寄存器文件读人最多两个操作数，得到值 valA 和&#x2F;或 valB。</li>
+<li>**执行(execute)**：在执行阶段，算术&#x2F;逻辑单元（ALU）要么执行指令指明的操作（根据 ifun 的值），计算内存引用的有效地址，要么增加或减少栈指针。得到的值称为 valE。在此，也可能设置条件码。</li>
+<li>**访存(memory)**：访存阶段可以将数据写入内存，或者从内存读出数据。读出的值 为 valM。</li>
+<li>**写回(write back)**：写回阶段最多可以写两个结果到寄存器文件。</li>
+<li>**更新 PC(PC update)**：将 PC 设置成下一条指令的地址。</li>
+</ul>
+<p>硬件单元与各个处理阶段相关联：</p>
+<ul>
+<li>取指：将程序计数器寄存器作为地址，指令内存读取指令的字节。PC 增加器(PC incrementer)计算 valP，即增加了的程序计数器。</li>
+<li>译码：寄存器文件有两个读端口 A 和 B, 从这两个端口同时读寄存器值 valA 和 valB。</li>
+<li>执行：执行阶段会根据指令的类型，将算术&#x2F;逻辑单元（ALU）用于不同的目的。对整数操作，它要执行指令所指定的运算。对其他指令，它会作为一个加法器来计算增加或减少栈指针，或者计算有效地址，或者只是简单地加 0, 将一个输入传递到输出。条件码寄存器(CC)有三个条件码位。ALU 负责计算条件码的新值。当执行条件传送 指令时，根据条件码和传送条件来计算决定是否更新目标寄存器。同样，当执行一条跳转指令时，会根据条件码和跳转类型来计算分支信号 Cnd。</li>
+<li>访存：在执行访存操作时，数据内存读出或写人一个内存字。指令和数据内存访问的 是相同的内存位置，但是用于不同的目的。</li>
+<li>写回：寄存器文件有两个写端口。端口 E 用来写 ALU 计算出来的值，而端口 M 用来写从数据内存中读出的值。</li>
+<li>PC 更新：程序计数器的新值选择自：valP，下一条指令的地址；vaic，调用指令或跳转指令指定的目标地址；valM, 从内存读取的返回地址。</li>
+</ul>
+<p>​		SEQ 的实现包括组合逻辑和两种存储器设备：时钟寄存器（程序计数器和条件码寄存 器）， 随机访问存储器(寄存器文件、指令内存和数据内存）。 组合逻辑不需要任何时序或 控制——只要输入变化了，值就通过逻辑门网络传播。要控制处理器中活动的时序，只需要寄存器和内存的时钟控制。</p>
+<p><strong>原则</strong>：从不回读</p>
+<p><code>处理器从来不需要为了完成一条指令的执行而去读由该指令更新了的状态。</code></p>
+<p>SEQ阶段实现：</p>
+<p>取指逻辑：</p>
+<ul>
+<li><p>预定义的单元</p>
+<ul>
+<li>PC：存储PC的寄存器</li>
+<li>指令内存：读十个字节（PC to PC + 9）</li>
+<li><ul>
+<li>发出指令地址不合法的信号 imem_error</li>
+</ul>
+</li>
+<li>Split： 把指令字节分为 icode 和 ifun</li>
+<li>Align：把读出的字节放入寄存器和常数字中</li>
+</ul>
+</li>
+<li><p>控制逻辑</p>
+<ul>
+<li>Instr.Valid：指令是否无效？</li>
+<li>icode，ifun：指令地址无效时生成 no-op 字节</li>
+<li>Need regids：指令是否含有寄存器字节？</li>
+<li>Need valC：指令是否含有常数字？</li>
+</ul>
+</li>
+</ul>
+<p>译码&#x2F;写回逻辑：</p>
+<ul>
+<li>寄存器文件</li>
+<li>读端口 A，B</li>
+<li>写端口 E，M</li>
+<li>地址为寄存器的 ID<ul>
+<li>或为15（0xF）- 无法访问</li>
+</ul>
+</li>
+</ul>
+<p>执行逻辑：</p>
+<ul>
+<li><p>单元</p>
+<ul>
+<li>ALU<ul>
+<li>实现四种所需的功能</li>
+<li>生成条件码</li>
+</ul>
+</li>
+<li>CC<ul>
+<li>包含三个条件码位的寄存器</li>
+</ul>
+</li>
+<li>cond<ul>
+<li>计算条件转移或跳转标识</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>控制逻辑</p>
+<ul>
+<li>Set CC：是否加载条件码寄存器？</li>
+<li>ALU A：数据 A 送 ALU</li>
+<li>ALU B：数据 B 送 ALU</li>
+<li>ALU fun: ALU执行哪个功能?</li>
+</ul>
+</li>
+</ul>
+<p><strong>访存逻辑</strong></p>
+<ul>
+<li>访存<ul>
+<li>读写内存里的数据字</li>
+</ul>
+</li>
+<li>控制逻辑<ul>
+<li>stat: 指令状态是什么?</li>
+<li>Mem. read: 是否读数据字?</li>
+<li>Mem. write: 是否写数据字?</li>
+<li>Mem. addr.: 选择地址</li>
+<li>Mem. data.: 选择数据</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-4-流水线的通用原理"><a href="#4-4-流水线的通用原理" class="headerlink" title="4.4 流水线的通用原理"></a>4.4 流水线的通用原理</h2><p>​		SEQ 我们已经探讨了它的实现，可以发现它最大的问题就是时钟太慢了，它需要在一个时钟周期将信号传遍所有阶段，这就导致了它的性能相当差强人意。所以我们引入了流水线来增加它的性能。</p>
+<p>​		流水线简单来说就是将处理一套事物分成很多个部分，当处理的第一套事物完成第一个阶段时，它将下一个要处理的事务放入流水线处理第一个阶段，以此类推，这样就增加了吞吐量，也就增加了性能。</p>
+<p>​		<code>系统最大吞吐量 = 1 / 处理一条指令的延迟</code></p>
+<p>​		所以在处理器中我们在每一个阶段后都插入一个流水线寄存器保存阶段结束对应的状态即可实现流水线。</p>
+<p>​		流水线虽然提升了处理器性能，但是也有一定的局限性：</p>
+<ol>
+<li>不一致的划分</li>
+</ol>
+<p>​		处理器处理各阶段的时间不一，但是为了保证流水线按照时钟信号的变化而运行，所以流水线始终变化的周期必须以最长的时间为准，这就导致了可能有的阶段市场空闲，而有的阶段一直在运行，这就导致了大量的性能浪费。</p>
+<ol start="2">
+<li>流水线过深，收益反而下降</li>
+</ol>
+<p>​		处理器越深，相应的延迟会加大（因为有流水线寄存器参与阶段结束的部分），所以收益反而被制约。现代处理器采用了很深的流水线。处理器架构师将指令的执行划分成很多非常简单的步骤，将每段延迟将至最低。</p>
+<p>​		当然，在 SEQ 模型中涉及反馈。也就是得到的结果向下传递到寄存器文件。而在流水线技术中，最后一个阶段输出的结果如果反馈给一阶段，则会造成系统行为的改变，因为原本需要接受结果作为输入的 I2，此时已经运行至第四阶段，反馈给的第一个阶段也就成为了第四条指令的输入，这样就不对了。所以必须正确处理反馈的影响，以某种方式来处理指令间的数据和控制相关，以使得到的行为与 ISA 定义的模型相符合。</p>
+<h2 id="4-5-Y86-64-的流水线实现"><a href="#4-5-Y86-64-的流水线实现" class="headerlink" title="4.5 Y86-64 的流水线实现"></a>4.5 Y86-64 的流水线实现</h2><p>​		为了实现 Y86-64 的流水线化设计，我们首先需要重新安排计算阶段，也就是 SEQ+。我们移动 PC 阶段，使得它的逻辑在时钟周期开始时活动，使它计算当前指令的 PC 值。在 SEQ+ 中，我们创建状态寄存器来保存一条指令执行过程中的信号，然后当一个新的时钟周期开始时，这些信号值通过同样的逻辑来计算当前指令的 PC。SEQ+ 中没有硬件寄存器来存放程序计数器，而是根据从前一条指令保存下来的一些状态信息动态地计算 PC。SEQ 到 SEQ+ 的改进称为<strong>电路重定时（circuit retiming）</strong>。重定时改变了一个系统的状态表示，但是并不改变它的逻辑行为。通常用它来平衡一个流水线系统中各个阶段的延迟。</p>
+<p>​		接着我们向各个阶段中插入流水线寄存器，并对信号重新排列得到 PIPE- 处理器。			</p>
+<p>流水线寄存器按如下方式标号：</p>
+<ol>
+<li>F 保存程序计数器的预测值</li>
+<li>D 位于取值和译码之间，保存关于最新取出的指令的信息</li>
+<li>E 位于译码和执行阶段之间，保存关于最新译码的指令和从寄存器文件读出的值的信息</li>
+<li>M 位于执行和访存阶段之间，保存最新执行的指令的结果，还保存关于用于处理条件转移的分支条件和分支目标的信息</li>
+<li>W位于访存阶段和反馈路径之间，反馈路径将计算出来的值提供给寄存器文件写，而当完成<strong>ret</strong>指令时，它还要向PC选择逻辑提供返回地址</li>
+</ol>
+<p>​		标号为“Stat”保存指令的状态码，一共有四个，用前缀区分。如D_stat、E_stat等。大写的字母开头的是指流水线寄存器的状态码字段，小写的字母开头的是指流水线阶段，例如 m_stat 指的是在访存阶段中由控制逻辑块产生出的状态信号。</p>
+<p>​		另外 PIPE- 将valP和valA合并了，因为只有call在访存阶段需要valP，只有跳转指令在执行阶段需要valP（不需要跳转的时候），这些指令都不需要从寄存器中读出的值。</p>
+<p>​		流水线化设计的目的就是每个时钟周期都发射一条新指令，所以按理来说，流水线上应该一直充斥着待执行的指令。但是由于条件分支指令和ret等的指令，需要等指令通过某些阶段，才能知道接下来要执行什么。所以为了继续流水线的执行，我们需要对执行的指令进行预测，并处理预测错误的情况。猜测分支方向并根据猜测开始取指的技术就称为<strong>分支预测</strong>。</p>
+<p>​		标号为“&#x3D;&#x3D;<strong>Predict PC</strong>&#x3D;&#x3D;”的块从PC增加器计算出的valP和取出的指令中得到的valC中进行选择，这个值放在流水线寄存器F中作为PC的预测值。</p>
+<p>​		标号为“**&#x3D;&#x3D;Select PC&#x3D;&#x3D;**”的块从三个值中选择一个作为指令内存的地址：预测的PC，对于到达流水线寄存器M的不选择分支的指令来说是valP的值，或是当ret指令到达流水线寄存器W（存储在W_valM）时的返回地址的值。	</p>
+<p>​		指令之间存在两种相关形式：</p>
+<ol>
+<li>数据相关，下一条指令会用到这一条指令计算出的结果</li>
+<li>控制相关，一条指令要确定下一条指令的位置（跳转指令、call和ret）</li>
+</ol>
+<p>所以流水线冒险也分为数据冒险和控制冒险。</p>
+<p>我们有以下几种机制来应对冒险：</p>
+<ol>
+<li><p>&#x3D;&#x3D;<u>用暂停来避免数据冒险</u>&#x3D;&#x3D;，<strong>暂停</strong>是避免冒险的一种常用技术，<strong>暂停时，处理器会停止流水线中一条或多条指令</strong>，直到冒险条件不再满足。（让一条指令停顿在译码阶段，直到产生它的源操作数的指令通过了写回阶段）。暂停技术就是让一组指令阻塞在它所处的阶段，而允许其它指令继续通过流水线。</p>
+</li>
+<li><p>&#x3D;&#x3D;<u>用转发来避免数据冒险</u>&#x3D;&#x3D;，将结果值直接从一个流水线阶段传到较早阶段的技术称为<strong>数据转发</strong>（data forwarding 简称<strong>转发</strong>，有时也称为<strong>旁路</strong>），数据抓发需要在基本的硬件结构中增加一些额外的数据连接和控制逻辑。也就是说，PIPE- 在译码阶段从寄存器文件中读入源操作数，但对这些源操作数更改的写入要到写回时才进行，运用转发可以将要写回的值简单地传递到流水线寄存器上作为源操作数。</p>
+</li>
+<li><p>&#x3D;&#x3D;<u>加载&#x2F;使用数据冒险</u>&#x3D;&#x3D;，在有些时候，直接将数据转发的话时间对不上，因为当产生所谓下一条指令所需要的源操作数的值的时候，可能下一条指令在流水线上已经过了译码这样一个阶段了。因此使用加载&#x2F;使用数据冒险的技术，插入气泡，使下一条指令阻塞在取指阶段，使气泡替代其执行译码阶段，直到上一条指令转发的时间线能够对上这条指令译码的时间线。用暂停来处理加载&#x2F;使用冒险的方法称为<strong>加载互锁</strong>，加载互锁和转发技术结合起来足以处理所有可能类型的数据冒险，只是加载互锁会降低流水线的吞吐量。</p>
+</li>
+<li><p><u>&#x3D;&#x3D;避免控制冒险&#x3D;&#x3D;</u>，当处理器无法根据处于取指阶段的当前指令来确定下一条指令的地址时，就会出现<strong>控制冒险</strong>，控制冒险只会发生在ret指令和跳转指令。在产生错误的预测时，流水线上，在分支判断的指令执行到执行阶段确定已经预测错误时，流水线已经把分支之后的两条指令放入流水线执行了。但是只有执行阶段才会改变条件码，所以后两条指令并未改变<strong>程序员可见的状态</strong>，所以在下一个周期往译码和执行阶段插入气泡，同时取出跳转指令后面的指令，这样就可以取消（有时候也称为指令排除(instruction squashing)）预测错误的指令。</p>
+</li>
+</ol>
+<p>​		处理器中很多事情都会导致异常控制流，此时，程序执行的正常流程被破坏掉。异常可以由程序执行从内部产生，也可以由某个外部信号从外部产生。我们把导致异常的指令称为异常指令（excepting instruction）。</p>
+<ul>
+<li><strong>Y86-64指令体系结构包括三种不同的内部产生的异常</strong>：<ol>
+<li>halt指令</li>
+<li>有非法指令和功能码组合的指令</li>
+<li>取指或数据读写试图访问一个非法地址</li>
+</ol>
+</li>
+</ul>
+<p>​		在简化的ISA模型中，<strong>当处理器遇到异常时，会停止，设置适当的状态码，看上去应该是到异常指令之前的所有指令都已经完成，而其后的指令都不应该对程序员可见状态产生任何影响</strong>（在更完整的设计中，处理器会继续调用异常处理程序）。</p>
+<p>​		可能同时有多条指令会引起异常（如取指阶段的halt指令，访存阶段的指令数据地址越界），处理器向操作系统报告哪个异常，&#x3D;&#x3D;基本原则&#x3D;&#x3D;：<strong>由流水线中最深的指令引起的异常，优先级最高</strong>（所以访存阶段的指令本来就应该在下个指令取指之前完成，所以向操作系统报告地址访问异常）。有时候会出现当首先取出一条指令，开始执行时，导致了一个异常，而后来由于分支预测错误，取消了该指令的情况，或者流水线化的处理器会在不同阶段更新系统状态的不同部分，有可能会出现这样的情况，一条指令导致了一个异常，它后面的指令在异常指令完成之前改变了部分状态等等，其实通过在流水线结构中加入异常处理逻辑，既能从各个异常中做出正确选择，也能够避免出现由于分支预测错误取出的指令造成的异常（在流水线寄存器中包括一个状态码stat） <u>为了避免异常指令之后的指令更新程序员可见状态，当处于访存或写回阶段中的指令导致异常时，流水线控制逻辑必须禁止更新条件码寄存器或是数据内存。</u></p>
+<p><strong>PIPE各阶段的实现</strong>：</p>
+<ol>
+<li>pc选择和取指阶段：</li>
+</ol>
+<p>​		PC从三个程序计数器源中进行选择。<strong>当一条预测错误的分支进入访存阶段时，会从流水线寄存器M（信号M_valA）中读出该指令的valP值（因为valP和valA合并了，M_valA就是valP（在jxx指令中））</strong> <strong>当ret指令进入写回阶段时，会从流水线寄存器W（信号W_valM）中读出放回地址</strong> <strong>其他情况使用存放在流水线寄存器F（信号F_predPC）中的PC的预测值</strong>。</p>
+<p>​		和SEQ不一样，在取指阶段，可以测试由于指令地址越界引起的内存错误，还可以发现非法指令或halt指令，必须推迟到访存阶段才能发现非法数据地址。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">word f_pv = [</span><br><span class="line">	# Mispredicted branch. Fetch at incremented PC</span><br><span class="line">	M_icode == IJXX &amp;&amp; !M_Cnd : M_valA;</span><br><span class="line">	# Completion of RET instruction</span><br><span class="line">	W_icode == IRET : W_valM;</span><br><span class="line">	# Default: Use predicted value of PC</span><br><span class="line">	1 : F_predPC;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">word f_predPC = [</span><br><span class="line">	f_icode in &#123; IJXX, ICALL &#125; : f_valC;</span><br><span class="line">	1 : f_valP;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>译码和写回阶段：</li>
+</ol>
+<p>​		没有指令既需要 valp 又需要来自寄存器端口 A 中读出的值，因此“ Sel+Fwd A ”为后面的阶段将valP信号合并到valA信号，减少了流水线寄存器中状态的数量，同时实现了源操作数valA的转发逻辑。标号为” Fwd B “的块实现源操作数 valB 的转发逻辑。寄存器写的位置是由来自写回阶段的 dstE 和 dstM 信号指定的，而不是来自于译码阶段，因为它要写的是当前正在写回阶段中的指令的结果。</p>
+<p>5个不同的转发源如下:</p>
+<table>
+<thead>
+<tr>
+<th align="center">数据字</th>
+<th align="center">寄存器 ID</th>
+<th align="center">源描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">e_valE</td>
+<td align="center">e_dstE</td>
+<td align="center">ALU 输出</td>
+</tr>
+<tr>
+<td align="center">m_valM</td>
+<td align="center">M_dstM</td>
+<td align="center">内存输出</td>
+</tr>
+<tr>
+<td align="center">M_valE</td>
+<td align="center">M_dstE</td>
+<td align="center">访存阶段中对端口 E 未进行的写</td>
+</tr>
+<tr>
+<td align="center">W_valM</td>
+<td align="center">W_dstM</td>
+<td align="center">写回阶段中对端口 M 未进行的写</td>
+</tr>
+<tr>
+<td align="center">W_valE</td>
+<td align="center">W_dstE</td>
+<td align="center">写回阶段中对端口 E 未进行的写</td>
+</tr>
+</tbody></table>
+<p>流水线寄存器E的valA新值的HCL描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">word d_valA = [</span><br><span class="line">	D_icode in &#123; ICALL, IJXX &#125; : D_valP; # Use incremented PC</span><br><span class="line">	d_srcA == e_dstE : e_valE;	# Forward valE from execute</span><br><span class="line">	d_srcA == M_dstE : m_valE;	# Forward valM from memory</span><br><span class="line">	d_srcA == M_dstE : M_valE;	# Forward valE from memory</span><br><span class="line">	d_srcA == W_dstM : W_valM;	# Forward valM from write back</span><br><span class="line">	d_srcA == W_dstE : W_valE;	# Forward valE from write back</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p><code>上述HCL代码中赋予这五个转发源的优先级是非常重要的，这种优先级是由HCL代码中检测5个目的寄存器ID的顺序来确定的</code></p>
+<p>​		写回阶段的一小部分是保持不变的，整个处理器状态Stat是一个块根据流水线寄存器W中的状态值计算出来的，W保存着最近完成的指令的状态，所以用这个值来表示整个处理器状态。考虑写回阶段有气泡，是正常操作，状态码是AOK.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">word Stat = [</span><br><span class="line">	W_stat == SBUB : SAOK;</span><br><span class="line">	1: W_stat;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>执行阶段</li>
+</ol>
+<p>​		硬件单元和逻辑块同SEQ相同，<strong>重要区别是标号为“Set CC”的逻辑以信号m_stat和W_stat作为输入，这个逻辑决定了是否要更新条件码</strong>（这些信号被用来检查一条导致异常的指令正在通过后面的流水线阶段的情况，因此，任何对条件码的更新都会被禁止）。</p>
+<ol start="4">
+<li>访存阶段</li>
+</ol>
+<ul>
+<li>相对于SEQ没有了“Data”块，因为选择valP和valA现在由译码阶段的“Sel+Fwd A”块来执行</li>
+<li>许多流水线寄存器M和W中的值作为转发和流水线控制逻辑的一部分，提供给电路中其他部分</li>
+</ul>
+<p><strong>流水线控制逻辑</strong>：</p>
+<p>控制逻辑必须处理下面4种空置情况，这些情况是数据转发和分支预测不能处理的：</p>
+<p>​		<strong>加载&#x2F;使用冒险</strong>：在一条从内存中读出一个值的指令和一条使用该值的指令之间，流水线必须暂停一个周期。</p>
+<p>​		<strong>处理 ret</strong>：流水线必须暂停直到 ret 指令到达写回阶段。</p>
+<p>​		<strong>预测错误的分支</strong>：在分支逻辑发现不应该选择分支之前，分支目标处的几条指令已经进入流水线了。必须取消这些指令，并从跳转指令后面的那条指令开始取指。</p>
+<p>​		<strong>异常</strong>：当一条指令导致异常，我们想要禁止后面的指令更新程序员可见的状态，并且在异常指令到达写回阶段时，停止执行。</p>
+<ul>
+<li>当异常指令到达访存阶段时，采取措施防止后面的指令修改程序员可见状态：<ol>
+<li>禁止执行阶段中的指令设置条件码</li>
+<li>向内存阶段中插入气泡，以禁止向数据内存中写入</li>
+<li>当写回阶段中有异常指令时，暂停写回阶段，因而暂停了流水线</li>
+</ol>
+</li>
+</ul>
+<p><strong>发现特殊控制条件</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="center">条件</th>
+<th align="center">触发条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">处理 ret</td>
+<td align="center">IRET∈{D_icode,E_icode,M_icode}</td>
+</tr>
+<tr>
+<td align="center">加载&#x2F;使用冒险</td>
+<td align="center">E_icode∈{IMRMOVL,IPOPL} &amp;&amp; E_dstM∈{d_srcA,d_srcB}</td>
+</tr>
+<tr>
+<td align="center">预测错误的分支</td>
+<td align="center">E_icode&#x3D;IJXX &amp;&amp; !e_Cnd</td>
+</tr>
+<tr>
+<td align="center">异常</td>
+<td align="center">m_stat∈{SADR,SINS,SHLT}||W_stat∈{SADR,SINS,SHLT}</td>
+</tr>
+</tbody></table>
+<p>各流水线寄存器在三种特殊情况下应采取的行动：</p>
+<table>
+<thead>
+<tr>
+<th align="center">条件</th>
+<th align="center">F</th>
+<th align="center">D</th>
+<th align="center">E</th>
+<th align="center">M</th>
+<th align="center">W</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">处理 ret</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">加载&#x2F;使用冒险</td>
+<td align="center">暂停</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">预测错误的分支</td>
+<td align="center">正常</td>
+<td align="center">气泡</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+</tbody></table>
+<p> <strong>控制条件的组合</strong>：</p>
+<ul>
+<li>组合A条件控制动作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">条件</th>
+<th align="center">F</th>
+<th align="center">D</th>
+<th align="center">E</th>
+<th align="center">M</th>
+<th align="center">W</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">处理 ret</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">预测错误的分支</td>
+<td align="center">正常</td>
+<td align="center">气泡</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">组合</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+</tbody></table>
+<ul>
+<li>组合B条件控制动作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">条件</th>
+<th align="center">F</th>
+<th align="center">D</th>
+<th align="center">E</th>
+<th align="center">M</th>
+<th align="center">W</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">处理 ret</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">加载&#x2F;使用</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">组合</td>
+<td align="center">暂停</td>
+<td align="center">气泡 + 暂停</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+<tr>
+<td align="center">期望的情况</td>
+<td align="center">暂停</td>
+<td align="center">暂停</td>
+<td align="center">气泡</td>
+<td align="center">正常</td>
+<td align="center">正常</td>
+</tr>
+</tbody></table>
+<p>遇到加载&#x2F;使用冒险或 ret 指令，流水线寄存器 F 必须暂停：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bool F_stall =</span><br><span class="line">	# Conditions for a load/use hazard</span><br><span class="line">	E_icode in &#123; IMRMOVQ, IPOPQ &#125; &amp;&amp;</span><br><span class="line">	E_dstM in &#123; d_srcA, d_srcB &#125; ||</span><br><span class="line">	# Stalling at fetch while ret passes through pipeline</span><br><span class="line">	IRET in &#123; D_icode, E_icode, M_icode &#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>性能分析</strong>：</p>
+<ul>
+<li><p>通过计算PIPE执行一条指令所需要的平均时钟周期数的估计值，来量化这些处罚对整体性能的影响，称为<strong>CPI</strong>（每指令周期数）。</p>
+</li>
+<li><p>基准程序在一个阶段一共处理了CiCi条指令和CbCb个气泡，那么处理器总共需要Ci+CbCi+Cb个时钟周期来执行CiCi条指令，可通过以下方法计算基准程序的CPI：</p>
+<p><code>CPI=Ci+CbCi=1.0+CbCiCPI=Ci+CbCi=1.0+CbCi</code></p>
+</li>
+<li><p>因为只有三种指令会导致插入气泡，可以将处罚细分成三个部分。</p>
+<p><code>CPI=1.0+lp+mp+rpCPI=1.0+lp+mp+rp</code></p>
+</li>
+<li><p>上面lp时加载&#x2F;使用冒险造成暂停插入气泡的平均数，mp时预测错误取消指令时插入的气泡平均数，rp是ret指令造成暂停插入气泡的平均数。</p>
+</li>
+</ul>
+<h1 id="4-6-小结"><a href="#4-6-小结" class="headerlink" title="4.6 小结"></a>4.6 小结</h1><pre><code>     指令集体系结构，即 ISA 在处理器行为（就指令集合及其编码而言）和如何实现处理器之间提供了一层抽象。ISA 提供了程序执行的一种顺序说明，也就是一条指令执行完了，下一条指令才会开始。
+</code></pre>
+<p>​		从 IA32 指令开始，大大简化数据类型、地址模式和指令编码，我们定义了 Y86-64 指令集。得到的 ISA 既有 RISC 指令集的属性，也有 CISC 指令集的属性。然后，将不同指令组织放到五个阶段中处理, 在此，根据被执行的指令的不同，每个阶段中的操作也不相同。据此，我们构造了 SEQ 处理器，其中每个时钟周期执行一条指令，它会通过所有五个阶段。</p>
+<p>​		流水线化通过让不同的阶段并行操作，改进了系统的吞吐量性能。在任意一个给定的时刻，多条指令被不同的阶段处理。在引人这种并行性的过程中，我们必须非常小心，以提供与程序的顺序执行相同的程序级行为。通过重新调整 SEQ 各个部分的顺序，引人流水线，我们得到 SEQ+,接着添加流水线寄存器，创建出 PIPE- 流水线。然后，添加了转发逻辑，加速了将结果从一条指令发送到另一条指令，从而提高了流水线的性能。有几种特殊情况需要额外的流水线控制逻辑来暂停或取消一些流水线阶段。</p>
+<p>​		我们的设计中包括了一些基本的异常处理机制，在此，保证只有到异常指令之前的指令会影响程序 员可见的状态。实现完整的异常处理远比此更具挑战性。在采用了更深流水线和更多并行性的系统中， 要想正确处理异常就更加复杂了。</p>
+<p>在本章中，我们学习了有关处理器设计的几个重要经验： </p>
+<ul>
+<li>&#x3D;&#x3D;管理复杂性是首要问题&#x3D;&#x3D;。想要优化使用硬件资源，在最小的成本下获得最大的性能。为了实现这 个目的，我们创建了一个非常简单而一致的框架，来处理所有不同的指令类型。有了这个框架， 就能够在处理不同指令类型的逻辑中共享硬件单元。</li>
+<li>&#x3D;&#x3D;我们不需要直接实现 ISA&#x3D;&#x3D;。ISA 的直接实现意味着一个顺序的设计。为了获得更高的性能，我们想运用硬件能力以同时执行许多操作，这就导致要使用流水线化的设计。通过仔细的设计和分析， 我们能够处理各种流水线冒险，因此运行一个程序的整体效果，同用 ISA 模型获得的效果完全 一致。 </li>
+<li>&#x3D;&#x3D;硬件设计人员必须非常谨慎小心&#x3D;&#x3D;。一旦芯片被制造出来，就几乎不可能改正任何错误了。一开始就使设计正确是非常重要的。这就意味着要仔细地分析各种指令类型和组合，甚至于那些看上去没有意义的情况，例如弹出值到栈指针。必须用系统的模拟测试程序彻底地测试设计。在开发 PIPE 的控制逻辑中，我们的设计有个细微的错误，只有通过对控制组合的仔细而系统的分析才能发现。</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/09/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%A4%84%E7%90%86%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/09/21/ARM%20%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">ARM 汇编学习</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
