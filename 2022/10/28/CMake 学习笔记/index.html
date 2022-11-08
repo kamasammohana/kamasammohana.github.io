@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>CMake 学习笔记 |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-CMake 学习笔记"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  CMake 学习笔记
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/10/28/CMake%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2022-10-28T15:15:58.000Z" itemprop="datePublished">2022-10-28</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">5k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">19 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="CMake-学习笔记"><a href="#CMake-学习笔记" class="headerlink" title="CMake 学习笔记"></a>CMake 学习笔记</h1><blockquote>
+<p>本文学习路线取自<a target="_blank" rel="noopener" href="https://github.com/ttroy50/cmake-examples">https://github.com/ttroy50/cmake-examples</a></p>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38410730/article/details/102837401">https://blog.csdn.net/qq_38410730/article/details/102837401</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_34109743/article/details/111832126?spm=1001.2014.3001.5502">https://blog.csdn.net/sinat_34109743/article/details/111832126?spm=1001.2014.3001.5502</a></p>
+</blockquote>
+<h2 id="一：什么是CMake"><a href="#一：什么是CMake" class="headerlink" title="一：什么是CMake"></a>一：什么是CMake</h2><blockquote>
+<p>“Write once, run everywhere”</p>
+</blockquote>
+<p>​		在学习cmake之前我也很好奇什么是cmake。习惯性地看词只看半边，再加上对百科里注解的懵懂印象，我认为cmake是新一代的 C&#x2F;C++ 的编译器，对标 gcc。在实际学习后我才明白 cmake 绝对不是取代 gcc 的新一代编译器套装，而是一个<strong>跨平台的安装（编译）工具</strong>。这里扒一段网上的解释：</p>
+<blockquote>
+<p><strong>CMake是一个跨平台的安装（编译）工具，可以用简单的语句来描述所有平台的安装(编译过程)。</strong>他能够输出各种各样的makefile或者project文件，能测试编译器所支持的C++特性,类似UNIX下的automake。只是 CMake 的组态档取名为 CMakeLists.txt。Cmake 并不直接建构出最终的软件，而是产生标准的建构档（如 Unix 的 Makefile 或 Windows Visual C++ 的 projects&#x2F;workspaces），然后再依一般的建构方式使用。这使得熟悉某个集成开发环境（IDE）的开发者可以用标准的方式建构他的软件，这种可以使用各平台的原生建构系统的能力是 CMake 和 SCons 等其他类似系统的区别之处。		</p>
+</blockquote>
+<p>​		看完以后捕捉一下关键词：<code>跨平台</code>。cmake需要我们自己写一个能被 cmake 处理的与平台无关的 txt 文件 CMakeList.txt 来定制整个编译流程，然后再根据目标用户的平台进一步生成所需的本地化 Makefile 和工程文件，如 Unix 的 Makefile 或 Windows 的 Visual Studio 工程。</p>
+<h2 id="二：CMake-平台搭建"><a href="#二：CMake-平台搭建" class="headerlink" title="二：CMake 平台搭建"></a>二：CMake 平台搭建</h2><p>​		最近一直在用 mac，就简单记录一下 mac 上的搭建过程。</p>
+<p>首先从 cmake 官网下载 cmake：<a target="_blank" rel="noopener" href="https://cmake.org/download/">https://cmake.org/download/</a></p>
+<p>然后打开 cmake，选择上方菜单栏的工具（Tools）一栏，查看：How to Install For Command Line Use。一般来说它会给你三个方法，第一个方法是暂时性的，在关闭当前的 Terminal 后就失效了，下一次打开还需要重新键入。所以后两个命令选择其一使用，即可永久添加环境变量。</p>
+<p>在命令执行成功后，在工具栏中键入：<code>cmake --version</code></p>
+<p>得到输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmake version 3.25.0-rc2</span><br><span class="line">CMake suite maintained and supported by Kitware (kitware.com/cmake).</span><br></pre></td></tr></table></figure>
+
+<p>即搭建完成。</p>
+<h2 id="三：cmake-examples-学习"><a href="#三：cmake-examples-学习" class="headerlink" title="三：cmake-examples 学习"></a>三：cmake-examples 学习</h2><blockquote>
+<p>学习链接：<a target="_blank" rel="noopener" href="https://github.com/ttroy50/cmake-examples">https://github.com/ttroy50/cmake-examples</a></p>
+</blockquote>
+<h2 id="CMakeList-编写"><a href="#CMakeList-编写" class="headerlink" title="CMakeList 编写"></a>CMakeList 编写</h2><ul>
+<li>默认已经安装了 Homebrew。用<code>brew install tree</code>命令安装 tree。通过 tree 命令可以显示目录结构。</li>
+</ul>
+<p>CMakeList:<br>        CMakeLists.txt 是应该存储所有 CMake 命令的文件。什么时候 cmake 在一个文件夹中运行，它会查找这个文件，如果它不存在，cmake 将退出并出现错误。</p>
+<p>编写CMakeList.txt：</p>
+<h3 id="Minimum-CMake-version"><a href="#Minimum-CMake-version" class="headerlink" title="Minimum CMake version"></a>Minimum CMake version</h3><p>​		首先指定支持 cmake 的最低版本。</p>
+<p>命令：<code>cmake_minimum_required(VERSION #.#)</code></p>
+<h3 id="Projects"><a href="#Projects" class="headerlink" title="Projects"></a>Projects</h3><p>创建可执行文件。CMake build 可以包含一个项目名称以使引用某些使用多个项目时变量更容易。</p>
+<p>命令：<code>project (project_name)</code></p>
+<h3 id="Creating-an-Executable"><a href="#Creating-an-Executable" class="headerlink" title="Creating an Executable"></a>Creating an Executable</h3><p>+add_executable()+ 命令指定一个可执行文件应该是<br>从指定的源文件构建，在本例中为 main.cpp。<br>add_executable() 函数的第一个参数是要构建的可执行文件，也就是project，第二个参数是要编译的源文件列表。</p>
+<p>命令：<code>add_executable(project_name main.cpp)</code></p>
+<p>所以最基本的CMakeList的写法就是：<br>cmake_minimum_required(VERSION 3.5)<br>project (hello_cmake)<br>add_executable(hello_cmake main.cpp)</p>
+<p>在写好 CMakeList 后，建立一个新目录，然后进行编译：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>如果要编译的源文件较多的话，可以使用<code>set</code>创建一个源变量，包含所需编译源文件的路径，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">set(SOURCES</span><br><span class="line">    src/Hello.cpp</span><br><span class="line">    src/main.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>在最后add的时候只需要：<code>add_executable($&#123;PROJECT_NAME&#125; $&#123;SOURCES&#125;)</code>即可。</p>
+<h3 id="Adding-a-Static-Library"><a href="#Adding-a-Static-Library" class="headerlink" title="Adding a Static Library"></a>Adding a Static Library</h3><p>add_library() 函数用于从一些源文件创建库。参数为库名，属性（STATIC(静态库)<code>/</code>SHARED(动态库)<code>/</code>MODULE(模块库)）还有所用到的源文件。</p>
+<blockquote>
+<p> STATIC库是目标文件的归档文件，在链接其它目标的时候使用。SHARED库会被动态链接，在运行时被加载。MODULE库是不会被链接到其它目标中的插件，但是可能会在运行时使用dlopen-系列的函数动态链接。如果没有类型被显式指定，这个选项将会根据变量BUILD_SHARED_LIBS的当前值是否为真决定是STATIC还是SHARED。</p>
+</blockquote>
+<p>大致用法为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_library(hello_library STATIC </span><br><span class="line">    src/Hello.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>可以为给定library添加一个别名，后续可使用<code>&lt;name&gt;</code>来替代<code>&lt;target&gt;</code>。</p>
+<p><code>add_library(&lt;name&gt; ALIAS &lt;target&gt;)</code></p>
+<p>这样就可以允许您在将目标链接到其他目标时使用别名来引用目标。</p>
+</blockquote>
+<h3 id="Including-Directories"><a href="#Including-Directories" class="headerlink" title="Including Directories"></a>Including Directories</h3><p>target_include_directories()：指定目标包含的头文件路径，相当于是把需要使用到的所有库整合成一个库。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_include_directories(hello_library</span><br><span class="line">    PUBLIC </span><br><span class="line">        $&#123;PROJECT_SOURCE_DIR&#125;/include</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>在源代码中要引用这些库，应该建议使用当前根目录到库目录的路径。如：<code>#include &quot;static/Hello.h&quot;</code></p>
+<p>使用这种方法的话意味着头文件名冲突的可能性较小，这样就可以在项目中使用多个库。</p>
+<blockquote>
+<p>这里的范围的含义是：</p>
+<ul>
+<li>+PRIVATE+ - 目录被添加到这个目标的包含目录中</li>
+<li>+INTERFACE+ - 该目录被添加到链接该库的任何目标的包含目录中。</li>
+<li>+PUBLIC+ - 如上所述，它包含在此库中，也包含在链接此库的任何目标中。</li>
+</ul>
+</blockquote>
+<h3 id="Linking-a-Library"><a href="#Linking-a-Library" class="headerlink" title="Linking a Library"></a>Linking a Library</h3><p>创建将使用目标库的可执行文件时，必须将库传达给编译器。这将使用 target_link_libraries() 函数来完成。如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#此语句要写在add_executable之后</span><br><span class="line">target_link_libraries( hello_binary</span><br><span class="line">    PRIVATE  </span><br><span class="line">        hello_library</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>链接共享库与链接静态库相同。创建可执行文件使用 +target_link_library()+ 函数指向你的库</p>
+<p>target_link_libraries(hello_binary<br>    PRIVATE<br>        hello::library #用alias替换过的库名<br>)</p>
+</blockquote>
+<h3 id="Installing"><a href="#Installing" class="headerlink" title="Installing"></a>Installing</h3><p>CMake 提供了添加“make install”目标的能力，以允许用户安装二进制文件、库和其他文件。如果不对 install 指令进行配置，那么系统会使用默认值进行安装。install用于指定在安装时运行的规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">install(TARGETS &lt;target&gt;... [...])</span><br><span class="line">install(&#123;FILES | PROGRAMS&#125; &lt;file&gt;... [...])</span><br><span class="line">install(DIRECTORY &lt;dir&gt;... [...])</span><br><span class="line">install(SCRIPT &lt;file&gt; [...])</span><br><span class="line">install(CODE &lt;code&gt; [...])</span><br><span class="line">install(EXPORT &lt;export-name&gt; [...])</span><br></pre></td></tr></table></figure>
+
+<p>有时候，也会用到一个非常有用的变量<code>CMAKE_INSTALL_PREFIX</code>，<strong>用于指定cmake install时的相对地址前缀</strong>。用法如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake -DCMAKE_INSTALL_PREFIX=/usr ..</span><br></pre></td></tr></table></figure>
+
+<h4 id="目标文件的安装："><a href="#目标文件的安装：" class="headerlink" title="目标文件的安装："></a>目标文件的安装：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">install(TARGETS targets... [EXPORT &lt;export-name&gt;]</span><br><span class="line">        [[ARCHIVE|LIBRARY|RUNTIME|OBJECTS|FRAMEWORK|BUNDLE|</span><br><span class="line">          PRIVATE_HEADER|PUBLIC_HEADER|RESOURCE]</span><br><span class="line">         [DESTINATION &lt;dir&gt;]</span><br><span class="line">         [PERMISSIONS permissions...]</span><br><span class="line">         [CONFIGURATIONS [Debug|Release|...]]</span><br><span class="line">         [COMPONENT &lt;component&gt;]</span><br><span class="line">         [NAMELINK_COMPONENT &lt;component&gt;]</span><br><span class="line">         [OPTIONAL] [EXCLUDE_FROM_ALL]</span><br><span class="line">         [NAMELINK_ONLY|NAMELINK_SKIP]</span><br><span class="line">        ] [...]</span><br><span class="line">        [INCLUDES DESTINATION [&lt;dir&gt; ...]]</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>参数中的<code>TARGET</code>可以是很多种目标文件，最常见的是<strong>通过ADD_EXECUTABLE或者ADD_LIBRARY定义的目标文件，即可执行二进制、动态库、静态库</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="center">目标文件</th>
+<th align="center">内容</th>
+<th align="center">安装目录变量</th>
+<th align="center">默认安装文件夹</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ARCHIVE</td>
+<td align="center">静态库</td>
+<td align="center">${CMAKE_INSTALL_LIBDIR}</td>
+<td align="center">lib</td>
+</tr>
+<tr>
+<td align="center">LIBRARY</td>
+<td align="center">动态库</td>
+<td align="center">${CMAKE_INSTALL_LIBDIR}</td>
+<td align="center">lib</td>
+</tr>
+<tr>
+<td align="center">RUNTIME</td>
+<td align="center">可执行二进制文件</td>
+<td align="center">${CMAKE_INSTALL_BINDIR}</td>
+<td align="center">bin</td>
+</tr>
+<tr>
+<td align="center">PUBLIC_HEADER</td>
+<td align="center">与库关联的PUBLIC头文件</td>
+<td align="center">${CMAKE_INSTALL_INCLUDEDIR}</td>
+<td align="center">include</td>
+</tr>
+<tr>
+<td align="center">PRIVATE_HEADER</td>
+<td align="center">与库关联的PRIVATE头文件</td>
+<td align="center">${CMAKE_INSTALL_INCLUDEDIR}</td>
+<td align="center">include</td>
+</tr>
+</tbody></table>
+<p>为了符合一般的默认安装路径，如果设置了<code>DESTINATION</code>参数，推荐配置在安装目录变量下的文件夹。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">INSTALL(TARGETS myrun mylib mystaticlib</span><br><span class="line">       RUNTIME DESTINATION $&#123;CMAKE_INSTALL_BINDIR&#125;</span><br><span class="line">       LIBRARY DESTINATION $&#123;CMAKE_INSTALL_LIBDIR&#125;</span><br><span class="line">       ARCHIVE DESTINATION $&#123;CMAKE_INSTALL_LIBDIR</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>上面的例子会将：可执行二进制myrun安装到$&#123;CMAKE_INSTALL_BINDIR&#125;目录，动态库libmylib.so安装到$&#123;CMAKE_INSTALL_LIBDIR&#125;目录，静态库libmystaticlib.a安装到$&#123;CMAKE_INSTALL_LIBDIR&#125;目录。</code></p>
+<blockquote>
+<p>该命令的其他一些参数的含义：</p>
+<p><strong>DESTINATION</strong>：指定磁盘上要安装文件的目录；<br><strong>PERMISSIONS</strong>：指定安装文件的权限。有效权限是OWNER_READ，OWNER_WRITE，OWNER_EXECUTE，GROUP_READ，GROUP_WRITE，GROUP_EXECUTE，WORLD_READ，WORLD_WRITE，WORLD_EXECUTE，SETUID和SETGID；<br><strong>CONFIGURATIONS</strong>：指定安装规则适用的构建配置列表(DEBUG或RELEASE等)；<br><strong>EXCLUDE_FROM_ALL</strong>：指定该文件从完整安装中排除，仅作为特定于组件的安装的一部分进行安装；<br><strong>OPTIONAL</strong>：如果要安装的文件不存在，则指定不是错误。</p>
+</blockquote>
+<p><code>CONFIGURATIONS</code>参数，<strong>此选项指定的值仅适用于此选项之后列出的选项</strong>：例如，要为调试和发布配置设置单独的安装路径，请执行以下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">install(TARGETS target</span><br><span class="line">        CONFIGURATIONS Debug</span><br><span class="line">        RUNTIME DESTINATION Debug/bin)</span><br><span class="line">install(TARGETS target</span><br><span class="line">        CONFIGURATIONS Release</span><br><span class="line">        RUNTIME DESTINATION Release/bin)</span><br></pre></td></tr></table></figure>
+
+<p><code>也就是说，</code>DEBUG和RELEASE<code>版本的</code>DESTINATION<code>安装路径不同，那么</code>DESTINATION<code>必须在</code>CONFIGUATIONS<code>后面。</code></p>
+<h4 id="普通文件的安装："><a href="#普通文件的安装：" class="headerlink" title="普通文件的安装："></a>普通文件的安装：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">install(&lt;FILES|PROGRAMS&gt; files...</span><br><span class="line">        TYPE &lt;type&gt; | DESTINATION &lt;dir&gt;</span><br><span class="line">        [PERMISSIONS permissions...]</span><br><span class="line">        [CONFIGURATIONS [Debug|Release|...]]</span><br><span class="line">        [COMPONENT &lt;component&gt;]</span><br><span class="line">        [RENAME &lt;name&gt;] [OPTIONAL] [EXCLUDE_FROM_ALL])</span><br></pre></td></tr></table></figure>
+
+<p>FILES|PROGRAMS若为相对路径给出的文件名，将相对于当前源目录进行解释。其中，FILES为普通的文本文件，PROGRAMS指的是非目标文件的可执行程序(如脚本文件)。</p>
+<p>如果未提供PERMISSIONS参数，默认情况下，普通的文本文件将具有OWNER_WRITE，OWNER_READ，GROUP_READ和WORLD_READ权限，即644权限；而非目标文件的可执行程序将具有OWNER_EXECUTE, GROUP_EXECUTE,和WORLD_EXECUTE，即755权限。</p>
+<p>其中，不同的TYPE，cmake也提供了默认的安装路径，如下表：</p>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>TYPE类型</strong></th>
+<th align="center">安装目录变量</th>
+<th align="center">默认安装文件夹</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">BIN</td>
+<td align="center">${CMAKE_INSTALL_BINDIR}</td>
+<td align="center">bin</td>
+</tr>
+<tr>
+<td align="center">SBIN</td>
+<td align="center">${CMAKE_INSTALL_SBINDIR}</td>
+<td align="center">sbin</td>
+</tr>
+<tr>
+<td align="center">LIB</td>
+<td align="center">${CMAKE_INSTALL_LIBDIR}</td>
+<td align="center">lib</td>
+</tr>
+<tr>
+<td align="center">INCLUDE</td>
+<td align="center">${CMAKE_INSTALL_INCLUDEDIR}</td>
+<td align="center">include</td>
+</tr>
+<tr>
+<td align="center">SYSCONF</td>
+<td align="center">${CMAKE_INSTALL_SYSCONFDIR}</td>
+<td align="center">etc</td>
+</tr>
+<tr>
+<td align="center">SHAREDSTATE</td>
+<td align="center">${CMAKE_INSTALL_SHARESTATEDIR}</td>
+<td align="center">com</td>
+</tr>
+<tr>
+<td align="center">LOCALSTATE</td>
+<td align="center">${CMAKE_INSTALL_LOCALSTATEDIR}</td>
+<td align="center">var</td>
+</tr>
+<tr>
+<td align="center">RUNSTATE</td>
+<td align="center">${CMAKE_INSTALL_RUNSTATEDIR}</td>
+<td align="center">&#x2F;run</td>
+</tr>
+<tr>
+<td align="center">DATA</td>
+<td align="center">${CMAKE_INSTALL_DATADIR}</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">INFO</td>
+<td align="center">${CMAKE_INSTALL_INFODIR}</td>
+<td align="center">&#x2F;info</td>
+</tr>
+<tr>
+<td align="center">LOCALE</td>
+<td align="center">${CMAKE_INSTALL_LOCALEDIR}</td>
+<td align="center">&#x2F;locale</td>
+</tr>
+<tr>
+<td align="center">MAN</td>
+<td align="center">${CMAKE_INSTALL_MANDIR}</td>
+<td align="center">&#x2F;man</td>
+</tr>
+<tr>
+<td align="center">DOC</td>
+<td align="center">${CMAKE_INSTALL_DOCDIR}</td>
+<td align="center">&#x2F;doc</td>
+</tr>
+</tbody></table>
+<p><code>某些类型的内置默认值使用DATAROOT目录作为前缀，以CMAKE_INSTALL_DATAROOTDIR变量值为内容。</code></p>
+<blockquote>
+<p>该命令的其他一些参数的含义：</p>
+<p>DESTINATION：指定磁盘上要安装文件的目录；<br>PERMISSIONS：指定安装文件的权限。有效权限是OWNER_READ，OWNER_WRITE，OWNER_EXECUTE，GROUP_READ，GROUP_WRITE，GROUP_EXECUTE，WORLD_READ，WORLD_WRITE，WORLD_EXECUTE，SETUID和SETGID；<br>CONFIGURATIONS：指定安装规则适用的构建配置列表(DEBUG或RELEASE等)；<br>EXCLUDE_FROM_ALL：指定该文件从完整安装中排除，仅作为特定于组件的安装的一部分进行安装；<br>OPTIONAL：如果要安装的文件不存在，则指定不是错误；<br>RENAME：指定已安装文件的名称，该名称可能与原始文件不同。仅当命令安装了单个文件时，才允许重命名。</p>
+</blockquote>
+<h4 id="目录的安装："><a href="#目录的安装：" class="headerlink" title="目录的安装："></a>目录的安装：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">install(DIRECTORY dirs...</span><br><span class="line">        TYPE &lt;type&gt; | DESTINATION &lt;dir&gt;</span><br><span class="line">        [FILE_PERMISSIONS permissions...]</span><br><span class="line">        [DIRECTORY_PERMISSIONS permissions...]</span><br><span class="line">        [USE_SOURCE_PERMISSIONS] [OPTIONAL] [MESSAGE_NEVER]</span><br><span class="line">        [CONFIGURATIONS [Debug|Release|...]]</span><br><span class="line">        [COMPONENT &lt;component&gt;] [EXCLUDE_FROM_ALL]</span><br><span class="line">        [FILES_MATCHING]</span><br><span class="line">        [[PATTERN &lt;pattern&gt; | REGEX &lt;regex&gt;]</span><br><span class="line">         [EXCLUDE] [PERMISSIONS permissions...]] [...])</span><br></pre></td></tr></table></figure>
+
+<p>​	命令将一个或多个目录的内容安装到给定的目的地，目录结构被逐个复制到目标位置。每个目录名称的最后一个组成部分都附加到目标目录中，但是可以使用后跟斜杠来避免这种情况，因为它将最后一个组成部分留空。比如，DIRECTORY后面如果是abc意味着abc这个目录会安装在目标路径下，abc&#x2F;意味着abc这个目录的内容会被安装在目标路径下，而abc目录本身却不会被安装。即，如果目录名不以&#x2F;结尾，那么这个目录将被安装为目标路径下的abc，如果目录名以&#x2F;结尾，代表将这个目录中的内容安装到目标路径，但不包括这个目录本身。</p>
+<p>​	FILE_PERMISSIONS和DIRECTORY_PERMISSIONS选项指定对目标中文件和目录的权限。如果指定了USE_SOURCE_PERMISSIONS而未指定FILE_PERMISSIONS，则将从源目录结构中复制文件权限。如果未指定权限，则将为文件提供在命令的FILES形式中指定的默认权限(644权限)，而目录将被赋予在命令的PROGRAMS形式中指定的默认权限(755权限)。</p>
+<p>​	可以使用<code>PATTERN</code>或<code>REGEX</code>选项以精细的粒度控制目录的安装，可以<strong>指定一个通配模式或正则表达式以匹配输入目录中遇到的目录或文件</strong>。<strong>PATTERN仅匹配完整的文件名，而REGEX将匹配文件名的任何部分，但它可以使用&#x2F;和$模拟PATTERN行为</strong>。</p>
+<p>​	<strong>某些跟随PATTERN或REGEX表达式后的参数，仅应用于满足表达式的文件或目录</strong>。如：<code>EXCLUDE</code>选项将跳过匹配的文件或目录。<code>PERMISSIONS</code>选项将覆盖匹配文件或目录的权限设置。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">install(DIRECTORY icons scripts/ DESTINATION share/myproj</span><br><span class="line">        PATTERN &quot;CVS&quot; EXCLUDE</span><br><span class="line">        PATTERN &quot;scripts/*&quot;</span><br><span class="line">        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ</span><br><span class="line">                    GROUP_EXECUTE GROUP_READ)</span><br></pre></td></tr></table></figure>
+
+<p><code>这条命令的执行结果是：将icons目录安装到share/myproj，将scripts/中的内容安装到share/myproj，两个目录均不包含目录名为CVS的子目录，对于scripts/*的文件指定权限为OWNER_EXECUTE，OWNER_WRITE，OWNER_READ，GROUP_EXECUTE，GROUP_READ。</code></p>
+<h4 id="安装时脚本的运行"><a href="#安装时脚本的运行" class="headerlink" title="安装时脚本的运行:"></a>安装时脚本的运行:</h4><p>有时候需要在<code>install</code>的过程中打印一些语句，或者执行一些<code>cmake</code>指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">install([[SCRIPT &lt;file&gt;] [CODE &lt;code&gt;]]</span><br><span class="line">        [COMPONENT &lt;component&gt;] [EXCLUDE_FROM_ALL] [...])</span><br></pre></td></tr></table></figure>
+
+<p><code>SCRIPT</code>参数将在安装过程中<strong>调用给定的CMake脚本文件(即.cmake脚本文件)<strong>，如果脚本文件名是相对路径，则将相对于当前源目录进行解释。<code>CODE</code>参数将在安装过程中调用给定的<code>CMake</code>代码。将代码</strong>指定为双引号字符串内的单个参数</strong>。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">install(CODE &quot;MESSAGE(\&quot;Sample install message.\&quot;)&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>这条命令将会在<code>install</code>的过程中执行<code>cmake</code>代码，打印语句。</p>
+<h3 id="Build-Type"><a href="#Build-Type" class="headerlink" title="Build Type"></a>Build Type</h3><p>编译过程中，CMake提供了一系列内置的构建选项，它们可以用来指定优化级别以及调试信息是否被包含在可执行文件中。本例展示了在CMake中配置相关信息。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.5)</span><br><span class="line"> </span><br><span class="line"># 设置默认构建选项</span><br><span class="line">if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)</span><br><span class="line">  message(&quot;Setting build type to &#x27;RelWithDebInfo&#x27; as none was specified.&quot;)</span><br><span class="line">  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING &quot;Choose the type of build.&quot; FORCE)</span><br><span class="line">  # 设置cmake-gui的构建选项</span><br><span class="line">  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS &quot;Debug&quot; &quot;Release&quot;</span><br><span class="line">    &quot;MinSizeRel&quot; &quot;RelWithDebInfo&quot;)</span><br><span class="line">endif()</span><br><span class="line"> </span><br><span class="line">project (build_type)</span><br><span class="line">add_executable(cmake_examples_build_type main.cpp)</span><br></pre></td></tr></table></figure>
+
+<p>如上所述，在编译器中设置优化级别可以通过在编译指令中添加相应标志做到：</p>
+<p>Release  —— 添加”-O3 -DNDEBUG”标志<br>Debug ——  添加”-g”标志<br>MinSizeRel —— 添加”-Os -DNDEBUG”标志<br>RelWithDebInfo —— 添加”-O2 -g -DNDEBUG”标志</p>
+<p>也可以在命令行中使用命令：<code>cmake .. -DCMAKE_BUILD_TYPE=Release</code>来选择优化级别。</p>
+<p>CMake的默认设置是不在编译命令中加任何标志。对与某些项目，如果你希望设置一个默认的优化级别，可以在CMakeLists.txt中加入以下命令：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="type">NOT</span> <span class="type">CMAKE_BUILD_TYPE</span> <span class="type">AND</span> <span class="type">NOT</span> <span class="type">CMAKE_CONFIGURATION_TYPES</span>)</span><br><span class="line">  message(<span class="string">&quot;Setting build type to &#x27;RelWithDebInfo&#x27; as none was specified.&quot;</span>)</span><br><span class="line">  <span class="keyword">set</span>(<span class="type">CMAKE_BUILD_TYPE</span> <span class="type">RelWithDebInfo</span> <span class="type">CACHE</span> <span class="type">STRING</span> <span class="string">&quot;Choose the type of build.&quot;</span> <span class="type">FORCE</span>)</span><br><span class="line">  # <span class="type">Set</span> the possible values of build type <span class="keyword">for</span> cmake<span class="operator">-</span>gui</span><br><span class="line">  set_property(<span class="type">CACHE</span> <span class="type">CMAKE_BUILD_TYPE</span> <span class="type">PROPERTY</span> <span class="type">STRINGS</span> <span class="string">&quot;Debug&quot;</span> <span class="string">&quot;Release&quot;</span></span><br><span class="line">    <span class="string">&quot;MinSizeRel&quot;</span> <span class="string">&quot;RelWithDebInfo&quot;</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+
+<p>设置默认优化级别为RelWithDebInfo，并设置了CMake gui中优化级别的选项值。</p>
+<h3 id="Set-Per-Target-C-Flags"><a href="#Set-Per-Target-C-Flags" class="headerlink" title="Set Per-Target C++ Flags"></a>Set Per-Target C++ Flags</h3><p>CMake提供了两张设置编译标志的方法：</p>
+<ul>
+<li>使用target_compile_definitions()函数</li>
+<li>使用CMAKE_C_FLAGS和CMAKE_CXX_FLAGS变量</li>
+</ul>
+<p>首先是为每个目标设置单独的C++ Flags：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">target_compile_definitions</span>(cmake_examples_compile_flags</span><br><span class="line">    PRIVATE EX3</span><br><span class="line">) </span><br></pre></td></tr></table></figure>
+
+<p>​	上述语句告诉编译器，编译cmake_examples_compile_flags目标时，添加-DEX3标志。此处的PRIVATE与添加包含目录时的scope含义相似。如果目标是库并且选择了范围 +PUBLIC+ 或 +INTERFACE+，则定义也将包含在链接此目标的任何可执行文件中。也可以使用target_compile_options()函数。</p>
+<h3 id="Set-Default-C-Flags"><a href="#Set-Default-C-Flags" class="headerlink" title="Set Default C++ Flags"></a>Set Default C++ Flags</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set (CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -DEX2&quot; CACHE STRING &quot;Set C++ Compiler Flags&quot; FORCE)</span><br></pre></td></tr></table></figure>
+
+<p>设置CMAKE_CXX_FLAGS变量，强制写入缓存变量。</p>
+<blockquote>
+<p>设置c flags使用<strong>CMAKE_C_FLAGS</strong></p>
+<p>设置linker flags使用<strong>CMAKE_LINKER_FLAGS</strong></p>
+</blockquote>
+<p><code>一旦设置了 +CMAKE_C_FLAGS+ 和 +CMAKE_CXX_FLAGS+ 将为该目录或任何包含的子目录中的所有目标全局设置编译器标志/定义。现在不建议将此方法用于一般用途，并且首选 +target_compile_definitions+ 函数。</code></p>
+<h3 id="Set-CMake-Flags"><a href="#Set-CMake-Flags" class="headerlink" title="Set CMake Flags"></a>Set CMake Flags</h3><p>与构建类型类似，可以使用以下方法设置全局 C++ 编译器标志。</p>
+<ul>
+<li>使用 ccmake &#x2F; cmake-gui 等 gui 工具</li>
+</ul>
+<p>image::cmake-gui-set-cxx-flag.png[cmake-gui set cxx flag]</p>
+<ul>
+<li>传入 cmake</li>
+</ul>
+<hr>
+<p><code>cmake .. -DCMAKE_CXX_FLAGS=&quot;-DEX3&quot;</code></p>
+<hr>
+<h3 id="Finding-a-Package"><a href="#Finding-a-Package" class="headerlink" title="Finding a Package"></a>Finding a Package</h3><p>​	使用<code>find_package()</code> 函数将从 <code>CMAKE_MODULE_PATH</code> 中的文件夹列表中搜索“FindXXX.cmake”中的 CMake 模块。最正确<br><code>find_package</code> 的参数格式将取决于你正在查找的模块，这通常记录在 <code>FindXXX.cmake</code> 文件的顶部。</p>
+<p><code>find_package(Boost 1.46.1 REQUIRED COMPONENTS filesystem system)</code></p>
+<p>其中：</p>
+<ul>
+<li>Boost - 库的名称。这是用于查找模块文件 FindBoost.cmake 的一部分</li>
+<li>1.46.1 - 要查找的最低版本的 boost</li>
+<li>REQUIRED - 告诉模块这是必需的，如果找不到则失败</li>
+<li>COMPONENTS - 要在库中找到的组件列表。</li>
+</ul>
+<h3 id="Checking-if-the-package-is-found"><a href="#Checking-if-the-package-is-found" class="headerlink" title="Checking if the package is found"></a>Checking if the package is found</h3><p>大多数包含的包都会设置一个变量<code>XXX_FOUND</code>，可以用来检查该软件包在系统上可用。</p>
+<p>在下面的例子中，变量是<code>Boost_FOUND</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if(Boost_FOUND)</span><br><span class="line">    message (&quot;boost found&quot;)</span><br><span class="line">    include_directories($&#123;Boost_INCLUDE_DIRS&#125;)</span><br><span class="line">else()</span><br><span class="line">    message (FATAL_ERROR &quot;Cannot find Boost&quot;)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Exported-Variables"><a href="#Exported-Variables" class="headerlink" title="Exported Variables"></a>Exported Variables</h3><p>​	找到一个包后，它通常会导出变量，这些变量可以通知用户在哪里可以找到库、头文件或可执行文件。类似于 <code>XXX_FOUND</code> 变量，这些是特定于包的，通常记录在 <code>FindXXX.cmake</code> 文件的顶部。</p>
+<p>例如：</p>
+<p><code>   Boost_INCLUDE_DIRS - The path to the boost header files.</code></p>
+<p>在某些情况下，还可以通过使用 ccmake 或 cmake-gui 检查缓存来检查这些变量。</p>
+<p>在 Boost 的情况下，所有目标都使用 <code>Boost::</code> 标识符导出，然后是子系统的名称。</p>
+<p>例如，可以使用：</p>
+<ul>
+<li><code>Boost::boost</code> 仅用于标头库</li>
+<li><code>Boost::system</code> 用于 boost 系统库。</li>
+<li><code>Boost::filesystem</code> 用于文件系统库。</li>
+</ul>
+<p>与您自己的目标一样，这些目标包含它们的依赖项，因此链接到 <code>Boost::filesystem</code> 将自动添加 <code>Boost::boost</code> 和 <code>Boost::system</code> 依赖项。</p>
+<p>要链接到导入的目标，可以使用以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries( third_party_include</span><br><span class="line">    PRIVATE</span><br><span class="line">        Boost::filesystem</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Non-alias-targets"><a href="#Non-alias-targets" class="headerlink" title="Non-alias targets"></a>Non-alias targets</h3><p>虽然大多数现代库都使用导入的目标，但并非所有模块都已更新。在库尚未更新的情况下，您通常会发现以下可用变量：</p>
+<ul>
+<li>xxx_INCLUDE_DIRS - A variable pointing to the include directory for the library.</li>
+<li>xxx_LIBRARY - A variable pointing to the library path.</li>
+</ul>
+<p>然后可以将这些添加到您的 +target_include_directories+ 和 +target_link_libraries+ 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># Include the boost headers</span><br><span class="line">target_include_directories( third_party_include</span><br><span class="line">    PRIVATE $&#123;Boost_INCLUDE_DIRS&#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># link against the boost libraries</span><br><span class="line">target_link_libraries( third_party_include</span><br><span class="line">    PRIVATE</span><br><span class="line">    $&#123;Boost_SYSTEM_LIBRARY&#125;</span><br><span class="line">    $&#123;Boost_FILESYSTEM_LIBRARY&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Adding-a-Sub-Directory"><a href="#Adding-a-Sub-Directory" class="headerlink" title="Adding a Sub-Directory"></a>Adding a Sub-Directory</h3><p>CMakeLists.txt 文件可以包含和调用包含 CMakeLists.txt 的子目录文件。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_subdirectory(sublibrary1)</span><br><span class="line">add_subdirectory(sublibrary2)</span><br><span class="line">add_subdirectory(subbinary)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Referencing-Sub-Project-Directories"><a href="#Referencing-Sub-Project-Directories" class="headerlink" title="Referencing Sub-Project Directories"></a>Referencing Sub-Project Directories</h3><p>​	当使用 <code>project()</code> 命令创建项目时，CMake 将自动创建许多变量，这些变量可用于引用有关项目的详细信息。然后这些变量可以被其他子项目或主项目使用。例如，要引用可以使用的不同项目的源目录。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$&#123;sublibrary1_SOURCE_DIR&#125;</span><br><span class="line">$&#123;sublibrary2_SOURCE_DIR&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Header-only-Libraries"><a href="#Header-only-Libraries" class="headerlink" title="Header only Libraries"></a>Header only Libraries</h3><p>​	如果您有一个作为仅标头库创建的库，cmake 支持 +INTERFACE+ 目标以允许在没有任何构建输出的情况下创建目标。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_library($&#123;PROJECT_NAME&#125; INTERFACE)</span><br></pre></td></tr></table></figure>
+
+<p>创建目标时，您还可以使用 +INTERFACE+ 范围包含该目标的目录。 +INTERFACE+ 范围用于生成在链接此目标的任何库中使用的目标要求，但不在目标本身的编译中。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_include_directories($&#123;PROJECT_NAME&#125;</span><br><span class="line">    界面</span><br><span class="line">        $&#123;PROJECT_SOURCE_DIR&#125;/包括</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Referencing-Libraries-from-Sub-Projects"><a href="#Referencing-Libraries-from-Sub-Projects" class="headerlink" title="Referencing Libraries from Sub-Projects"></a>Referencing Libraries from Sub-Projects</h3><p>如果一个子项目创建了一个库，它可以被其他项目通过在<code>target_link_libraries()</code>命令中调用目标的名称来引用。 这意味着不必引用新库的完整路径，而是将其添加为依赖项。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(subbinary</span><br><span class="line">    PUBLIC</span><br><span class="line">        sublibrary1</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>或者，您可以创建一个别名目标，它允许您在只读上下文中引用目标：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_library(sublibrary2)</span><br><span class="line">add_library(sub::lib2 ALIAS sublibrary2)</span><br></pre></td></tr></table></figure>
+
+<p>要引用别名，只需如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(subbinary</span><br><span class="line">    sub::lib2</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Include-directories-from-sub-projects"><a href="#Include-directories-from-sub-projects" class="headerlink" title="Include directories from sub-projects"></a>Include directories from sub-projects</h3><p>从子项目添加库时，从 cmake v3 开始，不需要在使用它们的二进制文件的包含目录中添加项目包含目录。</p>
+<p>这由创建库时 <code>target_include_directories()</code> 命令中的范围控制。在这个例子中，因为 subbinary 可执行文件链接了 sublibrary1 和 sublibrary2 库，它会自动包含<code>$&#123;sublibrary1_SOURCE_DIR&#125;/include</code><br>和 <code>$&#123;sublibrary2_SOURCE_DIR&#125;/include</code> 文件夹，因为它们是使用库的 +PUBLIC+ 和 +INTERFACE+ 范围导出的。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/10/28/CMake%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/09/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%A4%84%E7%90%86%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">深入理解计算机系统第四章：处理器体系结构</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
