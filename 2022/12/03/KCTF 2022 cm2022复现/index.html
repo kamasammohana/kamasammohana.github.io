@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>KCTF 2022 cm2022复现 |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-KCTF 2022 cm2022复现"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  KCTF 2022 cm2022复现
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/12/03/KCTF%202022%20cm2022%E5%A4%8D%E7%8E%B0/" class="article-date">
+  <time datetime="2022-12-03T11:11:16.408Z" itemprop="datePublished">2022-12-03</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">23 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="KCTF-2022-cm2022复现"><a href="#KCTF-2022-cm2022复现" class="headerlink" title="KCTF 2022 cm2022复现"></a>KCTF 2022 cm2022复现</h1><p>拿到题目放入 IDA 中分析：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v6; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">char</span> v9; <span class="comment">// [esp+8h] [ebp-40h] BYREF</span></span><br><span class="line">  <span class="type">char</span> v10[<span class="number">60</span>]; <span class="comment">// [esp+9h] [ebp-3Fh] BYREF</span></span><br><span class="line">  __int16 v11; <span class="comment">// [esp+45h] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v12; <span class="comment">// [esp+47h] [ebp-1h]</span></span><br><span class="line"></span><br><span class="line">  v9 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">memset</span>(v10, <span class="number">0</span>, <span class="keyword">sizeof</span>(v10));</span><br><span class="line">  v11 = <span class="number">0</span>;</span><br><span class="line">  v12 = <span class="number">0</span>;</span><br><span class="line">  sub_40284A(aInput);</span><br><span class="line">  gets(&amp;v9);</span><br><span class="line">  v3 = <span class="number">-1</span>;</span><br><span class="line">  v4 = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> ( !v9 )</span><br><span class="line">    <span class="keyword">goto</span> LABEL_20;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( v4 &gt;= <span class="number">64</span> )</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span> ( v10[v4 - <span class="number">1</span>] == <span class="number">45</span> ) </span><br><span class="line">      v3 = v4;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span> ( v10[v4++] );</span><br><span class="line">  <span class="keyword">if</span> ( v3 &gt; <span class="number">0</span></span><br><span class="line">    &amp;&amp; (v6 = v4 - v3, v4 - v3 &gt; <span class="number">0</span>)</span><br><span class="line">    &amp;&amp; (<span class="type">int</span>)sub_4014D0(dword_40A940, &amp;v9, v3, a0123456789abcd) &gt; <span class="number">0</span></span><br><span class="line">    &amp;&amp; (<span class="type">int</span>)sub_4014D0(&amp;unk_40A964, &amp;v10[v3], v6 - <span class="number">1</span>, a0123456789abcd) &gt; <span class="number">0</span></span><br><span class="line">    &amp;&amp; (sub_4014D0(&amp;unk_40A9D0, aIrtzloz6iub, <span class="built_in">strlen</span>(aIrtzloz6iub), a0123456789abcd),</span><br><span class="line">        sub_401630(&amp;unk_40A9FC, <span class="number">0</span>),</span><br><span class="line">        sub_401630(&amp;unk_40AA20, <span class="number">0</span>),</span><br><span class="line">        (<span class="type">int</span>)sub_401690(dword_40A940, &amp;unk_40A964) &lt; <span class="number">0</span>)</span><br><span class="line">    &amp;&amp; (<span class="type">int</span>)sub_401690(dword_40A940, &amp;unk_40A9D0) &lt; <span class="number">0</span></span><br><span class="line">    &amp;&amp; (<span class="type">int</span>)sub_401690(&amp;unk_40A964, &amp;unk_40A9D0) &lt; <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v7 = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> ( <span class="number">1</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      dword_40A9F4 = v7 + <span class="number">1</span>;</span><br><span class="line">      sub_401730(&amp;unk_40A9FC, &amp;unk_40A9FC, dword_40A940);</span><br><span class="line">      sub_401730(&amp;unk_40AA20, &amp;unk_40AA20, &amp;unk_40A964);</span><br><span class="line">      sub_4021A0(&amp;unk_40A9FC, &amp;unk_40A9FC, &amp;unk_40A9D0);</span><br><span class="line">      sub_4021A0(&amp;unk_40AA20, &amp;unk_40AA20, &amp;unk_40A9D0);</span><br><span class="line">      sub_401630(&amp;dword_40A988, <span class="number">1</span>);</span><br><span class="line">      sub_401820(&amp;dword_40A988, &amp;unk_40A9FC, &amp;dword_40A988);</span><br><span class="line">      <span class="keyword">if</span> ( !sub_401690(&amp;dword_40A988, dword_40A940) )</span><br><span class="line">      &#123;</span><br><span class="line">        ++dword_40A9F8;</span><br><span class="line">        sub_401CF0(&amp;dword_40A988, &amp;dword_40A988, dword_40A940);</span><br><span class="line">      &#125;</span><br><span class="line">      sub_401630(&amp;unk_40A9AC, <span class="number">1</span>);</span><br><span class="line">      sub_401730(&amp;unk_40A9AC, &amp;unk_40AA20, &amp;unk_40A9AC);</span><br><span class="line">      <span class="keyword">if</span> ( !sub_401690(&amp;unk_40A9AC, &amp;unk_40A964) )</span><br><span class="line">      &#123;</span><br><span class="line">        ++dword_40A9F8;</span><br><span class="line">        sub_401F30(&amp;unk_40A9AC, &amp;unk_40A9D0, &amp;unk_40A964);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ( dword_40A9F8 == <span class="number">10</span> )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      v7 = dword_40A9F4;</span><br><span class="line">      <span class="keyword">if</span> ( dword_40A9F4 &gt;= <span class="number">0x200000</span> )</span><br><span class="line">        <span class="keyword">goto</span> LABEL_20;</span><br><span class="line">    &#125;</span><br><span class="line">    sub_40284A(aSuccess);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">LABEL_20:</span><br><span class="line">    sub_40284A(aError);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	在大的 if 判断之前，它的作用就是去验证输入字符串的格式，必须要满足 <code>xxx-xxx</code> 的格式。v3 读出分隔符前半部分的长度，而 v4 为输入的字符串的总长度。</p>
+<p>接下来就传入大的 if 判断里去给我们的输入添加约束条件。</p>
+<p>&#x3D;&#x3D;sub_401730&#x3D;&#x3D;：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">sub_4014D0</span><span class="params">(<span class="type">int</span> *a1, <span class="type">int</span> a2, <span class="type">int</span> a3, <span class="type">const</span> <span class="type">char</span> *a4)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">int</span> v5; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">int</span> v6; <span class="comment">// ecx</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v9; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> v10; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v11; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">int</span> v12; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">bool</span> v13; <span class="comment">// zf</span></span><br><span class="line">  <span class="type">int</span> *v14; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">int</span> v15; <span class="comment">// [esp+10h] [ebp-84h] BYREF</span></span><br><span class="line">  <span class="type">int</span> v16[<span class="number">32</span>]; <span class="comment">// [esp+14h] [ebp-80h] BYREF</span></span><br><span class="line"></span><br><span class="line">  v4 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">memset</span>(v16, <span class="number">0</span>, <span class="keyword">sizeof</span>(v16));</span><br><span class="line">  v5 = a3;</span><br><span class="line">  v6 = <span class="built_in">strlen</span>(a4);</span><br><span class="line">  <span class="keyword">if</span> ( a3 &gt; <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      LOBYTE(v15) = *(_BYTE *)(v4 + a2);</span><br><span class="line">      v7 = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">if</span> ( v6 &lt;= <span class="number">0</span> )</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">      <span class="keyword">while</span> ( a4[v7] != (<span class="type">unsigned</span> __int8)v15 )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( ++v7 &gt;= v6 )</span><br><span class="line">          <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ( v7 &lt; <span class="number">0</span> )</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">      v16[v4++] = v7;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> ( v4 &lt; a3 );</span><br><span class="line">  &#125;</span><br><span class="line">  v9 = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> ( !v16[a3 - <span class="number">1</span>] )</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  v16[a3] = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> ( a3 )</span><br><span class="line">  &#123;</span><br><span class="line">    v10 = v16[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      v11 = v5;</span><br><span class="line">      <span class="keyword">if</span> ( v5 &gt;= <span class="number">1</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">          v12 = v16[v11];</span><br><span class="line">          v16[v11 - <span class="number">1</span>] += v6 * (v12 % <span class="number">256</span>);</span><br><span class="line">          v16[v11--] = v12 / <span class="number">256</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> ( v11 &gt;= <span class="number">1</span> );</span><br><span class="line">        v10 = v16[<span class="number">0</span>];</span><br><span class="line">      &#125;</span><br><span class="line">      *((_BYTE *)a1 + v9++ + <span class="number">4</span>) = v10;</span><br><span class="line">      v10 /= <span class="number">256</span>;</span><br><span class="line">      v13 = v5 == <span class="number">0</span>;</span><br><span class="line">      v16[<span class="number">0</span>] = v10;</span><br><span class="line">      <span class="keyword">if</span> ( v5 &gt; <span class="number">0</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        v14 = &amp;v16[v5 - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">          <span class="keyword">if</span> ( *v14 )</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          --v5;</span><br><span class="line">          --v14;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> ( v5 &gt; <span class="number">0</span> );</span><br><span class="line">        v13 = v5 == <span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> ( !v13 );</span><br><span class="line">    <span class="keyword">if</span> ( v9 &gt;= <span class="number">32</span> )</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  *a1 = v9;</span><br><span class="line">  <span class="keyword">return</span> v9;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	通过动态调试可以分析出这个函数对我们输入的数据进行了某种加密，使用到了 <code>&#39;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&#39;</code>。</p>
+<p>这个常量字符串的长度为 62，并且在其中涉及对我们的输入字符串的每一位去 table 中寻址下标。很难不去往 base62 的方向猜测。我们再来观察它的加密。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( v5 &gt;= <span class="number">1</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">          v12 = v16[v11];</span><br><span class="line">          v16[v11 - <span class="number">1</span>] += v6 * (v12 % <span class="number">256</span>);</span><br><span class="line">          v16[v11--] = v12 / <span class="number">256</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> ( v11 &gt;= <span class="number">1</span> );</span><br></pre></td></tr></table></figure>
+
+<p>​	v16 是我们字符串向虽然这个循环第一个取的是向 table 中寻址的下标。虽然这个加密先取的额外的元素，但是由于初始值为零。所以第一轮加密没有任何影响。紧接着对我们输入倒序处理，后面一位乘上 62 的结果加上前一位，这样的行为能感觉出来加密的位的权重应该是按照字符串的正序上升的。 我们输入数值尝试我们的加密结果：<code>11 -&gt; 0x3F = 63</code> 、<code>12 -&gt; 0x7D = 125</code> 相当于 62 进制中的  11 和 21 转换十进制的结果。所以尝试着带着这样的思路去认识这段加密过程。这个循环会将字符串的低位当作 62 进制的高位进行进制展开,比如 1011<del>2</del> &#x3D; 1 * 2^3^ + 0 * 2^2^ + 1 * 2^1^ + 1 * 2^0^ ，然后将其按照小端序进行存储。并且将加密后的长度存储在地址的第一个 int （也就是前四个字节）处。我们可以发现其实存储的位置：<code>dword_40A940</code> 等。其实是一个结构体结构，总长度为 0x24。第一个成员是一个 int，第二个成员是个八个元素的<code>dword</code>数组。我们在 IDA 的 <strong>Local Types</strong> 窗口创建新的结构体：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct number&#123;</span><br><span class="line">int len;</span><br><span class="line">int num[8]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并将其同步到 idb。F5刷新，这样程序的可读性就大大增强了。</p>
+<p>言归正传，我们可以看到这个函数调用了三次，观察传入的参数，我们可以发现三部分分别是对输入序列号的前半部分、后半部分和固定字符串<code>IRtzloZ6iuB</code>进行base62。接下来是函数 &#x3D;&#x3D;sub_401630&#x3D;&#x3D;。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">sub_401630</span><span class="params">(number *a1, <span class="type">int</span> a2)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  a1-&gt;num[<span class="number">0</span>] = a2;</span><br><span class="line">  LOBYTE(a1-&gt;num[<span class="number">1</span>]) = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> ( result = <span class="number">4</span>; result &gt; <span class="number">0</span>; --result )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( *((_BYTE *)&amp;a1-&gt;len + result + <span class="number">3</span>) )</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  a1-&gt;len = result;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到这是个对结构体进行设置的函数。将结构体内的数组的首元素设置为传入的第二个参数，然后将其他位置设零。可以看到这里设置了两个结构体。</p>
+<p>&#x3D;&#x3D;sub_401690&#x3D;&#x3D;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">sub_401690</span><span class="params">(number *a1, number *a2)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">unsigned</span> __int8 *v5; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">unsigned</span> __int8 v6; <span class="comment">// cl</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// esi</span></span><br><span class="line"></span><br><span class="line">  len = a1-&gt;len;</span><br><span class="line">  <span class="keyword">if</span> ( a1-&gt;len &gt; a2-&gt;len )</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( a1-&gt;len &lt; a2-&gt;len )</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  v4 = len - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> ( len - <span class="number">1</span> &gt;= <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v5 = (<span class="type">unsigned</span> __int8 *)a2-&gt;num + v4;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      v6 = v5[(<span class="type">char</span> *)a1 - (<span class="type">char</span> *)a2];</span><br><span class="line">      <span class="keyword">if</span> ( v6 &gt; *v5 )</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">if</span> ( v6 &lt; *v5 )</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">      --v4;</span><br><span class="line">      --v5;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> ( v4 &gt;= <span class="number">0</span> );</span><br><span class="line">  &#125;</span><br><span class="line">  v7 = sub_402360(&amp;dword_40A9AC, dword_40A9F4);</span><br><span class="line">  <span class="keyword">if</span> ( v7 == sub_401630((number *)&amp;dword_40A988, <span class="number">4</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">    sub_402490(&amp;dword_40A9AC, &amp;dword_40A988, dword_40A9F4);</span><br><span class="line">    sub_402360(&amp;dword_40A988, dword_40A9F8);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	可以看到这个函数的返回值只有1，0，-1。所以可以猜测这是个涉及判断的函数。可以看到这个函数首先比较长度，长度小的数值肯定小，那么就直接返回了，若长度相同那就先从高位向低位的顺序开始比较。函数最后的 if 部分通过调试发现对这些全局变量和返回值均没有什么影响，而且函数大概率会在那些比较长度和大小的地方返回，所以暂不讨论。</p>
+<p>​	那么既然这是个比较函数，那 <em>main</em> 函数 if 条件判断的最后三个条件判断从句所添加到的约束就为：前半 base62 结果大于后半且均小于固定字符串 base62 结果的大小。</p>
+<p>​	if 分支结束后，我们就进入了 while 大循环，循环次数为 <em>0x200000</em> 次。对于这种大循环我们肯定要找到离开循环的条件，也就是 <code>dword_40A9F4</code> 全局变量的值等于十的时候 success，这就是解题的关键。可以看到有两个分支都可以使得该全局变量自加 1。那我们首要的思路就为在大循环中进入分支 10 次。</p>
+<p>&#x3D;&#x3D;sub_401730&#x3D;&#x3D;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">signed</span> <span class="type">int</span> __cdecl <span class="title function_">sub_401730</span><span class="params">(number *a1, number *a2, number *a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">int</span> v5; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">int</span> v6; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">char</span> v10[<span class="number">33</span>]; <span class="comment">// [esp+10h] [ebp-24h] BYREF</span></span><br><span class="line">  __int16 v11; <span class="comment">// [esp+31h] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v12; <span class="comment">// [esp+33h] [ebp-1h]</span></span><br><span class="line"></span><br><span class="line">  v3 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">memset</span>(v10, <span class="number">0</span>, <span class="keyword">sizeof</span>(v10));</span><br><span class="line">  v11 = <span class="number">0</span>;</span><br><span class="line">  v12 = <span class="number">0</span>;</span><br><span class="line">  len = a3-&gt;len;</span><br><span class="line">  v5 = a2-&gt;len;</span><br><span class="line">  v6 = a2-&gt;len;</span><br><span class="line">  <span class="keyword">if</span> ( a2-&gt;len &lt; a3-&gt;len )</span><br><span class="line">    v6 = a3-&gt;len;</span><br><span class="line">  v7 = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> ( v6 &gt; <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v7 &lt; v5 )</span><br><span class="line">        v3 += *((<span class="type">unsigned</span> __int8 *)a2-&gt;num + v7);</span><br><span class="line">      <span class="keyword">if</span> ( v7 &lt; len )</span><br><span class="line">        v3 += *((<span class="type">unsigned</span> __int8 *)a3-&gt;num + v7);</span><br><span class="line">      v10[v7] = v3;</span><br><span class="line">      v3 &gt;&gt;= <span class="number">8</span>;</span><br><span class="line">      ++v7;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> ( v7 &lt; v6 );</span><br><span class="line">    <span class="keyword">for</span> ( ; v3; v3 &gt;&gt;= <span class="number">8</span> )</span><br><span class="line">      v10[v7++] = v3;</span><br><span class="line">    <span class="keyword">for</span> ( ; v7 &gt; <span class="number">0</span>; --v7 )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v10[v7 - <span class="number">1</span>] )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  a1-&gt;len = v7;</span><br><span class="line">  qmemcpy(a1-&gt;num, v10, v7);</span><br><span class="line">  <span class="keyword">if</span> ( sub_402360(&amp;dword_40A9AC, dword_40A9F4) == <span class="number">4</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    sub_402490(&amp;dword_40A988, &amp;dword_40A988, dword_40A9F4);</span><br><span class="line">    sub_402360(&amp;dword_40A988, dword_40A9F8);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> v7;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	可以看到这个函数的逻辑就是有一个临时变量 a3 去记录 a2 结构体里的数组值和 a3 结构体里的数组值的和。因为存入数组是按小端序存储，所以累加时正向取值即可，然后存入一个临时的数组，再将临时数组里的值复制进 a1 结构体的数组成员。所以我们可以得知这个函数是一个 add 函数。这个函数在大循环中出现两次，作用就是累加序列号加密后的前半段和后半段。</p>
+<p>&#x3D;&#x3D;sub_4021A0&#x3D;&#x3D;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">sub_4021A0</span><span class="params">(number *a1, number *a2, number *a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  number *v3; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v6; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> i; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">char</span> v8; <span class="comment">// bl</span></span><br><span class="line">  <span class="type">char</span> v9; <span class="comment">// al</span></span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// edx</span></span><br><span class="line">  number v11; <span class="comment">// [esp+10h] [ebp-64h] BYREF</span></span><br><span class="line">  <span class="type">char</span> v12[<span class="number">61</span>]; <span class="comment">// [esp+34h] [ebp-40h] BYREF</span></span><br><span class="line">  __int16 v13; <span class="comment">// [esp+71h] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v14; <span class="comment">// [esp+73h] [ebp-1h]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">memset</span>(v12, <span class="number">0</span>, <span class="keyword">sizeof</span>(v12));</span><br><span class="line">  v3 = a3;</span><br><span class="line">  v13 = <span class="number">0</span>;</span><br><span class="line">  v14 = <span class="number">0</span>;</span><br><span class="line">  v4 = cmp(a2, a3);</span><br><span class="line">  <span class="keyword">if</span> ( v4 &gt;= <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( v4 )</span><br><span class="line">    &#123;</span><br><span class="line">      v6 = a2-&gt;len - a3-&gt;len;</span><br><span class="line">      v11.len = a3-&gt;len;</span><br><span class="line">      qmemcpy(v11.num, (<span class="type">char</span> *)a2-&gt;num + v6, v11.len);</span><br><span class="line">      <span class="keyword">for</span> ( i = v6; i &gt;= <span class="number">0</span>; --i )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( cmp(&amp;v11, v3) &gt;= <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          v8 = v12[i];</span><br><span class="line">          <span class="keyword">do</span></span><br><span class="line">          &#123;</span><br><span class="line">            ++v8;</span><br><span class="line">            sub_401820(&amp;v11, &amp;v11, a3);</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">while</span> ( cmp(&amp;v11, a3) &gt;= <span class="number">0</span> );</span><br><span class="line">          v12[i] = v8;</span><br><span class="line">          v3 = a3;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( i &gt; <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          sub_4023A0(&amp;v11, &amp;v11, <span class="number">8</span>);</span><br><span class="line">          v9 = *((_BYTE *)&amp;a2-&gt;len + i + <span class="number">3</span>);</span><br><span class="line">          LOBYTE(v11.num[<span class="number">0</span>]) = v9;</span><br><span class="line">          <span class="keyword">if</span> ( !v11.len )</span><br><span class="line">            v11.len = v9 != <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      len = v11.len;</span><br><span class="line">      qmemcpy(a1-&gt;num, v11.num, v11.len);</span><br><span class="line">      a1-&gt;len = len;</span><br><span class="line">      sub_401920(&amp;dword_40A988, &amp;unk_40A9FC, &amp;unk_40AA20);</span><br><span class="line">      <span class="keyword">if</span> ( cmp((number *)&amp;dword_40A988, (number *)&amp;dword_40A9AC) &gt; <span class="number">0</span> &amp;&amp; dword_40A9F8 &gt; <span class="number">0</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        sub_402490(&amp;dword_40A988, &amp;dword_40A988, dword_40A9F4);</span><br><span class="line">        add((number *)&amp;dword_40A9AC, (number *)dword_40A940, (number *)dword_40A964);</span><br><span class="line">        sub_401820(&amp;dword_40A988, &amp;dword_40A988, &amp;dword_40A9AC);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> v11.len;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      a1-&gt;len = <span class="number">0</span>;</span><br><span class="line">      LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    a1-&gt;len = a2-&gt;len;</span><br><span class="line">    qmemcpy(a1-&gt;num, a2-&gt;num, a2-&gt;len);</span><br><span class="line">    <span class="keyword">return</span> a3-&gt;len;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	观察这个函数，发现他经过 cmp 函数之后想要干的事情在 <code>sub_401820 </code>中，我们先来分析这个函数。</p>
+<p>&#x3D;&#x3D;sub_401820&#x3D;&#x3D;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">signed</span> <span class="type">int</span> __cdecl <span class="title function_">sub_401820</span><span class="params">(number *a1, number *a2, number *a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">int</span> v5; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">int</span> v6; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">char</span> v10[<span class="number">29</span>]; <span class="comment">// [esp+10h] [ebp-20h] BYREF</span></span><br><span class="line">  __int16 v11; <span class="comment">// [esp+2Dh] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v12; <span class="comment">// [esp+2Fh] [ebp-1h]</span></span><br><span class="line"></span><br><span class="line">  v3 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">memset</span>(v10, <span class="number">0</span>, <span class="keyword">sizeof</span>(v10));</span><br><span class="line">  v11 = <span class="number">0</span>;</span><br><span class="line">  v12 = <span class="number">0</span>;</span><br><span class="line">  len = a3-&gt;len;</span><br><span class="line">  v5 = a2-&gt;len;</span><br><span class="line">  v6 = a2-&gt;len;</span><br><span class="line">  <span class="keyword">if</span> ( a2-&gt;len &lt; a3-&gt;len )</span><br><span class="line">    v6 = a3-&gt;len;</span><br><span class="line">  v7 = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> ( v6 &gt; <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v7 &lt; v5 )</span><br><span class="line">        v3 += *((<span class="type">unsigned</span> __int8 *)a2-&gt;num + v7);</span><br><span class="line">      <span class="keyword">if</span> ( v7 &lt; len )</span><br><span class="line">        v3 -= *((<span class="type">unsigned</span> __int8 *)a3-&gt;num + v7);</span><br><span class="line">      v10[v7] = v3;</span><br><span class="line">      v3 &gt;&gt;= <span class="number">8</span>;</span><br><span class="line">      ++v7;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> ( v7 &lt; v6 );</span><br><span class="line">    <span class="keyword">for</span> ( ; v3; v3 &gt;&gt;= <span class="number">8</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v7 &gt;= <span class="number">32</span> )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      v10[v7++] = v3;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> ( ; v7 &gt; <span class="number">0</span>; --v7 )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v10[v7 - <span class="number">1</span>] )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  a1-&gt;len = v7;</span><br><span class="line">  qmemcpy(a1-&gt;num, v10, v7);</span><br><span class="line">  <span class="keyword">if</span> ( sub_402360(&amp;dword_40A9D0, dword_40A9F4) == <span class="number">4</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    sub_402360(&amp;dword_40A9AC, dword_40A9F8);</span><br><span class="line">    sub_402490(&amp;dword_40A9AC, &amp;dword_40A9AC, dword_40A9F4);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> v7;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	可以看到，这个函数与 add 函数格式比较相似，我们可以看到 v3 取了 a2 又减去了 a3，然后将结果存入 a1。可以得知这是一个 sub 函数。</p>
+<p>​	那么回到之前的函数，如果 a2 大于 a3 则循环递减 a3，直到 a2 小于 a3，所以这应该是一个向 a3 取模的函数，同样的后面的 if 判断我们同样留坑。那么这个函数分别调用了两次，我们算一下发现 常量字符串 base62 的结果为：<em>10000000000000000000</em>（10^19^），也就是序列号 base62 的前半和后半的循环累加结果分别向该数取模。</p>
+<p>​	我们根据分析好的内容对函数重命名：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ( <span class="number">1</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      dword_40A9F4 = v7 + <span class="number">1</span>;</span><br><span class="line">      add(&amp;unk_40A9FC, &amp;unk_40A9FC, dword_40A940);</span><br><span class="line">      add(&amp;unk_40AA20, &amp;unk_40AA20, dword_40A964);</span><br><span class="line">      mod(&amp;unk_40A9FC, &amp;unk_40A9FC, &amp;dword_40A9D0);</span><br><span class="line">      mod(&amp;unk_40AA20, &amp;unk_40AA20, &amp;dword_40A9D0);</span><br><span class="line">      <span class="built_in">set</span>(&amp;dword_40A988, <span class="number">1</span>);</span><br><span class="line">      sub(&amp;dword_40A988, &amp;unk_40A9FC, &amp;dword_40A988);</span><br><span class="line">      <span class="keyword">if</span> ( !cmp((<span class="type">int</span>)&amp;dword_40A988, (<span class="type">int</span>)dword_40A940) )</span><br><span class="line">      &#123;</span><br><span class="line">        ++dword_40A9F8;</span><br><span class="line">        sub_401CF0(&amp;dword_40A988, &amp;dword_40A988, dword_40A940);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">set</span>(&amp;dword_40A9AC, <span class="number">1</span>);</span><br><span class="line">      add(&amp;dword_40A9AC, &amp;unk_40AA20, &amp;dword_40A9AC);</span><br><span class="line">      <span class="keyword">if</span> ( !cmp((<span class="type">int</span>)&amp;dword_40A9AC, (<span class="type">int</span>)dword_40A964) )</span><br><span class="line">      &#123;</span><br><span class="line">        ++dword_40A9F8;</span><br><span class="line">        sub_401F30(&amp;dword_40A9AC, &amp;dword_40A9D0, dword_40A964);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ( dword_40A9F8 == <span class="number">10</span> )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      v7 = dword_40A9F4;</span><br><span class="line">      <span class="keyword">if</span> ( dword_40A9F4 &gt;= <span class="number">0x200000</span> )</span><br><span class="line">        <span class="keyword">goto</span> errrror;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	这样我们就得出了循环中第一个 if 的判断条件：序列号前半的每一轮累加结果若与 10^19^ 取模再减一等于自身，则进入分支，写成表达式为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(first_half * radix) mod (<span class="number">10000000000000000000</span>) - <span class="number">1</span> == first_half</span><br></pre></td></tr></table></figure>
+
+<p>​	同样的第二个分支对应的也就是对序列号后半的约束：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(second_half * radix) mod (<span class="number">10000000000000000000</span>) + <span class="number">1</span> == second_half</span><br></pre></td></tr></table></figure>
+
+<p>​	接下来我们看进入分支后执行的函数：</p>
+<p>​	&#x3D;&#x3D;sub_401CF0&#x3D;&#x3D;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">sub_401CF0</span><span class="params">(number *a1, number *a2, number *a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">int</span> v5; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> v8; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">int</span> v9; <span class="comment">// ecx</span></span><br><span class="line">  <span class="type">int</span> v10; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">unsigned</span> __int8 *v11; <span class="comment">// ecx</span></span><br><span class="line">  <span class="type">int</span> v12; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v13; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> v14; <span class="comment">// [esp+10h] [ebp-4Ch]</span></span><br><span class="line">  <span class="type">int</span> v15; <span class="comment">// [esp+14h] [ebp-48h]</span></span><br><span class="line">  <span class="type">int</span> v16; <span class="comment">// [esp+18h] [ebp-44h]</span></span><br><span class="line">  <span class="type">char</span> v17[<span class="number">61</span>]; <span class="comment">// [esp+1Ch] [ebp-40h] BYREF</span></span><br><span class="line">  __int16 v18; <span class="comment">// [esp+59h] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v19; <span class="comment">// [esp+5Bh] [ebp-1h]</span></span><br><span class="line"></span><br><span class="line">  v3 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">memset</span>(v17, <span class="number">0</span>, <span class="keyword">sizeof</span>(v17));</span><br><span class="line">  v18 = <span class="number">0</span>;</span><br><span class="line">  len = a3-&gt;len;</span><br><span class="line">  v19 = <span class="number">0</span>;</span><br><span class="line">  v5 = a2-&gt;len;</span><br><span class="line">  v15 = len;</span><br><span class="line">  v14 = a2-&gt;len;</span><br><span class="line">  <span class="keyword">if</span> ( len + a2-&gt;len &lt;= <span class="number">32</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v7 = <span class="number">0</span>;</span><br><span class="line">    v16 = len + v5 - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> ( v16 &lt;= <span class="number">0</span> )</span><br><span class="line">      <span class="keyword">goto</span> LABEL_20;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      v8 = v7;</span><br><span class="line">      <span class="keyword">if</span> ( v7 &gt;= v5 )</span><br><span class="line">        v8 = v5 - <span class="number">1</span>;</span><br><span class="line">      v9 = v7;</span><br><span class="line">      <span class="keyword">if</span> ( v7 &gt;= len )</span><br><span class="line">        v9 = len - <span class="number">1</span>;</span><br><span class="line">      v10 = v7 - v9;</span><br><span class="line">      <span class="keyword">if</span> ( v7 - v9 &lt;= v8 )</span><br><span class="line">      &#123;</span><br><span class="line">        v11 = a3-&gt;num + v9;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">          v3 += *v11-- * *(a2-&gt;num + v10++);  <span class="comment">/* 功能实现 */</span></span><br><span class="line">        <span class="keyword">while</span> ( v10 &lt;= v8 );</span><br><span class="line">        v5 = v14;</span><br><span class="line">        len = v15;</span><br><span class="line">      &#125;</span><br><span class="line">      v12 = v16;</span><br><span class="line">      v17[v7] = v3;</span><br><span class="line">      v3 &gt;&gt;= <span class="number">8</span>;</span><br><span class="line">      ++v7;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> ( v7 &lt; v12 );</span><br><span class="line">    <span class="keyword">for</span> ( ; v3; v3 &gt;&gt;= <span class="number">8</span> )</span><br><span class="line">      v17[v7++] = v3;</span><br><span class="line">    <span class="keyword">for</span> ( ; v7 &gt; <span class="number">0</span>; --v7 )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v17[v7 - <span class="number">1</span>] )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ( v7 &lt;= <span class="number">32</span> )</span><br><span class="line">    &#123;</span><br><span class="line">LABEL_20:</span><br><span class="line">      qmemcpy(a1-&gt;num, v17, v7);</span><br><span class="line">      a1-&gt;len = v7;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      a1-&gt;len = <span class="number">0</span>;</span><br><span class="line">      LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    sub_401920(&amp;dword_40A988, &amp;unk_40A9FC, &amp;unk_40AA20);</span><br><span class="line">    <span class="keyword">if</span> ( cmp(&amp;dword_40A988, &amp;dword_40A9AC) &gt; <span class="number">0</span> &amp;&amp; dword_40A9F8 &gt; <span class="number">0</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      sub_402490(&amp;dword_40A988, &amp;dword_40A988, dword_40A9F4);</span><br><span class="line">      add(&amp;dword_40A9AC, dword_40A940, dword_40A964);</span><br><span class="line">      sub(&amp;dword_40A988, &amp;dword_40A988, &amp;dword_40A9AC);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">set</span>(&amp;dword_40A988, <span class="number">4</span>);</span><br><span class="line">    sub_4023A0(&amp;dword_40A9AC, &amp;dword_40A988, <span class="number">3</span>);</span><br><span class="line">    <span class="keyword">if</span> ( dword_40A9F8 &gt; <span class="number">0</span> &amp;&amp; *(&amp;dword_40A9D4 + dword_40A9B0) == dword_40A9B0 )</span><br><span class="line">    &#123;</span><br><span class="line">      add(&amp;dword_40A988, &amp;dword_40A988, &amp;dword_40A9AC);</span><br><span class="line">      v13 = sub_402360(&amp;dword_40A988, dword_40A9F4);</span><br><span class="line">      *(&amp;dword_40A9D4 + dword_40A98C) += <span class="number">4</span>;</span><br><span class="line">      sub_4023A0(&amp;dword_40A988, &amp;dword_40A988, v13);</span><br><span class="line">      sub(&amp;dword_40A9AC, &amp;dword_40A988, &amp;dword_40A9AC);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> v7;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    a1-&gt;len = <span class="number">0</span>;</span><br><span class="line">    LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> a3-&gt;len + a2-&gt;len;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	可以看到这个函数最主要实现功能的就在那一行：<code>v3 += *v11-- * *(a2-&gt;num + v10++)</code> v11 指向 a3，v3 指向 a1.所以这个函数实现的功能为 a2 与 a3 相乘结果保存在 a1.但我们可以发现传入的 a1 为 <code>dword_40A988</code>。这个全局变量每轮循环都会重新传入 set 函数进行设置，所以这个函数意义不大。</p>
+<p>同样的我们来分析第二个分支：</p>
+<p>&#x3D;&#x3D;sub_401F30&#x3D;&#x3D; </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">sub_401F30</span><span class="params">(number *a1, number *a2, number *a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  number *v3; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> v7; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> i; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">char</span> v9; <span class="comment">// bl</span></span><br><span class="line">  <span class="type">char</span> v10; <span class="comment">// al</span></span><br><span class="line">  <span class="type">int</span> j; <span class="comment">// ebp</span></span><br><span class="line">  <span class="type">int</span> v12; <span class="comment">// eax</span></span><br><span class="line">  number v13; <span class="comment">// [esp+Ch] [ebp-64h] BYREF</span></span><br><span class="line">  <span class="type">char</span> v14[<span class="number">61</span>]; <span class="comment">// [esp+30h] [ebp-40h] BYREF</span></span><br><span class="line">  __int16 v15; <span class="comment">// [esp+6Dh] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v16; <span class="comment">// [esp+6Fh] [ebp-1h]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">memset</span>(v14, <span class="number">0</span>, <span class="keyword">sizeof</span>(v14));</span><br><span class="line">  v3 = a2;</span><br><span class="line">  v15 = <span class="number">0</span>;</span><br><span class="line">  v16 = <span class="number">0</span>;</span><br><span class="line">  v4 = cmp(a2, a3);</span><br><span class="line">  <span class="keyword">if</span> ( v4 &gt;= <span class="number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( v4 )</span><br><span class="line">    &#123;</span><br><span class="line">      len = a2-&gt;len;</span><br><span class="line">      v13.len = a3-&gt;len;</span><br><span class="line">      v7 = len - v13.len;</span><br><span class="line">      qmemcpy(v13.num, a2-&gt;num + v7, v13.len);</span><br><span class="line">      <span class="keyword">for</span> ( i = v7; i &gt;= <span class="number">0</span>; --i )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( cmp(&amp;v13, a3) &gt;= <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          v9 = v14[i];</span><br><span class="line">          <span class="keyword">do</span></span><br><span class="line">          &#123;</span><br><span class="line">            ++v9;</span><br><span class="line">            sub(&amp;v13, &amp;v13, a3);	<span class="comment">/* 功能实现 */</span></span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">while</span> ( cmp(&amp;v13, a3) &gt;= <span class="number">0</span> );</span><br><span class="line">          v14[i] = v9;</span><br><span class="line">          v3 = a2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( i &gt; <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          sub_4023A0(&amp;v13, &amp;v13, <span class="number">8</span>);</span><br><span class="line">          v10 = *(&amp;v3-&gt;len + i + <span class="number">3</span>);</span><br><span class="line">          LOBYTE(v13.num[<span class="number">0</span>]) = v10;</span><br><span class="line">          <span class="keyword">if</span> ( !v13.len )</span><br><span class="line">            v13.len = v10 != <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span> ( j = v7 + <span class="number">1</span>; j &gt; <span class="number">0</span>; --j )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( *(&amp;v13.num[<span class="number">7</span>] + j + <span class="number">3</span>) )</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      qmemcpy(a1-&gt;num, v14, j);</span><br><span class="line">      a1-&gt;len = j;</span><br><span class="line">      sub(&amp;dword_40A9AC, &amp;stru_40AA20, dword_40A964);</span><br><span class="line">      add(&amp;dword_40A988, &amp;stru_40A9FC, dword_40A940);</span><br><span class="line">      <span class="keyword">if</span> ( !cmp(&amp;dword_40A988, &amp;dword_40A9AC) || dword_40A9F8 &gt; <span class="number">0</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        sub_402490(&amp;dword_40A988, &amp;dword_40A988, dword_40A9F4);</span><br><span class="line">        sub_402360(&amp;dword_40A988, dword_40A9F8);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">set</span>(&amp;dword_40A988, <span class="number">4</span>);</span><br><span class="line">      sub_4023A0(&amp;dword_40A9AC, &amp;dword_40A988, <span class="number">3</span>);</span><br><span class="line">      <span class="keyword">if</span> ( dword_40A9F8 &gt; <span class="number">0</span> &amp;&amp; *(&amp;dword_40A9D4 + dword_40A9B0) == dword_40A9B0 )</span><br><span class="line">      &#123;</span><br><span class="line">        add(&amp;dword_40A988, &amp;dword_40A988, &amp;dword_40A9AC);</span><br><span class="line">        v12 = sub_402360(&amp;dword_40A988, dword_40A9F4);</span><br><span class="line">        *(&amp;dword_40A9D4 + dword_40A98C) += <span class="number">4</span>;</span><br><span class="line">        sub_4023A0(&amp;dword_40A988, &amp;dword_40A988, v12);</span><br><span class="line">        sub(&amp;dword_40A9AC, &amp;dword_40A988, &amp;dword_40A9AC);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> j;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      a1-&gt;len = <span class="number">1</span>;</span><br><span class="line">      LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    a1-&gt;len = <span class="number">0</span>;</span><br><span class="line">    LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	可以看到这个函数是将 a2 循环递减 a3。将循环次数存进 a1.不难看出实现的功能是地板除。但是同样的，a1 同为每轮循环要重新设置的全局变量，所以明面上作用不大。</p>
+<p>​	主要的函数看的差不多了，该去求解了。在这里我们稍微思考一下，真的可以满足达成5组这样的输入吗？给的模数为 10^19^，而循环次数最多只有 10^6^ 数量级级。我们求解的条件是当循环数与模数互质的情况下才会有解且解唯一，那么就是说我们无论如何输入也只能在某一轮循环进入分支，也只能达成两次而已，我们需要别的去增加达成次数的点。</p>
+<p>​	这里有一个值得我们注意的地方，这个题目中使用了极其多的全局变量，也就是说不需要传入参数即可完成对它们值的修改，我们的达成次数（接下来管他叫 achieve）正是一个全局变量。我们发现在 mul 函数和 div 函数中都有一段类似的代码，我们把一些内存识别为结构体拿出来看看：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span>(&amp;stru_40A988, <span class="number">4</span>);</span><br><span class="line">sub_4023A0(&amp;stru_40A9AC.len, &amp;stru_40A988.len, <span class="number">3</span>);</span><br><span class="line"><span class="keyword">if</span> ( achieve_40A9F8 &gt; <span class="number">0</span> &amp;&amp; *&amp;stru_40A9D0.num[stru_40A9AC.num[<span class="number">0</span>]] == stru_40A9AC.num[<span class="number">0</span>] )</span><br><span class="line">&#123;</span><br><span class="line">  add(&amp;stru_40A988, &amp;stru_40A988, &amp;stru_40A9AC);</span><br><span class="line">  v13 = sub_402360(&amp;stru_40A988, dword_40A9F4);</span><br><span class="line">  stru_40A9D0.num[stru_40A988.num[<span class="number">0</span>]] += <span class="number">4</span>; </span><br><span class="line">  sub_4023A0(&amp;stru_40A988.len, &amp;stru_40A988.len, v13);</span><br><span class="line">  sub(&amp;stru_40A9AC, &amp;stru_40A988, &amp;stru_40A9AC);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	可以看到这个 if 的判断条件涉及 achieve，并且进入分支后会对一个地址的内容加 4。 我们由衷的希望那个地址是 achieve，所以我们来验证这个可能性。首先 achieve 大于 0 那是肯定的，毕竟只有进入分支才能执行到这个 if。想要理解后面的判断就需要去分析前面函数<code>sub_4023A0</code> 给 <code>stru_40A9AC.num[0]</code>的赋值结果。</p>
+<p>&#x3D;&#x3D;sub_4023A0&#x3D;&#x3D;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">signed</span> <span class="type">int</span> __cdecl <span class="title function_">sub_4023A0</span><span class="params">(number *a1, number *a2, <span class="type">int</span> a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">int</span> v4; <span class="comment">// edx</span></span><br><span class="line">  <span class="type">int</span> len; <span class="comment">// edi</span></span><br><span class="line">  <span class="type">signed</span> <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> i; <span class="comment">// esi</span></span><br><span class="line">  <span class="type">char</span> v10[<span class="number">61</span>]; <span class="comment">// [esp+Ch] [ebp-40h] BYREF</span></span><br><span class="line">  __int16 v11; <span class="comment">// [esp+49h] [ebp-3h]</span></span><br><span class="line">  <span class="type">char</span> v12; <span class="comment">// [esp+4Bh] [ebp-1h]</span></span><br><span class="line">  <span class="type">int</span> v13; <span class="comment">// [esp+54h] [ebp+8h]</span></span><br><span class="line"></span><br><span class="line">  v3 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">memset</span>(v10, <span class="number">0</span>, <span class="keyword">sizeof</span>(v10));</span><br><span class="line">  v11 = <span class="number">0</span>;</span><br><span class="line">  v12 = <span class="number">0</span>;</span><br><span class="line">  v4 = a3 &gt;&gt; <span class="number">3</span>;</span><br><span class="line">  len = a2-&gt;len;</span><br><span class="line">  v13 = a2-&gt;len + (a3 &gt;&gt; <span class="number">3</span>);</span><br><span class="line">  <span class="keyword">if</span> ( v13 &lt;= <span class="number">32</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">for</span> ( i = <span class="number">0</span>; ; ++i )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( i &lt; len )</span><br><span class="line">        v3 += *(a2-&gt;num + i) &lt;&lt; (a3 % <span class="number">8</span>);	<span class="comment">/* 功能实现 */</span></span><br><span class="line">      v10[v4 + i] = v3;</span><br><span class="line">      v3 &gt;&gt;= <span class="number">8</span>;</span><br><span class="line">      <span class="keyword">if</span> ( i &gt;= len &amp;&amp; !v3 )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> ( result = v13 + <span class="number">1</span>; result &gt; <span class="number">0</span>; --result )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( *(v10 + result + <span class="number">23</span>) )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ( result &lt;= <span class="number">32</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      qmemcpy(a1-&gt;num, v10, result);</span><br><span class="line">      a1-&gt;len = result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      a1-&gt;len = <span class="number">0</span>;</span><br><span class="line">      LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    a1-&gt;len = <span class="number">0</span>;</span><br><span class="line">    LOBYTE(a1-&gt;num[<span class="number">0</span>]) = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> v4 + a2-&gt;len;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	这个函数可以看到主要功能的那句代码对 a2 左移了 a3 位，而左移相当于乘上 2^n^ 所以可以得知此函数实现乘以 2 的 a3 次幂的功能。而我们看最外面的 main 函数：<code>set(&amp;stru_40A988, 1)</code> 这个结构体被设为了 1。所以这个函数将该结构体的值设置成 2^4 &#x3D; 32。</p>
+<p>​	接下来，<code>*&amp;stru_40A9D0.num[stru_40A9AC.num[0]] == stru_40A9AC.num[0] ) </code>就相当于 <code>stru_40A9D0.num[32] == 32 </code>，<code>stru_40A9D0.num</code> 的地址相当于 0x40A9D0 + 4，0x40A9D0 + 4 + 32 &#x3D; 0x40A9F4，也就是循环基数。也就是说我们的循环次数达到32次的时候可以进入该分支。</p>
+<p>​	这下一切都很明确了，<code>(XXX_half * radix) mod (10000000000000000000) +- 1 == XXX_half</code>，radix就等于一。这里记录一下 python 求逆元的方法：</p>
+<blockquote>
+<p>若  (k * n) mod p &#x3D; 1，k 与 p 互质（即有唯一解情况）</p>
+<p>n &#x3D; pow(k, -1, p)</p>
+</blockquote>
+<p>解题脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">table = <span class="string">&#x27;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">b62Tostr</span>(<span class="params">decode_int</span>):</span><br><span class="line">    <span class="keyword">global</span> table</span><br><span class="line">    <span class="built_in">str</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">while</span> decode_int:</span><br><span class="line">        <span class="built_in">str</span> += table[decode_int % <span class="number">62</span>]</span><br><span class="line">        decode_int //= <span class="number">62</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">str</span></span><br><span class="line">        </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():     </span><br><span class="line">    part1 = <span class="built_in">pow</span>(<span class="number">31</span>, -<span class="number">1</span>, <span class="number">10</span>**<span class="number">19</span>)</span><br><span class="line">    flag1 = b62Tostr(part1)</span><br><span class="line">    part2 = <span class="built_in">pow</span>(-<span class="number">31</span>, -<span class="number">1</span>, <span class="number">10</span>**<span class="number">19</span>)</span><br><span class="line">    flag2 = b62Tostr(part2)</span><br><span class="line">    <span class="built_in">print</span>(flag1 + <span class="string">&#x27;-&#x27;</span> + flag2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>序列号：<code>ZSxZerX4xb4-jyvP7x12lI7</code></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2022/12/03/KCTF%202022%20cm2022%E5%A4%8D%E7%8E%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/11/13/angr%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">angr 学习笔记</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
