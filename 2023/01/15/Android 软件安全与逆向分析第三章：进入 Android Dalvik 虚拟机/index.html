@@ -373,16 +373,14 @@
 <p>​	<code>const-class/jumbo VAAAA, type@BBBBBBBB</code> 通过给定的类型索引获取一个类引用并赋给寄存器 vAAAA。这条指令占用两个字节，值为0x00ff。</p>
 <h3 id="3-3-6锁指令"><a href="#3-3-6锁指令" class="headerlink" title="3.3.6	锁指令"></a>3.3.6	锁指令</h3><p>​	锁指令多用在多线程程序中对同一对象的操作。Dalvik 指令集中有两条锁指令。</p>
 <p>​	<code>monitor-enter vAA</code> 为指定的对象获取锁。</p>
-<pre><code> `monitor-exit vAA` 释放指定的对象的锁。  
-</code></pre>
+<p>​	<code>monitor-exit vAA</code> 释放指定的对象的锁。  </p>
 <h3 id="3-3-7-实例操作指令"><a href="#3-3-7-实例操作指令" class="headerlink" title="3.3.7 实例操作指令"></a>3.3.7 实例操作指令</h3><p>​	与实例相关的操作包括实例的类型转换、检查及新建等。</p>
 <p>​	<code>check-cast vAA, type@BBBB</code> 将vAA寄存器中的对象引用转换成指定的类型，如果失败会抛出 ClassCastException 异常。如果类型 B 指定的是基本类型，对于非基本类型的 A 来说，运行时始终会失败。 </p>
 <p>​	<code>instance-ofvA, VB, type@CCCC</code> 判断 vB 寄存器中的对象引用是否可以转换成指定的类型，如果可以 vA 寄存器赋值为 1,否则 vA 寄存器赋值为 0。</p>
 <p>​	<code>new-instance vAA, type@BBBB</code> 构造一个指定类型对象的新实例，并将对象引用赋值给 vAA 寄存器，类型符 type 指定的类型不能是数组类。</p>
 <p>​	<code>check-cast/jumbo vAAAA, type@BBBBBBBB</code> 指令功能与 <code>check-cast VAA, type@BBBB</code> 相同，只是寄存器值与指令的索引取值范围更大（Android 4.0中新增的指令）。</p>
 <p>​	<code>instance-of/jumbo vAAAA, VBBBB, type@CCCCCCCC</code> 指令功能与 <code>instance-of VA, VB, type@CCCC</code> 相同，只是寄存器值与指令的索引取值范围更大（Android4.0中新增的指令）。</p>
-<pre><code> `new-instance/jumbo vAAAA, type@BBBBBBBB` 指令功能与 `new-Instance VAA, type@BBBB` 相同，只是寄存器值与指令的索引取值范围更大（Android 4.0 中新增的指令）。
-</code></pre>
+<p>​	<code>new-instance/jumbo vAAAA, type@BBBBBBBB</code> 指令功能与 <code>new-Instance VAA, type@BBBB</code> 相同，只是寄存器值与指令的索引取值范围更大（Android 4.0 中新增的指令）。</p>
 <h3 id="3-3-8数组操作指令"><a href="#3-3-8数组操作指令" class="headerlink" title="3.3.8	数组操作指令"></a>3.3.8	数组操作指令</h3><p>​	数组操作包括获取数组长度、新建数组、数组赋值、数组元素取值与赋值等操作。</p>
 <p>​	<code>array-length vA, vB</code> 获取给定 vB 寄存器中数组的长度并将值赋给 vA寄存器，数组长度指的是数组的条目个数。</p>
 <p>​	<code>new-array vA, vB, type@CCCC</code> 构造指定类型（type@CCCC）与大小（vB）的数组，并将值赋给 vA 寄存器。</p>
@@ -415,7 +413,7 @@
 <li><p><code>if-le</code> 如果vA 小于等于 vB 则跳转。Java 语法表示为 <code>if(vA &lt;= vB) </code></p>
 </li>
 </ul>
-<p><img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"><img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image008.jpg" alt="img"> <code>if-testz VAA, +BBBB</code> 条件跳转指令。拿 vAA 寄存器与 0 比较，如果比较结果满足或值为 0 时就跳转到 BBBB 指定的偏移处。偏移量 BBBB 不能为 0。if-testz 类型的指令有以下几条：</p>
+<p>​	 <code>if-testz VAA, +BBBB</code> 条件跳转指令。拿 vAA 寄存器与 0 比较，如果比较结果满足或值为 0 时就跳转到 BBBB 指定的偏移处。偏移量 BBBB 不能为 0。if-testz 类型的指令有以下几条：</p>
 <ul>
 <li><p><code>if-eq</code> 如果 vAA 为 0 则跳转。Java 语法表示为 <code>if(!vAA)</code>    </p>
 </li>
@@ -456,13 +454,13 @@
 
 <h3 id="3-3-14数据转换指令"><a href="#3-3-14数据转换指令" class="headerlink" title="3.3.14	数据转换指令"></a>3.3.14	数据转换指令</h3><p>​	数据转换指令用于将一种类型的数值转换成另一种类型。它的格式为 <code>unop vA, vB</code>，vB 寄存器或 vB 寄存器对存放需要转换的数据，转换后的结果保存在 vA 寄存器或 vA 寄存器对中。</p>
 <p>​	<code>neg-int</code> 对整型数求补。</p>
-<p><img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"> <code>not-int</code> 对整型数求反。</p>
+<p>​	<code>not-int</code> 对整型数求反。</p>
 <p>​	<code>neg-long</code> 对长整型数求补。</p>
 <p>​	<code>not-long</code> 对长整型数求反。</p>
 <p>​	<code>neg-float</code> 对单精度浮点型数求补。</p>
 <p>​	<code>neg-double</code> 对双精度浮点型数求补。</p>
 <p>​	<code>int-to-long</code> 将整型数转换为长整型。</p>
-<p>​	<code>int-to-float</code> 将整型数转换为单精度浮点型。 <img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"></p>
+<p>​	<code>int-to-float</code> 将整型数转换为单精度浮点型。 </p>
 <p>​	<code>int-to-double</code> 将整型数转换为双精度浮点型。</p>
 <p>​	<code>long-to-int</code> 将长整型数转换为整型。</p>
 <p>​	<code>long-to-float</code> 将长整型数转换为单精度浮点型。</p>
@@ -478,14 +476,13 @@
 <p>​	<code>int-to-short</code> 将整型转换为短整型。</p>
 <h3 id="3-3-15数据运算指令"><a href="#3-3-15数据运算指令" class="headerlink" title="3.3.15	数据运算指令"></a>3.3.15	数据运算指令</h3><p>​	数据运算指令包括算术运算指令与逻辑运算指令。算术运算指令主要进行数值间如加、减、乘、除、模、移位等运算，逻辑运算指令主要进行数值间与、或、非、异或等运算。数据运算指令有如下四类（数据运算时可能是在寄存器或寄存器对间进行，下面的指令作用讲解时使用寄存器来描述)：</p>
 <p>​	<code>binop vAA, vBB, vcc</code> 将 vBB 寄存器与 vCC 寄存器进行运算，结果保存到 vAA 寄存器。</p>
-<p>​	<code>binop/2addrvA, VB</code>将 vA 寄存器与 vB 寄存器进行运算，结果保存到 vA 寄存器。 <img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"></p>
+<p>​	<code>binop/2addrvA, VB</code>将 vA 寄存器与 vB 寄存器进行运算，结果保存到 vA 寄存器。 </p>
 <p>​	<code>binop/lit16 VA, VB, #+CCCC</code> 将 vB 寄存器与常量 CCCC 进行运算，结果保存到 vA 寄存器。</p>
 <p>​	<code>binop/lit8 vAA, vBB, #+cc</code>将 vBB 寄存器与常量 CC 进行运算，结果保存到 vAA 寄存器。</p>
 <p>​	后面3类指令比第 1 类指令分别多出了 2addr、1it16、lit8 等指令后缀。四类指令中基础字节码相同的指令执行的运算操作是类似的，第 1 类指令中，根据数据的类型不同会在基础字节码后面加上数据类型后缀，如 -int 或 -long 分别表示操作的数据类型为整型与长整型。第 1 类指令可归类如下：</p>
 <p>​	<code>add-type</code> vBB 寄存器与 vCC 寄存器值进行加法运算（vBB + vCC）。</p>
 <p>​	<code>sub-type</code> vBB 寄存器与 vCC 寄存器值进行减法运算（vBB · vCC）。</p>
-<pre><code> `mul-type` vBB 寄存器与 vCC 寄存器值进行乘法运算（vBB * vCC）。
-</code></pre>
+<p>​	<code>mul-type</code> vBB 寄存器与 vCC 寄存器值进行乘法运算（vBB * vCC）。</p>
 <p>​	<code>div-type</code> vBB 寄存器与 vCC 寄存器值进行除法运算（vBB &#x2F; vCC）。</p>
 <p>​	<code>rem-type</code> vBB 寄存器与 vCC 寄存器值进行模运算（vBB ％ vCC）。</p>
 <p>​	<code>and-type</code> vBB 寄存器与 vCC 寄存器值进行与运算（vBB AND vCC）。</p>
@@ -945,7 +942,7 @@
     
     
     <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
-        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+        src="//music.163.com/outchain/player?type=2&id=391426134&auto=1&height=32"></iframe>
 </div>
 
 <style>
