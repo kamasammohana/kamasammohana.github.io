@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>Android 软件安全与逆向分析第三章：进入 Android Dalvik 虚拟机（内含 smali 汇编学习） |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-Android 软件安全与逆向分析第三章：进入 Android Dalvik 虚拟机"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Android 软件安全与逆向分析第三章：进入 Android Dalvik 虚拟机（内含 smali 汇编学习）
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/01/15/Android%20%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E4%B8%8E%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E8%BF%9B%E5%85%A5%20Android%20Dalvik%20%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="article-date">
+  <time datetime="2023-01-14T22:25:48.882Z" itemprop="datePublished">2023-01-15</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">8.3k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">31 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Android-软件安全与逆向分析第三章：进入-Android-Dalvik-虚拟机"><a href="#Android-软件安全与逆向分析第三章：进入-Android-Dalvik-虚拟机" class="headerlink" title="Android 软件安全与逆向分析第三章：进入 Android Dalvik 虚拟机"></a>Android 软件安全与逆向分析第三章：进入 Android Dalvik 虚拟机</h1><blockquote>
+<p>虽然 Android 平台使用 Java 语言来开发应用程序，但 Android 程序却不是运行在标准 Java 虚拟机上的。可能是为了解决移动设备上软件运行效率的问题，也可能是为了规避与 Oracle 公司的版权纠纷。Google 为 Android 平台专门设计了一套虚拟机来运行 Android 程序，它就是 Dalvik Virtual Machine（Dalvik 虚拟机）。本章将讨论 Dalvik 虚拟机的特性及基于 Dalvik 字节码的汇编语言知识。</p>
+</blockquote>
+<h2 id="3-1Dalvik-虚拟机的特点——掌握-Android-程序的运行原理"><a href="#3-1Dalvik-虚拟机的特点——掌握-Android-程序的运行原理" class="headerlink" title="3.1	Dalvik 虚拟机的特点——掌握 Android 程序的运行原理"></a>3.1	Dalvik 虚拟机的特点——掌握 Android 程序的运行原理</h2><h3 id="3-1-1Dalvik-虚拟机概述"><a href="#3-1-1Dalvik-虚拟机概述" class="headerlink" title="3.1.1	Dalvik 虚拟机概述"></a>3.1.1	Dalvik 虚拟机概述</h3><p>Dalvik 虚拟机作为 Android 平台的核心组件，用有如下几个特点：</p>
+<ul>
+<li>体积小，占用内存空间小；</li>
+<li>专有的 DEX 可执行文件格式，体积更小，执行速度更快；</li>
+<li>常量池采用 32 位索引值，寻址类方法名、字段名、常量更快；</li>
+<li>基于寄存器架构，并拥有一套完整的指令系统；</li>
+<li>提供了对象生命周期管理、堆栈管理、线程管理、安全和异常管理以及垃圾回收等重要功能；</li>
+<li>所有的 Android 程序都运行在 Android 系统进程里，每个进程对应着一个 Dalvik 虚拟机实例。</li>
+</ul>
+<h3 id="3-1-2Dalvik-虚拟机与-Java-虚拟机的区别"><a href="#3-1-2Dalvik-虚拟机与-Java-虚拟机的区别" class="headerlink" title="3.1.2	Dalvik 虚拟机与 Java 虚拟机的区别"></a>3.1.2	Dalvik 虚拟机与 Java 虚拟机的区别</h3><ol>
+<li>Java 虚拟机运行的是 Java 字节码，Dalvik 虚拟机运行的是 Dalvik 字节码</li>
+<li>Dalvik 可执行文件（Dex）体积更小</li>
+<li>Java 虚拟机与Dalvik 虚拟机架构不同</li>
+</ol>
+<blockquote>
+<p>dx 工具负责将 Java 字节码转换为 Dalvik 字节码，它将 Java 类文件重新排列，重组常量池，消除在类文件中出现的所有冗余信息，避免虚拟机在初始化时出现重复的文件加载与解析过程。</p>
+<p>Java 虚拟机基于<strong>栈架构</strong>，使用求值栈来传递参数（零地址形式的指令集）：</p>
+<p><code>例如：iload_1</code></p>
+<p><strong>i</strong> 是指令前缀，表示操作类型为 <strong>int</strong> 类型，<strong>load</strong> 表示将局部变量存入 Java 栈，下划线右边的数字代表要操作具体哪个局部变量，<u>索引值从 0 开始计数</u>，这里的 1 表示将第二个 int 类型的局部变量进栈。</p>
+<p>Dalvik 虚拟机基于<strong>寄存器架构</strong>，调用栈维护一份寄存器列表，寄存器的数量在方法结构体的 registers 字段中给出，Dalvik 虚拟机会根据这个值来创建一份虚拟的寄存器列表。</p>
+<p><code>指令示例：add-int	v0, v3, v4</code>（smali）</p>
+</blockquote>
+<h3 id="3-1-3-Dalvik-虚拟机是如何执行程序的"><a href="#3-1-3-Dalvik-虚拟机是如何执行程序的" class="headerlink" title="3.1.3 Dalvik 虚拟机是如何执行程序的"></a>3.1.3 Dalvik 虚拟机是如何执行程序的</h3><p>​	Android 系统的架构采用<strong>分层思想</strong>，好处是拥有减少各层之间的依赖性、便于独立分发、容易收敛问题和错误等优点。</p>
+<p>​	Android 系统由 Linux 内核、函数库、Android 运行时、应用程序框架以及应用程序组成。Dalvik 虚拟机属于 Android 运行时环境，它与一些核心库共同承担 Android 应用程序的运行工作。</p>
+<p>​	Android 系统启动加载完内核后，第一个执行的是 <strong>init</strong> <strong>进程</strong>，init 进程会首先进行设备的初始化工作，然后读取 <code>inic.rc</code> 文件并启动系统中的重要外部程序 <strong>Zygote</strong>。<strong>Zygote</strong> 是 Android 所有进程的孵化器进程，它启动后会首先初始化 Dalvik 虚拟机，然后启动 <code>system_server</code> 并进入 <strong>Zygote 模式</strong>，通过 <strong>socket</strong>  等候命令。当执行一个 Android应用程序时，<code>system_server</code> 进程通过 <strong>socket</strong> 方式发送命令给 Zygote，Zygote 收到命令后通过 <strong>fork 自身</strong>创建一个 Dalvik 虚拟机的实例来执行应用程序的入口函数，由此完成程序的启动。</p>
+<blockquote>
+<p><strong>Zygote</strong> 提供了三种创建进程的方法：</p>
+<ul>
+<li><code>fork()</code>，创建一个 Zygote 进程</li>
+<li><code>forkAndSpecialize()</code>，创建一个非 Zygote 进程</li>
+<li><code>forkSystemServer()</code>，创建一个系统服务进程</li>
+</ul>
+<p>其中，Zygote 进程可以再 <code>fork()</code> 出其它进程，非 Zygote 进程则不能 fork 其他进程，而系统服务进程在终止后它的子进程也必须终止</p>
+</blockquote>
+<p>​	进程 <code>fork()</code> 成功后，Dalvik 虚拟机首先通过 <code>loadClassFromDex()</code> 函数完成类的装载工作，每个类被成功解析后都会拥有一个 <strong>ClassObject</strong> 类型的数据结构存储在运行时环境中，虚拟机使用 <code>gDvm.loadClasses</code> 全局哈希表来存储与查询所有装载进来的类，随后字节码验证器使用 <code>dvmVerifyCodeFlow()</code> 函数对装入的代码进行校验，接着虚拟机调用 <code>FindClass()</code> 函数查找并装载 <strong>main</strong> 方法类，随后调用 <code>dvmInterpret()</code> 函数初始化解释器并执行字节流。</p>
+<h3 id="3-1-4-关于-Dalvik-虚拟机-JIT（即时编译）"><a href="#3-1-4-关于-Dalvik-虚拟机-JIT（即时编译）" class="headerlink" title="3.1.4 关于 Dalvik 虚拟机 JIT（即时编译）"></a>3.1.4 关于 Dalvik 虚拟机 JIT（即时编译）</h3><p>​	<strong>JIT（Just-in-time Compilation，即时编译）</strong>，又称<strong>动态编译</strong>，是一种<u>通过在运行时将字节码翻译为机器码的技术</u>，使得程序执行速度更快。</p>
+<p>主流的 <strong>JIT</strong> 包含两种字节码编译方式：</p>
+<ul>
+<li><strong>method 方式</strong>：以函数或方法为单位进行编译</li>
+<li><strong>trace 方式</strong>：以 trace 为单位进行编译</li>
+</ul>
+<p>​	trace 方式编译能够快速地获取 “热路径”（函数中一般很少按顺序执行，多数的代码都被分成了好几条执行路径，其中的有些路径在实际运行过程中经常被在执行，这些路径被称为“热路径”，反之则被称为“冷路径”）代码，使用更短的时间与更少的内存来编译代码。</p>
+<h2 id="3-2-Dalvik-汇编语言基础为分析-Android-程序做准备"><a href="#3-2-Dalvik-汇编语言基础为分析-Android-程序做准备" class="headerlink" title="3.2 Dalvik 汇编语言基础为分析 Android 程序做准备"></a>3.2 Dalvik 汇编语言基础为分析 Android 程序做准备</h2><blockquote>
+<p>Dalvik 虚拟机为自己专门设计了一套指令集，并且制定了自己的指令格式与调用规范。我们将 Dalvik 指令集组成的代码称为 Dalvik 汇编代码，将这种语言称为 Dalvik 汇编语言（Dalvik 汇编语言并不是正式的语言，只是描述 Dalvik 指令集代码的一种称呼）</p>
+</blockquote>
+<h3 id="3-2-1-Dalvik-指令格式"><a href="#3-2-1-Dalvik-指令格式" class="headerlink" title="3.2.1 Dalvik 指令格式"></a>3.2.1 Dalvik 指令格式</h3><p>一段 Dalvik 汇编代码由一系列 Dalvik 指令组成，指令语法由指令的位描述符与指令格式标识来决定。位描述符约定如下：</p>
+<ul>
+<li>每 16 位的字采用空格分隔开来</li>
+<li>每个字母表示四位，每个字母按顺序从高字节开始，排列到低字节。每四位之间可能使用竖线 “ | ” 来表示不同的内容</li>
+<li>顺序采用 A~Z 的单个大写字母作为一个 4 位的操作码，op 表示一个 8 位的操作码</li>
+<li>“ Ø ” 来表示这字段所有的位为 0 值</li>
+</ul>
+<p>指令示例：<code>A|Gop BBBB F|E|D|C</code></p>
+<p>​	这个指令由三个16位的字组成，第一个 16 位的高八位由 A 与 G 组成，低字节由操作码 op 组成。第二个 16 位由 BBBB 组成，表示一个 16 位的偏移值。第三个16 位分别由 F、E、D、C 共四个 4 字节组成，在这里它们单独表示寄存器参数。</p>
+<p>​	单独使用位标识还无法确定一条指令，必须通过指令格式来指定指令的格式编码。它的约定如下：</p>
+<ul>
+<li>指令格式标识大多由三个字符组成，前两个是数字，最后一个是字母</li>
+<li>第一个数字是表示指令有多少个 16 位的字组成</li>
+<li>第二个数字是表示指令最多使用寄存器的个数。特殊标记 “ r ” 标识使用一定范围内的寄存器</li>
+<li>第三个字母为类型码，表示指令用到的额外数据的类型。</li>
+</ul>
+<p>还有一种特殊的情况是末尾可能会多出另一个字母，如果是字母 s 表示指令采用静态链接，如果是字母 i 表示指令应该被内联处理。</p>
+<p>指令格式标识类型码：</p>
+<table>
+<thead>
+<tr>
+<th align="center">助记符</th>
+<th align="center">位大小</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">b</td>
+<td align="center">8</td>
+<td align="center">8 位有符号立即数</td>
+</tr>
+<tr>
+<td align="center">c</td>
+<td align="center">16，32</td>
+<td align="center">常量池索引</td>
+</tr>
+<tr>
+<td align="center">f</td>
+<td align="center">16</td>
+<td align="center">接口常量（仅对静态链接格式有效）</td>
+</tr>
+<tr>
+<td align="center">h</td>
+<td align="center">16</td>
+<td align="center">有符号立即数（32 位或 64 位数的高值位，低值位为 0）</td>
+</tr>
+<tr>
+<td align="center">i</td>
+<td align="center">32</td>
+<td align="center">立即数，有符号整数或 32 位浮点数</td>
+</tr>
+<tr>
+<td align="center">l</td>
+<td align="center">64</td>
+<td align="center">立即数，有符号整数或 64 位双精度浮点数</td>
+</tr>
+<tr>
+<td align="center">m</td>
+<td align="center">16</td>
+<td align="center">方法常量（仅对静态链接格式有效）</td>
+</tr>
+<tr>
+<td align="center">n</td>
+<td align="center">4</td>
+<td align="center">4 位的立即数</td>
+</tr>
+<tr>
+<td align="center">s</td>
+<td align="center">16</td>
+<td align="center">短整型立即数</td>
+</tr>
+<tr>
+<td align="center">t</td>
+<td align="center">8，16，32</td>
+<td align="center">跳转、分支</td>
+</tr>
+<tr>
+<td align="center">x</td>
+<td align="center">0</td>
+<td align="center">无额外数据</td>
+</tr>
+</tbody></table>
+<p>指令格式标识示例：<code>22x</code></p>
+<p>​	第一个数字 2 表示指令有两个 16 位字组成，第二个数字 2 表示指令使用到 2 个寄存器，第三个字母 x 表示没有使用到额外的数据。</p>
+<p>另外，Dalvik 指令对语法做了一些说明，它约定如下：</p>
+<ul>
+<li>每条指令从操作码开始，后面紧跟参数，参数个数不定，每个参数之间采用逗号分开</li>
+<li>每条指令的参数从指令第一部分开始，op 位于低 8 位，高 8 位可以是一个 8 位的参数，也可以两个 4 位的参数，还可以为空，如果指令超过 16 位，则后面部分依次作为参数</li>
+<li>如果参数采用 “ vX ” 的方式表示，表明它是一个寄存器。这里采用 v 而不是 r 是为了避免与基于该虚拟机架构本身的寄存器命名产生冲突，如 ARM 架构寄存器命名采用 r 开头</li>
+<li>如果参数采用 “ #+X ”的方式表示，表明它是一个常量数字</li>
+<li>如果参数采用 “ +X ”的方式表示，表明它是一个相对指令的地址偏移</li>
+<li>如果参数采用 “kind@X ” 的方式表示，表明它是一个常量池索引值。其中 kind 表示常量池类型，它可以是 “ string ”（字符串常量池索引）、“ type ”（类型常量池索引）、“ field ”（字段常量池索引）或者 “ meth ”（方法常量池索引）</li>
+</ul>
+<h3 id="3-2-3-了解-Dalvik-寄存器"><a href="#3-2-3-了解-Dalvik-寄存器" class="headerlink" title="3.2.3 了解 Dalvik 寄存器"></a>3.2.3 了解 Dalvik 寄存器</h3><p>​	Dalvik 将部分寄存器映射到了 ARM 寄存器上，还有一部分则通过调用栈进行模拟，Dalvik 中用到的寄存器都是 32 位的，64 位类型用 2 个相邻寄存器表示。</p>
+<p>​	每个函数都在函数头部使用 <strong>.registers</strong> 指令指定函数使用到的寄存器数目，当虚拟机执行到这个函数时，会根据寄存器的数目分配适当的栈空间用来存放寄存器实际的值，虚拟机通过处理字节码，对寄存器进入读写操作，其实都是在写栈空间。Android SDK 中有一个名为 <code>dalvik.bytecode.Opcodes</code> 的接口，它定义了一份完整的 Dalvik 字节码列表。处理这些字节码的函数位一个宏 <code>HANDLE_OPCODE()</code>，这份 Dalvik 字节码列表中每个字节码的处理过程可以在 Android 源码的 <code>dalvik\vm\mterp\c</code> 目录中找到。</p>
+<h3 id="3-2-4两种不同的寄存器表示方法——v-命名法与-p-命名法"><a href="#3-2-4两种不同的寄存器表示方法——v-命名法与-p-命名法" class="headerlink" title="3.2.4	两种不同的寄存器表示方法——v 命名法与 p 命名法"></a>3.2.4	两种不同的寄存器表示方法——v 命名法与 p 命名法</h3><p>​	v 命名法采用以小写字母 “ v ” 开头的方式表示函数中用到的局部变量与参数，所有的寄存器命名从 v0 开始，依次递增。</p>
+<p>​	p 命名法对函数的局部变量寄存器命名没有影响，它的命名规则是：函数中引入的参数命名从 p0 开始，依次递增。</p>
+<p>​	使用 p 命名法表示的 Dalvik 汇编代码，通过寄存器的前缀更容易判断寄存器到底是局部变量寄存器还是参数寄存器。</p>
+<h3 id="3-2-5Dalvik-字节码的类型、方法与字段表示方法"><a href="#3-2-5Dalvik-字节码的类型、方法与字段表示方法" class="headerlink" title="3.2.5	Dalvik 字节码的类型、方法与字段表示方法"></a>3.2.5	Dalvik 字节码的类型、方法与字段表示方法</h3><ol>
+<li>类型</li>
+</ol>
+<p>​	Dalvik 字节码只有两种类型，<strong>基本类型</strong>与<strong>引用类型</strong>，除了对象与数组属于引用对象外，其他的 Java 类型都是基本类型。</p>
+<p>Dalvik 字节码类型描述符：</p>
+<table>
+<thead>
+<tr>
+<th align="center">语法</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">V</td>
+<td align="center">void，只用于返回类型</td>
+</tr>
+<tr>
+<td align="center">Z</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">B</td>
+<td align="center">byte</td>
+</tr>
+<tr>
+<td align="center">S</td>
+<td align="center">short</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="center">char</td>
+</tr>
+<tr>
+<td align="center">I</td>
+<td align="center">int</td>
+</tr>
+<tr>
+<td align="center">J</td>
+<td align="center">long</td>
+</tr>
+<tr>
+<td align="center">F</td>
+<td align="center">float</td>
+</tr>
+<tr>
+<td align="center">D</td>
+<td align="center">double</td>
+</tr>
+<tr>
+<td align="center">L</td>
+<td align="center">Java 类类型</td>
+</tr>
+<tr>
+<td align="center">[</td>
+<td align="center">数组类型</td>
+</tr>
+</tbody></table>
+<p>​	L 类型可以表示 Java 类型中的任何类。这些类在 Java 代码中以 package.name.ObjectName 方式引用，到了 Dalvik 汇编代码中，它们以 <code>Lpackage/name/ObjectName;</code>形式表示，ObjectName 表示对象的名称，最后的分号表示对象名结束。</p>
+<p>​	[ 类型可以表示所有基本类型的数组。[ 后面紧跟基本类型描述符，如 <code>[i</code> 表示一个整型一维数组，相当于 Java 中的 <code>int[]</code>。多个 [ 在一起的时候可表示多维数组。L 与 [ 可以同时使用用来表示对象数组。</p>
+<ol start="2">
+<li>方法</li>
+</ol>
+<p>​	Dalvik 使用方法名、类型参数与返回值来详细描述一个方法，方法格式如下：</p>
+<p><code>Lpackage/name/ObjectName;-&gt;MethodName(III)Z</code></p>
+<p>​	在这个例子中，<code>Lpackage/name/ObjectName;-</code> 应该理解为一个类型，MethodName 为具体的方法名，<code>(III)Z</code> 是方法的签名部分，其中括号内的 <code>III</code> 为方法的参数（在此为三个整型参数），Z 表示方法的返回类型（boolean 类型）</p>
+<p>​	BakSmali 生成的方法代码以 <strong>.method</strong> 指令开始，以 <strong>.end method</strong> 指令结束，根据方法类型的不同，在方法指令开始前可能会用井号加以注释。如 <code># virtual methods</code> 表示这是一个虚方法，<code># direct methods</code> 表示这是一个直接方法。</p>
+<ol start="3">
+<li>字段</li>
+</ol>
+<p>字段与方法很相似，只是字段没有方法签名域中的参数与返回值，取而代之的是字段的类型。字段的格式如下：</p>
+<p><code>Lpackage/name/ObjectName;-&gt;FieldNam：Ljava/lang/String;</code></p>
+<p>​	字段由类型（Lpackage&#x2F;name&#x2F;ObjectName;）、字段名（FieldName）与字段类型（Ljava&#x2F;lang&#x2F;String;）组成。其中字段名与字段类型中间冒号隔开。</p>
+<p>​	BakSmali 生成的字段代码以 <strong>.field</strong> 指令开头，根据字段类型的不同，在字段指令开始前可能会用井号加以注释。</p>
+<h2 id="3-3Dalvik-指令集（smali-汇编）"><a href="#3-3Dalvik-指令集（smali-汇编）" class="headerlink" title="3.3	Dalvik 指令集（smali 汇编）"></a>3.3	Dalvik 指令集（smali 汇编）</h2><h3 id="3-3-1指令特点"><a href="#3-3-1指令特点" class="headerlink" title="3.3.1	指令特点"></a>3.3.1	指令特点</h3><p>Dalvik 指令集在调用格式上模仿了 C 语言的调用约定。Dalvik 指令的语法与助词符有如下特点：</p>
+<ul>
+<li>参数采用从目标到源的方式</li>
+<li>根据字节码的大小与类型不同，一些字节码添加了名称后缀以消除歧义<ul>
+<li>32位常规类型的字节码未添加任何后缀</li>
+<li>64 位常规类型的字节码添加 <code>-wide</code> 后缀</li>
+<li>特殊类型的字节码根据具体类型添加后缀。它们可以是 <code>-boolean、-byte、-char、-short、-int、-long、-float、-double、-object、-string、-class、-void</code> 之一</li>
+</ul>
+</li>
+<li>根据字节码的布局与选项不同，一些字节码添加了字节码后缀以消除歧义。这些后缀通过在字节码的主名称后添加 <code>/</code> 来分隔开</li>
+<li>在指令集的描述中，宽度值中每个字母表示宽度为 4 位</li>
+</ul>
+<p>示例：<code>move-wide/from 16 vAA, vBBBB</code></p>
+<p>move 为基础字节码（base opcode）。标识这是基本操作。</p>
+<p>wide 为名称后缀（name suffix）。标识指令操作的数据宽度（64 位）</p>
+<p>from 16 为字节码后缀（opcode suffix）。标识源为一个 16 位的寄存器引用变量</p>
+<p>vAA 为目的寄存器。它始终在源的前面，取值范围为 v0~v255</p>
+<p>vBBBB 为源寄存器。取值范围为 v0~v65535</p>
+<h3 id="3-3-2空指令操作"><a href="#3-3-2空指令操作" class="headerlink" title="3.3.2	空指令操作"></a>3.3.2	空指令操作</h3><p>​	空操作指令的助记符为 nop。它的值为 00，通常 nop 指令被用来作对齐代码之用，无实际操作。</p>
+<h3 id="3-3-3数据操作指令"><a href="#3-3-3数据操作指令" class="headerlink" title="3.3.3	数据操作指令"></a>3.3.3	数据操作指令</h3><p>​	数据操作指令为move。move指令的原型为move destination, source或move destination， move指令根据字节码的大小与类型不同，后面会跟上不同的后缀。</p>
+<p>​	<code>move vA, vB</code>  将 vB 寄存器的值赋给 vA 寄存器，源寄存器与目的寄存器都为 4 位。</p>
+<p>​	<code>move/from16 vAA, vBBBB</code> 将 vBBBB 寄存器的值赋给 vAA 寄存器，源寄存器为16 位，目的寄存器为 8 位。</p>
+<p>​	<code>move/16 vAAAA, vBBBB</code> 将 vBBBB 寄存器的值赋给 vAAAA 寄存器，源寄存器与目的寄存器都为16位。</p>
+<p>​	<code>move-wide vA, vB</code> 为 4 位的寄存器对赋值。源寄存器与目的寄存器都为4位。</p>
+<p>​	<code>move-wide/from16 VAA, vBBBB</code>与 <code>move-wide/16 vAAAA, vBBBB</code> 实现与 move-wide 相同。</p>
+<p>​	<code>move-object vA, vB</code> 为对象赋值。源寄存器与目的寄存器都为 4 位。</p>
+<p>​	<code>move-object/from16 vAA, vBBBB</code> 为对象赋值。源寄存器为 8 位，目的寄存器为 16 位。 <code>move-object/16 vAAAA, vBBBB</code> 为对象赋值。源寄存器与目的寄存器都为 16 位。</p>
+<p>​	<code>move-result vAA</code> 将上一个 invoke 类型指令操作的单字非对象结果赋给 vAA 寄存器。 <code>move-result-wide vAA </code>将上一个 invoke 类型指令操作的双字非对象结果赋给vAA寄存器。</p>
+<p>​	<code>move-result-object vAA </code> 将上一个 invoke 类型指令操作的对象结果赋给 vAA 寄存器。</p>
+<p>​	<code>move-exception vAA</code>保存一个运行时发生的异常到 vAA 寄存器。这条指令必须是异常发生时的异常处理器的一条指令。否则的话，指令无效。</p>
+<h3 id="3-3-4返回指令"><a href="#3-3-4返回指令" class="headerlink" title="3.3.4	返回指令"></a>3.3.4	返回指令</h3><p>​	返回指令指的是函数结尾时运行的最后一条指令。它的基础字节码为 return，共有以下四条返回指令：</p>
+<p>​	<code>return-void</code> 表示函数从一个 void 方法返回。</p>
+<p>​	<code>return vAA </code> 表示函数返回一个 32 位非对象类型的值，返回值寄存器为 8 位的寄存器 vAA。</p>
+<p>​	<code>return-wide vAA </code> 表示函数返回一个 64 位非对象类型的值。返回值为 8 位的寄存器对 vAA。</p>
+<p>​	<code>return-object vAA</code> 表示函数返回一个对象类型的值。返回值为 8 位的寄存器 vAA。</p>
+<h3 id="3-3-5数据定义指令"><a href="#3-3-5数据定义指令" class="headerlink" title="3.3.5	数据定义指令"></a>3.3.5	数据定义指令</h3><p>​	数据定义指令用来定义程序中用到的常量、字符串、类等数据。它的基础字节码为 const。</p>
+<p>​	<code>const/4 vA, #+B</code> 数值符号扩展为 32 位后赋给寄存器vA。</p>
+<p>​	<code>const/16 vAA, #+BBBB</code> 将数值符号扩展为 32 位后赋给寄存器 vAA。</p>
+<p>​	<code>const vAA, #+BBBBBBBB</code> 将数值赋给寄存器 vAA。</p>
+<p>​	<code>const/high16 vAA, #+BBBB0000</code> 将数值右边零扩展为 32 位后赋给寄存器VAA。 </p>
+<p>​	<code>const-wide/16 vAA, #+BBBB</code> 将数值符号扩展为 64 位后赋给寄存器对 vAA。</p>
+<p>​	<code>const-wide/32 VAA, #十BBBBBBBB</code> 将数值符号扩展为 64 位后赋给寄存器对 vAA。</p>
+<p>​	<code>const-wide vAA, #+BBBBBBBBBBBBBBBB</code> 将数值赋给寄存器对 vAA。</p>
+<p>​	<code>const-wide/high16 vAA, #+BBBB000000000000</code> 将数值右边零扩展为 64 位后赋给寄存器对 vAA。</p>
+<p>​	<code>const-string vAA, string@BBBB</code> 通过字符串索引构造一个字符串并赋给寄存器 vAA。</p>
+<p>​	<code>const-string/jumbo vAA, string@BBBBBBBB</code> 通过字符串索引（较大）构造一个字符串并赋给寄存器 vAA。</p>
+<p>​	<code>const-class vAA, type@BBBB</code> 通过类型索引获取一个类引用并赋给寄存器 vAA。</p>
+<p>​	<code>const-class/jumbo VAAAA, type@BBBBBBBB</code> 通过给定的类型索引获取一个类引用并赋给寄存器 vAAAA。这条指令占用两个字节，值为0x00ff。</p>
+<h3 id="3-3-6锁指令"><a href="#3-3-6锁指令" class="headerlink" title="3.3.6	锁指令"></a>3.3.6	锁指令</h3><p>​	锁指令多用在多线程程序中对同一对象的操作。Dalvik 指令集中有两条锁指令。</p>
+<p>​	<code>monitor-enter vAA</code> 为指定的对象获取锁。</p>
+<pre><code> `monitor-exit vAA` 释放指定的对象的锁。  
+</code></pre>
+<h3 id="3-3-7-实例操作指令"><a href="#3-3-7-实例操作指令" class="headerlink" title="3.3.7 实例操作指令"></a>3.3.7 实例操作指令</h3><p>​	与实例相关的操作包括实例的类型转换、检查及新建等。</p>
+<p>​	<code>check-cast vAA, type@BBBB</code> 将vAA寄存器中的对象引用转换成指定的类型，如果失败会抛出 ClassCastException 异常。如果类型 B 指定的是基本类型，对于非基本类型的 A 来说，运行时始终会失败。 </p>
+<p>​	<code>instance-ofvA, VB, type@CCCC</code> 判断 vB 寄存器中的对象引用是否可以转换成指定的类型，如果可以 vA 寄存器赋值为 1,否则 vA 寄存器赋值为 0。</p>
+<p>​	<code>new-instance vAA, type@BBBB</code> 构造一个指定类型对象的新实例，并将对象引用赋值给 vAA 寄存器，类型符 type 指定的类型不能是数组类。</p>
+<p>​	<code>check-cast/jumbo vAAAA, type@BBBBBBBB</code> 指令功能与 <code>check-cast VAA, type@BBBB</code> 相同，只是寄存器值与指令的索引取值范围更大（Android 4.0中新增的指令）。</p>
+<p>​	<code>instance-of/jumbo vAAAA, VBBBB, type@CCCCCCCC</code> 指令功能与 <code>instance-of VA, VB, type@CCCC</code> 相同，只是寄存器值与指令的索引取值范围更大（Android4.0中新增的指令）。</p>
+<pre><code> `new-instance/jumbo vAAAA, type@BBBBBBBB` 指令功能与 `new-Instance VAA, type@BBBB` 相同，只是寄存器值与指令的索引取值范围更大（Android 4.0 中新增的指令）。
+</code></pre>
+<h3 id="3-3-8数组操作指令"><a href="#3-3-8数组操作指令" class="headerlink" title="3.3.8	数组操作指令"></a>3.3.8	数组操作指令</h3><p>​	数组操作包括获取数组长度、新建数组、数组赋值、数组元素取值与赋值等操作。</p>
+<p>​	<code>array-length vA, vB</code> 获取给定 vB 寄存器中数组的长度并将值赋给 vA寄存器，数组长度指的是数组的条目个数。</p>
+<p>​	<code>new-array vA, vB, type@CCCC</code> 构造指定类型（type@CCCC）与大小（vB）的数组，并将值赋给 vA 寄存器。</p>
+<p>​	<code>filled-new-array &#123;vc, vD, vE, vF, vG&#125;，type@BBBB</code> 构造指定类型（type@BBBB）与大小（VA）的数组并填充数组内容。vA 寄存器是隐含使用的，除了指定数组的大小外还指定了参数的个数，vC~vG 是使用到的参数寄存器序列。</p>
+<p>​	<code>filled-new-array/range &#123;vCCCC .. vNNNN&#125;，type@BBBB</code> 指令功能与 <code>filled-new-array &#123;vc, vD, vE, vF, vG&#125;，type@BBBB</code> 相同，只是参数寄存器使用 range 字节码后缀指定了取值范围，vC 是第一个参数寄存器，N &#x3D; A + C - 1。 </p>
+<p>​	<code>fill-array-data vAA, +BBBBBBBB</code> 用指定的数据来填充数组，vAA 寄存器为数组引用，引用必须为基础类型的数组，在指令后面会紧跟一个数据表。</p>
+<p>​	<code>new-array/jumbo vAAAA, vBBBB, type@CCCCCCCC</code> 指令功能与 <code>new-array VA, VB, type@CCCC</code> 相同，只是寄存器值与指令的索引取值范围更大（Android4.0中新增的指令）。</p>
+<p>​	<code>filled-new-array/jumbo &#123;vCCCC .. vNNNN&#125;, type@BBBBBBBB</code> 指令功能与 <code>filled-new-array/range &#123;vcccc .. vNNNN&#125;, type@BBBB</code> 相同，只是索引取值范围更大 (Android 4．0中新增的指令)。</p>
+<p>​	<code>arrayop vAA, vBB, vCC</code> 对 vBB 寄存器指定的数组元素进入取值与赋值。寄存器指定数组元素索引，vAA 寄存器用来存放读取的或需要设置的数组元素的值。读取元素使用 aget 类指令，元素赋值使用 aput 类指令，根据数组中存储的类型指令后面会紧跟不同的指令后缀，指令列表有 <code>aget、aget-wide、aget-obJ ect、aget-boolean、aget-byte、aget-char、aget-short、aput、aput-wide、aput-object、aput-boolean、aput-byte、aput-char、aput-short</code>。</p>
+<h3 id="3-3-9异常指令"><a href="#3-3-9异常指令" class="headerlink" title="3.3.9	异常指令"></a>3.3.9	异常指令</h3><p>​	Dalvik指令集中有一条指令用来抛出异常：</p>
+<p>​	<code>throw vAA</code>抛出 vAA 寄存器中指定类型的异常。</p>
+<h3 id="3-3-10跳转指令"><a href="#3-3-10跳转指令" class="headerlink" title="3.3.10	跳转指令"></a>3.3.10	跳转指令</h3><p>​	跳转指令用于从当前地址跳转到指定的偏移处。Dalvik 指令集中有三种跳转指令：无条件跳转（goto）、分支跳转（switch）与条件跳转（if）。</p>
+<p>​	<code>goto +AA</code> 无条件跳转到指定偏移处，偏移量 AA 不能为0。</p>
+<p>​	<code>goto/16 +AAAA</code>无条件跳转到指定偏移处，偏移量 AAAA 不能为0。</p>
+<p>​	<code>goto/32 +AAAAAAAA</code> 无条件跳转到指定偏移处。</p>
+<p>​	<code>packed-switch VAA,+BBBBBBBB</code> 分支跳转指令。vAA 寄存器为 switch 分支中需要判断的值，BBBBBBBB 指向一个packed-switch-payload 格式的偏移表，表中的值是有规律递增的。</p>
+<p>​	<code>sparse-switch VAA, +BBBBBBBB</code> 分支跳转指令。vAA 寄存器为 switch 分支中需要判断的值，BBBBBBBB 指向一个sparse-switch-payload 格式的偏移表，表中的值是无规律的偏移量。</p>
+<p>​	<code>if-test vA, vB, +CCCC</code> 条件跳转指令。比较 vA 寄存器与 vB 寄存器的值，如果比较结果满足就跳转到 CCCC 指定的偏移处。偏移量 CCCC 不能为 0。if-test 类型的指令有以下几条：</p>
+<ul>
+<li><p><code>if-eq</code> 如果 vA 等于 vB 则跳转。Java 语法表示为 <code>if(vA== vB)</code></p>
+</li>
+<li><p><code>if-ne</code> 如果 vA 不等于 vB 则跳转。Java 语法表示为 <code>if(vA != vB)</code></p>
+</li>
+<li><p><code>if-lt</code> 如果 vA 小于 vB 则跳转。Java 语法表示为 <code>if(vA &lt; vB)</code></p>
+</li>
+<li><p><code>if-ge</code> 如果 vA 大于等于 vB 则跳转。Java 语法表示为 <code>if(vA &gt;= VB)</code></p>
+</li>
+<li><p><code>if-gt</code> 如果 vA 大于 vB 则跳转。Java 语法表示为 <code>if(vA &gt; vB)</code> </p>
+</li>
+<li><p><code>if-le</code> 如果vA 小于等于 vB 则跳转。Java 语法表示为 <code>if(vA &lt;= vB) </code></p>
+</li>
+</ul>
+<p><img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"><img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image008.jpg" alt="img"> <code>if-testz VAA, +BBBB</code> 条件跳转指令。拿 vAA 寄存器与 0 比较，如果比较结果满足或值为 0 时就跳转到 BBBB 指定的偏移处。偏移量 BBBB 不能为 0。if-testz 类型的指令有以下几条：</p>
+<ul>
+<li><p><code>if-eq</code> 如果 vAA 为 0 则跳转。Java 语法表示为 <code>if(!vAA)</code>    </p>
+</li>
+<li><p><code>if-ne</code> 如果 vAA 不为 0 则跳转。Java 语法表示为 <code>if(vAA)</code> </p>
+</li>
+<li><p><code>if-lt</code> 如果 vAA 小于 0 则跳转。Java 语法表示为 <code>if(vAA &lt; 0)</code></p>
+</li>
+<li><p><code>if-ge</code> 如果 vAA 大于等于 0 则跳转。Java 语法表示为 <code>if(vAA &gt;= 0)</code> </p>
+</li>
+<li><p><code>if-gt</code> 如果 vAA 大于 0 则跳转。Java 语法表示为 <code>if(vAA &gt; 0)</code></p>
+</li>
+<li><p><code>if-le</code> 如果 vAA 小于等于 0 则跳转。Java 语法表示为 <code>if(vAA &lt;= 0)</code></p>
+</li>
+</ul>
+<h3 id="3-3-11比较指令"><a href="#3-3-11比较指令" class="headerlink" title="3.3.11	比较指令"></a>3.3.11	比较指令</h3><p>​	比较指令用于对两个寄存器的值（浮点型或长整型）进行比较。它的格式为 <code>cmpkind vAA, vBB, vcc</code>，其中 vBB 寄存器与 vCC 寄存器是需要比较的两个寄存器或两个寄存器对，比较的结果放到 vAA 寄存器。Dalvik 指令集中共有 5 条比较指令：</p>
+<p>​	<code>cmpl-float</code> 比较两个单精度浮点数。如果 vBB 寄存器大于 vCC 寄存器，则结果为 -1，相等则结果为0，小于的话结果为1。</p>
+<p>​	<code>cmpg-float</code> 比较两个单精度浮点数。如果 vBB 寄存器大于 vCC 寄存器，则结果为1，相等则结果为0，小于的话结果为1。</p>
+<p><code>cmpl-double</code> 比较两个双精度浮点数。如果 vBB 寄存器对大于 vCC 寄存器对。则结果为 -1，相等则结果为 0，小于的话结果为 1。</p>
+<p><code>cmpg-double</code> 比较两个双精度浮点数。如果 vBB 寄存器对大于 vCC 寄存器对，则结果为 1，相等则结果为 0，小于的话结果为 -1。</p>
+<p><code>cmp-long</code> 比较两个长整型数。如果 vBB 寄存器大于 vCC 寄存器，则结果为 1，相等则结果为 0，小于的话结果为· -1。	</p>
+<h3 id="3-3-12字段操作指令"><a href="#3-3-12字段操作指令" class="headerlink" title="3.3.12	字段操作指令"></a>3.3.12	字段操作指令</h3><p>​	字段操作指令用来对对象实例的字段进入读写操作。字段的类型可以是 Java 中有效的数据类型。对普通字段与静态字段操作有两种指令集，分别是 <code>iinstanceop VA, VB, field@CCCC</code> 与 <code>sstaticop vAA, field@BBBB</code>。</p>
+<p>​	普通字段指令的指令前缀为 i，如对普通字段读操作使用 iget 指令，写操作使用 iput 指令；静态字段的指令前缀为 s,如对静态字段读操作使用 sget 指令，写操作使用 sput 指令。</p>
+<p>​	根据访问的字段类型不同，字段操作指令后面会紧跟字段类型的后缀，如 iget-byte 指令表示读取实例字段的值类型为字节类型，iput-short 指令表示设置实例字段的值类型为短整形。两类指令操作结果都是一样，只是指令前缀与操作的字段类型不同。</p>
+<p>​	普遍字段操作指令有：<code>iget、iget-wide、iget-object、iget-boolean、iget-byte、iget-char、 iget-short、iput、iput-wide、iput-object、iput-boolean、iput-byte、iput-char、iput-short</code>。</p>
+<p>​	静态字段操作指令有：<code>sget、sget-wide、sget-object、sget-boolean、sget-byte、sget-char、 sget-short、sput、sput-wide、sput-obJ ect、sput-boolean、sput-byte、sput-char、sput-short</code>。</p>
+<p>​	在 Android 4.0 系统中，Dalvik 指令集中增加了 <code>iinstanceop/jumbo vAAAA, vBBBB, field@CCCCCCCC</code> 与 <code>sstaticop/jumbo vAAAA, field@BBBBBBBB</code> 两类指令，它们与上面介绍的两类指令作用相同，只是在指令中增加了jumbo 字节码后缀，且寄存器值与指令的索引取值范围更大。</p>
+<h3 id="3-3-13方法调用指令"><a href="#3-3-13方法调用指令" class="headerlink" title="3.3.13	方法调用指令"></a>3.3.13	方法调用指令</h3><p>​	方法调用指令负责调用类实例的方法。它的基础指令为 invoke，方法调用指令有 <code>invoke-kind &#123;vC, vD, vE, vF, vG&#125;，meth@BBBB</code> 与 <code>invoke-kind/range &#123;vCCCC .. vNNNN&#125;， meth@BBBB</code> 两类，两类指令在作用上并无不同，只是后者在设置参数寄存器时使用了  range  来指定寄存器的范围。根据方法类型的不同，共有如下五条方法调用指令：</p>
+<p>​	<code>invoke-virtual</code> 或 <code>invoke-virtual/range</code> 调用实例的虚方法。</p>
+<p>​	<code>invoke-super</code> 或 <code>invoke-super/range</code> 调用实例的父类方法。</p>
+<p>​	<code>invoke-direct</code> 或 <code>invoke-direct/range</code> 调用实例的直接方法。</p>
+<p>​	<code>invoke-static</code> 或 <code>invoke-static/range</code> 调用实例的静态方法。</p>
+<p>​	<code>invoke-interface</code> 或 <code>invoke-interface/range</code> 调用实例的接口方法。</p>
+<p>​	在 Android 4.0 系统中，Dalvik 指令集中增加了 <code>invoke-kind/jumbo &#123;vcccc .. vNNNN&#125;, meth@BBBBBBBB</code> 这类指令，它与上面介绍的两类指令作用相同，只是在指令中增加了 jumbo 字节码后缀，且寄存器与指令的索引取值更大。</p>
+<p>​	方法调用指令的返回值必须使用 <code>move-result*</code> 指令来获取。如下面两条指令：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">invoke-static &#123;&#125;, <span class="class">Landroid/os/Parcel;</span>-&gt;obtain()<span class="class">Landroid/os/Parcel;</span><span class="built_in"></span></span><br><span class="line"><span class="built_in">move-result-object </span>v0</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-3-14数据转换指令"><a href="#3-3-14数据转换指令" class="headerlink" title="3.3.14	数据转换指令"></a>3.3.14	数据转换指令</h3><p>​	数据转换指令用于将一种类型的数值转换成另一种类型。它的格式为 <code>unop vA, vB</code>，vB 寄存器或 vB 寄存器对存放需要转换的数据，转换后的结果保存在 vA 寄存器或 vA 寄存器对中。</p>
+<p>​	<code>neg-int</code> 对整型数求补。</p>
+<p><img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"> <code>not-int</code> 对整型数求反。</p>
+<p>​	<code>neg-long</code> 对长整型数求补。</p>
+<p>​	<code>not-long</code> 对长整型数求反。</p>
+<p>​	<code>neg-float</code> 对单精度浮点型数求补。</p>
+<p>​	<code>neg-double</code> 对双精度浮点型数求补。</p>
+<p>​	<code>int-to-long</code> 将整型数转换为长整型。</p>
+<p>​	<code>int-to-float</code> 将整型数转换为单精度浮点型。 <img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"></p>
+<p>​	<code>int-to-double</code> 将整型数转换为双精度浮点型。</p>
+<p>​	<code>long-to-int</code> 将长整型数转换为整型。</p>
+<p>​	<code>long-to-float</code> 将长整型数转换为单精度浮点型。</p>
+<p>​	<code>long-to-double</code> 将长整型数转换为双精度浮点型。</p>
+<p>​	<code>float-to-int</code> 将单精度浮点型数转换为整型。</p>
+<p>​	<code>float-to-long</code> 将单精度浮点型数转换为长整型。</p>
+<p>​	<code>float-to-double</code> 将单精度浮点型数转换为双精度浮点型。</p>
+<p>​	<code>double-to-int</code> 将双精度浮点型数转换为整型。</p>
+<p>​	<code>double-to-long</code> 将双精度浮点型数转换为长整型。</p>
+<p>​	<code>double-to-float</code> 将双精度浮点型数转换为单精度浮点型。</p>
+<p>​	<code>int-to-byte</code> 将整型转换为字节型。</p>
+<p>​	<code>int-to-char</code> 将整形转换为字符串。</p>
+<p>​	<code>int-to-short</code> 将整型转换为短整型。</p>
+<h3 id="3-3-15数据运算指令"><a href="#3-3-15数据运算指令" class="headerlink" title="3.3.15	数据运算指令"></a>3.3.15	数据运算指令</h3><p>​	数据运算指令包括算术运算指令与逻辑运算指令。算术运算指令主要进行数值间如加、减、乘、除、模、移位等运算，逻辑运算指令主要进行数值间与、或、非、异或等运算。数据运算指令有如下四类（数据运算时可能是在寄存器或寄存器对间进行，下面的指令作用讲解时使用寄存器来描述)：</p>
+<p>​	<code>binop vAA, vBB, vcc</code> 将 vBB 寄存器与 vCC 寄存器进行运算，结果保存到 vAA 寄存器。</p>
+<p>​	<code>binop/2addrvA, VB</code>将 vA 寄存器与 vB 寄存器进行运算，结果保存到 vA 寄存器。 <img src="file:///C:/Users/52911/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg" alt="img"></p>
+<p>​	<code>binop/lit16 VA, VB, #+CCCC</code> 将 vB 寄存器与常量 CCCC 进行运算，结果保存到 vA 寄存器。</p>
+<p>​	<code>binop/lit8 vAA, vBB, #+cc</code>将 vBB 寄存器与常量 CC 进行运算，结果保存到 vAA 寄存器。</p>
+<p>​	后面3类指令比第 1 类指令分别多出了 2addr、1it16、lit8 等指令后缀。四类指令中基础字节码相同的指令执行的运算操作是类似的，第 1 类指令中，根据数据的类型不同会在基础字节码后面加上数据类型后缀，如 -int 或 -long 分别表示操作的数据类型为整型与长整型。第 1 类指令可归类如下：</p>
+<p>​	<code>add-type</code> vBB 寄存器与 vCC 寄存器值进行加法运算（vBB + vCC）。</p>
+<p>​	<code>sub-type</code> vBB 寄存器与 vCC 寄存器值进行减法运算（vBB · vCC）。</p>
+<pre><code> `mul-type` vBB 寄存器与 vCC 寄存器值进行乘法运算（vBB * vCC）。
+</code></pre>
+<p>​	<code>div-type</code> vBB 寄存器与 vCC 寄存器值进行除法运算（vBB &#x2F; vCC）。</p>
+<p>​	<code>rem-type</code> vBB 寄存器与 vCC 寄存器值进行模运算（vBB ％ vCC）。</p>
+<p>​	<code>and-type</code> vBB 寄存器与 vCC 寄存器值进行与运算（vBB AND vCC）。</p>
+<p>​	<code>or-type</code> vBB 寄存器与 vCC 寄存器值进行或运算（vBB OR vCC）。</p>
+<p>​	<code>xor-type</code> vBB 寄存器与 vCC 寄存器值进行异或运算（vBB XOR vCC）。</p>
+<p>​	<code>shl-type</code>  vBB 寄存器值（有符号数）左移 vCC 位（vBB &lt;&lt; vCC）。</p>
+<p>​	<code>shr-type</code> vBB 寄存器值（有符号数）右移 vCC 位（vBB &gt;&gt; vCC）。</p>
+<p>​	<code>ushr-type</code> vBB 寄存器值（无符号数）右移 vCC 位（vBB &gt;&gt; vCC）。</p>
+<p>​	其中基础字节码后面的 -type 可以是-int、-long、-float、-double。后面 3 类指令与之类似，此处不再列出。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2023/01/15/Android%20%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E4%B8%8E%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E8%BF%9B%E5%85%A5%20Android%20Dalvik%20%E8%99%9A%E6%8B%9F%E6%9C%BA/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2023/01/04/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AD%A6%E4%B9%A0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">正则表达式学习</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022-2023
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
