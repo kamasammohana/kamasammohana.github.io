@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>西湖论剑 2023 初赛 RE 复现 |  Kama</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="engineering-西湖论剑 2023 初赛 RE 复现"
+  class="article article-type-engineering"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  西湖论剑 2023 初赛 RE 复现
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/02/14/%E8%A5%BF%E6%B9%96%E8%AE%BA%E5%89%91%202023%20%E5%88%9D%E8%B5%9B%20RE%20%E5%A4%8D%E7%8E%B0/" class="article-date">
+  <time datetime="2023-02-13T16:12:43.531Z" itemprop="datePublished">2023-02-14</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">20 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="西湖论剑-2023-初赛-RE-复现"><a href="#西湖论剑-2023-初赛-RE-复现" class="headerlink" title="西湖论剑 2023 初赛 RE 复现"></a>西湖论剑 2023 初赛 RE 复现</h1><h2 id="Dual-personality"><a href="#Dual-personality" class="headerlink" title="Dual personality"></a>Dual personality</h2><p>​	第一次见到这种题目，好好做个记录。</p>
+<p>​	拿到题目文件，无壳 32 位 exe 文件。放入 ida 中分析，发现主函数没办法反编译。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br></pre></td><td class="code"><pre><span class="line">; int __cdecl main(int argc, const char **argv, const char **envp)</span><br><span class="line">.text:004013A0 _main:                                  ; CODE XREF: invoke_main(void)+2E↓p</span><br><span class="line">.text:004013A0                 push    ebp</span><br><span class="line">.text:004013A1                 mov     ebp, esp</span><br><span class="line">.text:004013A3                 sub     esp, 134h</span><br><span class="line">.text:004013A9                 push    ebx</span><br><span class="line">.text:004013AA                 push    esi</span><br><span class="line">.text:004013AB                 push    edi</span><br><span class="line">.text:004013AC                 lea     edi, [ebp-74h]</span><br><span class="line">.text:004013AF                 mov     ecx, 1Dh</span><br><span class="line">.text:004013B4                 mov     eax, 0CCCCCCCCh</span><br><span class="line">.text:004013B9                 rep stosd</span><br><span class="line">.text:004013BB                 mov     eax, ___security_cookie</span><br><span class="line">.text:004013C0                 xor     eax, ebp</span><br><span class="line">.text:004013C2                 mov     [ebp-4], eax</span><br><span class="line">.text:004013C5                 call    sub_401000</span><br><span class="line">.text:004013CA                 push    offset unk_407060</span><br><span class="line">.text:004013CF                 push    offset a99s     ; &quot;%99s&quot;</span><br><span class="line">.text:004013D4                 call    sub_401620</span><br><span class="line">.text:004013D9                 add     esp, 8</span><br><span class="line">.text:004013DC                 push    offset dword_4011D0</span><br><span class="line">.text:004013E1                 push    7</span><br><span class="line">.text:004013E3                 call    heaven_gate</span><br><span class="line">.text:004013E8                 add     esp, 8</span><br><span class="line">.text:004013EB                 test    eax, eax</span><br><span class="line">.text:004013ED                 jz      short loc_4013F4</span><br><span class="line">.text:004013EF                 mov     eax, dword_407058</span><br><span class="line">.text:004013F4</span><br><span class="line">.text:004013F4 loc_4013F4:                             ; CODE XREF: .text:004013ED↑j</span><br><span class="line">.text:004013F4                 sub     eax, 21524111h</span><br><span class="line">.text:004013F9                 mov     dword_407058, eax</span><br><span class="line">.text:004013FE                 mov     dword ptr [ebp-0Ch], offset unk_407060</span><br><span class="line">.text:00401405                 mov     dword ptr [ebp-18h], 0</span><br><span class="line">.text:0040140C                 jmp     short loc_401417</span><br><span class="line">.text:0040140E ; ---------------------------------------------------------------------------</span><br><span class="line">.text:0040140E</span><br><span class="line">.text:0040140E loc_40140E:                             ; CODE XREF: .text:0040144A↓j</span><br><span class="line">.text:0040140E                 mov     eax, [ebp-18h]</span><br><span class="line">.text:00401411                 add     eax, 1</span><br><span class="line">.text:00401414                 mov     [ebp-18h], eax</span><br><span class="line">.text:00401417</span><br><span class="line">.text:00401417 loc_401417:                             ; CODE XREF: .text:0040140C↑j</span><br><span class="line">.text:00401417                 cmp     dword ptr [ebp-18h], 8</span><br><span class="line">.text:0040141B                 jge     short loc_40144C</span><br><span class="line">.text:0040141D                 mov     eax, [ebp-18h]</span><br><span class="line">.text:00401420                 mov     ecx, [ebp-0Ch]</span><br><span class="line">.text:00401423                 mov     edx, [ecx+eax*4]</span><br><span class="line">.text:00401426                 add     edx, dword_407058</span><br><span class="line">.text:0040142C                 mov     eax, [ebp-18h]</span><br><span class="line">.text:0040142F                 mov     ecx, [ebp-0Ch]</span><br><span class="line">.text:00401432                 mov     [ecx+eax*4], edx</span><br><span class="line">.text:00401435                 mov     eax, [ebp-18h]</span><br><span class="line">.text:00401438                 mov     ecx, [ebp-0Ch]</span><br><span class="line">.text:0040143B                 mov     edx, dword_407058</span><br><span class="line">.text:00401441                 xor     edx, [ecx+eax*4]</span><br><span class="line">.text:00401444                 mov     dword_407058, edx</span><br><span class="line">.text:0040144A                 jmp     short loc_40140E</span><br><span class="line">.text:0040144C ; ---------------------------------------------------------------------------</span><br><span class="line">.text:0040144C</span><br><span class="line">.text:0040144C loc_40144C:                             ; CODE XREF: .text:0040141B↑j</span><br><span class="line">.text:0040144C                 push    0</span><br><span class="line">.text:0040144E                 lea     eax, unk_407060</span><br><span class="line">.text:00401454                 push    eax</span><br><span class="line">.text:00401455                 call    fword ptr byte_40700C</span><br><span class="line">.text:0040145B                 push    offset dword_401290</span><br><span class="line">.text:00401460                 push    7</span><br><span class="line">.text:00401462                 call    heaven_gate</span><br><span class="line">.text:00401467                 add     esp, 8</span><br><span class="line">.text:0040146A                 test    eax, eax</span><br><span class="line">.text:0040146C                 jnz     short near ptr loc_40146F+4</span><br><span class="line">.text:0040146E                 dec     eax</span><br><span class="line">.text:0040146F</span><br><span class="line">.text:0040146F loc_40146F:                             ; CODE XREF: .text:0040146C↑j</span><br><span class="line">.text:0040146F                 mov     eax, dword_4070C8</span><br><span class="line">.text:00401476                 dec     eax</span><br><span class="line">.text:00401477                 cmp     eax, 20h ; &#x27; &#x27;</span><br><span class="line">.text:0040147A                 jz      short loc_4014BC</span><br><span class="line">.text:0040147C                 dec     eax</span><br><span class="line">.text:0040147D                 xor     edx, edx</span><br><span class="line">.text:0040147F                 dec     eax</span><br><span class="line">.text:00401480                 mov     ecx, 4</span><br><span class="line">.text:00401480 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00401485                 db 3 dup(0)</span><br><span class="line">.text:00401488                 dd 0F1F74800h, 251C8D48h, 407014h, 4893148Ah, 0C825048Bh</span><br><span class="line">.text:00401488                 dd 48004070h, 60251C8Dh, 8A004070h, 0CA32030Ch, 48030C88h</span><br><span class="line">.text:00401488                 dd 8948C0FFh, 70C82504h, 0B2EB0040h</span><br><span class="line">.text:004014BC ; ---------------------------------------------------------------------------</span><br><span class="line">.text:004014BC</span><br><span class="line">.text:004014BC loc_4014BC:                             ; CODE XREF: .text:0040147A↑j</span><br><span class="line">.text:004014BC                 inc     esp</span><br><span class="line">.text:004014BD                 mov     eax, offset dword_407000</span><br><span class="line">.text:004014C2                 dec     eax</span><br><span class="line">.text:004014C3                 jmp     fword ptr [eax]</span><br><span class="line">.text:004014C5 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:004014C5                 xor     eax, eax</span><br><span class="line">.text:004014C7                 mov     [ebp-44h], eax</span><br><span class="line">.text:004014CA                 mov     [ebp-40h], eax</span><br><span class="line">.text:004014CD                 mov     [ebp-3Ch], eax</span><br><span class="line">.text:004014D0                 mov     [ebp-38h], eax</span><br><span class="line">.text:004014D3                 mov     [ebp-34h], eax</span><br><span class="line">.text:004014D6                 mov     [ebp-30h], eax</span><br><span class="line">.text:004014D9                 mov     [ebp-2Ch], eax</span><br><span class="line">.text:004014DC                 mov     [ebp-28h], eax</span><br><span class="line">.text:004014DF                 mov     [ebp-24h], al</span><br><span class="line">.text:004014E2                 mov     byte ptr [ebp-70h], 0AAh</span><br><span class="line">.text:004014E6                 mov     byte ptr [ebp-6Fh], 4Fh ; &#x27;O&#x27;</span><br><span class="line">.text:004014EA                 mov     byte ptr [ebp-6Eh], 0Fh</span><br><span class="line">.text:004014EE                 mov     byte ptr [ebp-6Dh], 0E2h</span><br><span class="line">.text:004014F2                 mov     byte ptr [ebp-6Ch], 0E4h</span><br><span class="line">.text:004014F6                 mov     byte ptr [ebp-6Bh], 41h ; &#x27;A&#x27;</span><br><span class="line">.text:004014FA                 mov     byte ptr [ebp-6Ah], 99h</span><br><span class="line">.text:004014FE</span><br><span class="line">.text:004014FE loc_4014FE:                             ; CODE XREF: .text:004013E8↑J</span><br><span class="line">.text:004014FE                 mov     byte ptr [ebp-69h], 54h ; &#x27;T&#x27;</span><br><span class="line">.text:00401502                 mov     byte ptr [ebp-68h], 2Ch ; &#x27;,&#x27;</span><br><span class="line">.text:00401506                 mov     byte ptr [ebp-67h], 2Bh ; &#x27;+&#x27;</span><br><span class="line">.text:0040150A                 mov     byte ptr [ebp-66h], 84h</span><br><span class="line">.text:0040150E                 mov     byte ptr [ebp-65h], 7Eh ; &#x27;~&#x27;</span><br><span class="line">.text:00401512                 mov     byte ptr [ebp-64h], 0BCh</span><br><span class="line">.text:00401516                 mov     byte ptr [ebp-63h], 8Fh</span><br><span class="line">.text:0040151A                 mov     byte ptr [ebp-62h], 8Bh</span><br><span class="line">.text:0040151E                 mov     byte ptr [ebp-61h], 78h ; &#x27;x&#x27;</span><br><span class="line">.text:00401522                 mov     byte ptr [ebp-60h], 0D3h</span><br><span class="line">.text:00401526                 mov     byte ptr [ebp-5Fh], 73h ; &#x27;s&#x27;</span><br><span class="line">.text:0040152A                 mov     byte ptr [ebp-5Eh], 88h</span><br><span class="line">.text:0040152E                 mov     byte ptr [ebp-5Dh], 5Eh ; &#x27;^&#x27;</span><br><span class="line">.text:00401532                 mov     byte ptr [ebp-5Ch], 0AEh</span><br><span class="line">.text:00401536                 mov     byte ptr [ebp-5Bh], 47h ; &#x27;G&#x27;</span><br><span class="line">.text:0040153A                 mov     byte ptr [ebp-5Ah], 85h</span><br><span class="line">.text:0040153E                 mov     byte ptr [ebp-59h], 70h ; &#x27;p&#x27;</span><br><span class="line">.text:00401542                 mov     byte ptr [ebp-58h], 31h ; &#x27;1&#x27;</span><br><span class="line">.text:00401546                 mov     byte ptr [ebp-57h], 0B3h</span><br><span class="line">.text:0040154A                 mov     byte ptr [ebp-56h], 9</span><br><span class="line">.text:0040154E                 mov     byte ptr [ebp-55h], 0CEh</span><br><span class="line">.text:00401552                 mov     byte ptr [ebp-54h], 13h</span><br><span class="line">.text:00401556                 mov     byte ptr [ebp-53h], 0F5h</span><br><span class="line">.text:0040155A                 mov     byte ptr [ebp-52h], 0Dh</span><br><span class="line">.text:0040155E                 mov     byte ptr [ebp-51h], 0CAh</span><br><span class="line">.text:00401562                 xor     eax, eax</span><br><span class="line">.text:00401564                 mov     [ebp-50h], al</span><br><span class="line">.text:00401567                 push    20h ; &#x27; &#x27;</span><br><span class="line">.text:00401569                 lea     eax, [ebp-70h]</span><br><span class="line">.text:0040156C                 push    eax</span><br><span class="line">.text:0040156D                 push    offset unk_407060</span><br><span class="line">.text:00401572                 call    memcmp</span><br><span class="line">.text:00401577                 add     esp, 0Ch</span><br><span class="line">.text:0040157A                 test    eax, eax</span><br><span class="line">.text:0040157C                 jnz     short loc_4015A6</span><br><span class="line">.text:0040157E                 mov     esi, esp</span><br><span class="line">.text:00401580                 push    offset aRightFlagIsDas ; &quot;Right, flag is DASCTF&#123;your input&#125;&quot;</span><br><span class="line">.text:00401585                 call    ds:puts</span><br><span class="line">.text:0040158B                 add     esp, 4</span><br><span class="line">.text:0040158E                 cmp     esi, esp</span><br><span class="line">.text:00401590                 call    __RTC_CheckEsp</span><br><span class="line">.text:00401595                 mov     esi, esp</span><br><span class="line">.text:00401597                 push    0</span><br><span class="line">.text:00401599                 call    ds:__imp_exit</span><br><span class="line">.text:0040159F ; ---------------------------------------------------------------------------</span><br><span class="line">.text:0040159F                 cmp     esi, esp</span><br><span class="line">.text:004015A1                 call    __RTC_CheckEsp</span><br><span class="line">.text:004015A6</span><br><span class="line">.text:004015A6 loc_4015A6:                             ; CODE XREF: .text:0040157C↑j</span><br><span class="line">.text:004015A6                 mov     esi, esp</span><br><span class="line">.text:004015A8                 push    offset aWrongFlag ; &quot;Wrong flag&quot;</span><br><span class="line">.text:004015AD                 call    ds:puts</span><br><span class="line">.text:004015B3                 add     esp, 4</span><br><span class="line">.text:004015B6                 cmp     esi, esp</span><br><span class="line">.text:004015B8                 call    __RTC_CheckEsp</span><br><span class="line">.text:004015BD                 xor     eax, eax</span><br><span class="line">.text:004015BF                 push    edx</span><br><span class="line">.text:004015C0</span><br><span class="line">.text:004015C0 loc_4015C0:                             ; CODE XREF: .text:00401467↑J</span><br><span class="line">.text:004015C0                 mov     ecx, ebp</span><br><span class="line">.text:004015C2                 push    eax</span><br><span class="line">.text:004015C3                 lea     edx, dword_4015F0</span><br><span class="line">.text:004015C9                 call    @_RTC_CheckStackVars@8 ; _RTC_CheckStackVars(x,x)</span><br><span class="line">.text:004015CE                 pop     eax</span><br><span class="line">.text:004015CF                 pop     edx</span><br><span class="line">.text:004015D0                 pop     edi</span><br><span class="line">.text:004015D1                 pop     esi</span><br><span class="line">.text:004015D2                 pop     ebx</span><br><span class="line">.text:004015D3                 mov     ecx, [ebp-4]</span><br><span class="line">.text:004015D6                 xor     ecx, ebp</span><br><span class="line">.text:004015D8                 call    sub_4018A0</span><br><span class="line">.text:004015DD                 add     esp, 134h</span><br><span class="line">.text:004015E3                 cmp     ebp, esp</span><br><span class="line">.text:004015E5                 call    __RTC_CheckEsp</span><br><span class="line">.text:004015EA                 mov     esp, ebp</span><br><span class="line">.text:004015EC                 pop     ebp</span><br><span class="line">.text:004015ED                 retn</span><br></pre></td></tr></table></figure>
+
+<p>​	猜测其中存在花指令。我们对汇编进行逐步分析。</p>
+<p>​	第一个函数 <code>sub_401000</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">sub_401000</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> i; <span class="comment">// [esp+DCh] [ebp-54h]</span></span><br><span class="line">  <span class="type">int</span> v2; <span class="comment">// [esp+E8h] [ebp-48h]</span></span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// [esp+100h] [ebp-30h]</span></span><br><span class="line">  HMODULE ModuleHandleA; <span class="comment">// [esp+118h] [ebp-18h]</span></span><br><span class="line">  DWORD flOldProtect[<span class="number">2</span>]; <span class="comment">// [esp+124h] [ebp-Ch] BYREF</span></span><br><span class="line"></span><br><span class="line">  __CheckForDebuggerJustMyCode(&amp;unk_4080A2);</span><br><span class="line">  ModuleHandleA = <span class="built_in">GetModuleHandleA</span>(<span class="number">0</span>);</span><br><span class="line">  v3 = (<span class="type">int</span>)ModuleHandleA + *((_DWORD *)ModuleHandleA + <span class="number">15</span>) + <span class="number">4</span>;</span><br><span class="line">  v2 = (<span class="type">int</span>)ModuleHandleA</span><br><span class="line">     + *((_DWORD *)ModuleHandleA + <span class="number">15</span>)</span><br><span class="line">     + *(<span class="type">unsigned</span> __int16 *)((<span class="type">char</span> *)ModuleHandleA + *((_DWORD *)ModuleHandleA + <span class="number">15</span>) + <span class="number">20</span>)</span><br><span class="line">     + <span class="number">24</span>;</span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0</span>; ; ++i )</span><br><span class="line">  &#123;</span><br><span class="line">    result = v3;</span><br><span class="line">    <span class="keyword">if</span> ( i &gt;= *(<span class="type">unsigned</span> __int16 *)(v3 + <span class="number">2</span>) )</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="built_in">VirtualProtect</span>((<span class="type">char</span> *)ModuleHandleA + *(_DWORD *)(v2 + <span class="number">12</span>), *(_DWORD *)(v2 + <span class="number">20</span>), <span class="number">0x40</span>u, flOldProtect);</span><br><span class="line">    v2 += <span class="number">40</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	发现他对我们的输入并没有什么影响，主要是对进程做一些设置。</p>
+<p>​	下一个函数 <code>sub_401620</code> 传入的参数有 %99s，并且我们通过单步调试可以明确这是一个输入函数。</p>
+<p>​	再下面我们就来到了关键函数 <code>heaven_gate</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">heaven_gate</span><span class="params">(<span class="type">size_t</span> Size, <span class="type">int</span> a2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">char</span> *v2; <span class="comment">// ebx</span></span><br><span class="line">  <span class="type">char</span> *retaddr; <span class="comment">// [esp+D0h] [ebp+4h]</span></span><br><span class="line"></span><br><span class="line">  dword_407050 = <span class="built_in">VirtualAlloc</span>(<span class="number">0</span>, Size + <span class="number">6</span>, <span class="number">0x3000</span>u, <span class="number">0x40</span>u);</span><br><span class="line">  dword_407000 = (<span class="type">int</span>)dword_407050;</span><br><span class="line">  <span class="built_in">memcpy</span>(dword_407050, retaddr, Size);</span><br><span class="line">  v2 = (<span class="type">char</span> *)dword_407050 + Size;</span><br><span class="line">  *v2 = <span class="number">-23</span>;</span><br><span class="line">  *(_DWORD *)(v2 + <span class="number">1</span>) = &amp;retaddr[Size] - v2 - <span class="number">5</span>;</span><br><span class="line">  v2[<span class="number">5</span>] = <span class="number">0xCC</span>;</span><br><span class="line">  *retaddr = <span class="number">-22</span>;</span><br><span class="line">  *(_DWORD *)(retaddr + <span class="number">1</span>) = a2;</span><br><span class="line">  *(_WORD *)(retaddr + <span class="number">5</span>) = <span class="number">0x33</span>;	<span class="comment">/* 段选择子 */</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	这里先记录一个知识点，x86-64 系统下的进程存在 32 位和 64 位两种工作模式，当处在 32 位工作模式下，段寄存器 CS 的值为 0x23，当初在 64 位工作模式下，段寄存器 CS 的值为 0x33，因为 cs 段寄存器存放的是段描述符在 GDT 的索引，CS为 0x33 在 GDT 表对应的段描述符为 64 位，CS 为 0x23 在 GDT 表对应的段描述符为 32 位。所以这里就存在一种方式在 32 位程序上执行 64 位代码的方法，被称作<strong>天堂之门</strong>。由于 32 位 ida 无法反编译 64 位的代码，所以这种技术极大的干扰了我们静态分析程序。</p>
+<p>​	通常，一般的 mov 指令没有办法直接修改 CS 段寄存器的值。所以这里就会使用到三条指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jmp far ptr</span><br><span class="line"></span><br><span class="line">call far</span><br><span class="line"></span><br><span class="line">retf</span><br></pre></td></tr></table></figure>
+
+<p>​	首先 jmp far ptr 这个指令不仅会实现跳转，同时会修改 CS 寄存器的值。在 windbg 中对jmp far ptr 反汇编的汇编的代码例如 <code>jmp 0x33:addr</code>，冒号左边的值保存在 CS 寄存器中，而右边的值保存在 ip 中。</p>
+<p>​	同理 call far 也是这个道理，它的格式也如是 <code>call 0x33:addr</code>。</p>
+<p>​	retf  指令不同于普通的 ret 指令吗，他会从栈上弹出两个数据，一个赋值给 CS 寄存器，一个赋值给 ip。</p>
+<p>​	了解了这些，接下来我们来看这个函数。这个函数申请了一段内存，并且将这个函数接下来的几条指令复制一份放入申请的内存中。并同时修改两份代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 对原本指令的修改</span><br><span class="line">.text:004013E8 jmp     far ptr loc_4014FE+2</span><br><span class="line">.text:004013EF mov     eax, dword_407058</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 对申请内存保存指令的修改</span><br><span class="line">debug045:00420000 add     esp, 8</span><br><span class="line">debug045:00420003 test    eax, eax</span><br><span class="line">debug045:00420005 jz      short loc_42000C</span><br><span class="line">debug045:00420007 jmp     loc_4013EF</span><br><span class="line">debug045:0042000C ; ---------------------------------------------------------------------------</span><br><span class="line">debug045:0042000C</span><br><span class="line">debug045:0042000C loc_42000C:                             ; CODE XREF: debug045:00420005↑j</span><br><span class="line">debug045:0042000C int     3                               ; Trap to Debugger</span><br></pre></td></tr></table></figure>
+
+<p>​	在指令修改后，我们可以看到 jmp far ptr，我们直接看其机器码就能发现熟悉的格式：</p>
+<p>​	<code>EA D0 11 40 00 33 00</code> -&gt; <code>jmp 0x33:0x4011D0</code> </p>
+<p>​	我们可以得知跳转的目标地址处应该是一段 64 位代码，直接在 32 位 ida 上没办法进行分析。我们使用 010 editor 将这个 pe 文件的 pe 可选头的第一个 WORD 由 10B 改为 20B（32 位和 64 位的标识），这样就可以使用 64 位 ida 对 64 位代码进行反汇编，并且注意将分析程序重定位，保持与 32 位程序基地址一致（直接使用 windbg 会少不少事）。我们来看看目标地址处的 64 位代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">add_4011d0:</span><br><span class="line">.text:00000000004011C4                 align 10h</span><br><span class="line">.text:00000000004011D0                 mov     rax, gs:60h     ; 获取 PEB</span><br><span class="line">.text:00000000004011D9                 mov     al, [rax+2]     ; 获取 BeingDebugged 字段</span><br><span class="line">.text:00000000004011DC                 mov     byte_40705C, al</span><br><span class="line">.text:00000000004011E3                 test    al, al          ; 检测是否处于调试进程</span><br><span class="line">.text:00000000004011E5                 jnz     short loc_4011F5 ; 调试状态下执行</span><br><span class="line">.text:00000000004011E7                 mov     r12d, 5DF966AEh ; 非调试状态下执行</span><br><span class="line">.text:00000000004011ED                 mov     dword_407058, r12d</span><br><span class="line">.text:00000000004011F5</span><br><span class="line">.text:00000000004011F5 loc_4011F5:                             ; CODE XREF: .text:00000000004011E5↑j</span><br><span class="line">.text:00000000004011F5                 mov     eax, 407000h    ; 调试状态下执行</span><br><span class="line">.text:00000000004011FB                 jmp     qword ptr [rax]</span><br></pre></td></tr></table></figure>
+
+<p>​	这里是一个反调试手段：BeingDebugged反调试技巧。gs:60h 获得 PEB 结构（进程环境块）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_PEB</span> &#123;</span><br><span class="line">  BYTE                          Reserved1[<span class="number">2</span>];</span><br><span class="line">  BYTE                          BeingDebugged;</span><br><span class="line">  BYTE                          Reserved2[<span class="number">1</span>];</span><br><span class="line">  PVOID                         Reserved3[<span class="number">2</span>];</span><br><span class="line">  PPEB_LDR_DATA                 Ldr;</span><br><span class="line">  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;</span><br><span class="line">  PVOID                         Reserved4[<span class="number">3</span>];</span><br><span class="line">  PVOID                         AtlThunkSListPtr;</span><br><span class="line">  PVOID                         Reserved5;</span><br><span class="line">  ULONG                         Reserved6;</span><br><span class="line">  PVOID                         Reserved7;</span><br><span class="line">  ULONG                         Reserved8;</span><br><span class="line">  ULONG                         AtlThunkSListPtr32;</span><br><span class="line">  PVOID                         Reserved9[<span class="number">45</span>];</span><br><span class="line">  BYTE                          Reserved10[<span class="number">96</span>];</span><br><span class="line">  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;</span><br><span class="line">  BYTE                          Reserved11[<span class="number">128</span>];</span><br><span class="line">  PVOID                         Reserved12[<span class="number">1</span>];</span><br><span class="line">  ULONG                         SessionId;</span><br><span class="line">&#125; PEB, *PPEB;</span><br></pre></td></tr></table></figure>
+
+<pre><code> mov al, [rax+2] 后。al的值就是 BeingDebugged 的值，调试状态为 1，非调试状态为 0。根据调试状态的不同执行不同的指令，这里的区别就是是否将 5DF966AE 赋值，参与后面的加密扩散的步骤。这里执行完毕后程序会跳转到申请的内存中，进而通过偏移跳转回程序的主函数继续执行。
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># alloc 目标内存</span><br><span class="line">debug045:00420000 add     esp, 8</span><br><span class="line">debug045:00420003 test    eax, eax</span><br><span class="line">debug045:00420005 jz      short loc_42000C</span><br><span class="line">debug045:00420007 jmp     loc_4013EF</span><br><span class="line">debug045:0042000C ; ---------------------------------------------------------------------------</span><br><span class="line">debug045:0042000C</span><br><span class="line">debug045:0042000C loc_42000C:                             ; CODE XREF: debug045:00420005↑j</span><br><span class="line">debug045:0042000C int     3                               ; Trap to Debugger</span><br></pre></td></tr></table></figure>
+
+<p>程序诸如此类的切换段选择子的方式还有两处：</p>
+<p>第二处：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.text:0040144C push    0</span><br><span class="line">.text:0040144E lea     eax, input</span><br><span class="line">.text:00401454 push    eax</span><br><span class="line">.text:00401455 call    fword ptr byte_40700C</span><br></pre></td></tr></table></figure>
+
+<p>64位代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">; __int64 __fastcall add_401200(__int64, __int64, __int64, __int64, __int64)</span><br><span class="line">.text:0000000000401200 add_401200      proc far</span><br><span class="line">.text:0000000000401200                 push    rbp</span><br><span class="line">.text:0000000000401201                 mov     rbp, rsp</span><br><span class="line">.text:0000000000401204                 mov     al, byte_40705C</span><br><span class="line">.text:000000000040120D                 test    al, al          ; 再次检查是否处于调试状态</span><br><span class="line">.text:000000000040120F                 jz      short loc_401245 ; 非调试状态执行</span><br><span class="line">.text:0000000000401211                 mov     rax, [rbp+10h]</span><br><span class="line">.text:0000000000401215                 mov     rbx, [rax]</span><br><span class="line">.text:0000000000401218                 rol     rbx, 20h</span><br><span class="line">.text:000000000040121C                 mov     [rax], rbx</span><br><span class="line">.text:000000000040121F                 mov     rbx, [rax+8]</span><br><span class="line">.text:0000000000401223                 rol     rbx, 20h</span><br><span class="line">.text:0000000000401227                 mov     [rax+8], rbx</span><br><span class="line">.text:000000000040122B                 mov     rbx, [rax+10h]</span><br><span class="line">.text:000000000040122F                 rol     rbx, 20h</span><br><span class="line">.text:0000000000401233                 mov     [rax+10h], rbx</span><br><span class="line">.text:0000000000401237                 mov     rbx, [rax+18h]</span><br><span class="line">.text:000000000040123B                 rol     rbx, 20h</span><br><span class="line">.text:000000000040123F                 mov     [rax+18h], rbx</span><br><span class="line">.text:0000000000401243                 jmp     short loc_40127C</span><br><span class="line">.text:0000000000401245 ; -------------------------------------------------------------------</span><br><span class="line">.text:0000000000401245</span><br><span class="line">.text:0000000000401245 loc_401245:                             ; CODE XREF: add_401200+F↑j</span><br><span class="line">.text:0000000000401245                 mov     rax, [rbp+10h]  ; 非调试状态执行</span><br><span class="line">.text:0000000000401249                 mov     rbx, [rax]      ; 获取待加密数据，8字节一组进行移位</span><br><span class="line">.text:000000000040124C                 rol     rbx, 0Ch        ; 循环左移0xc</span><br><span class="line">.text:0000000000401250                 mov     [rax], rbx      ; 保存数据</span><br><span class="line">.text:0000000000401253                 mov     rbx, [rax+8]</span><br><span class="line">.text:0000000000401257                 rol     rbx, 22h</span><br><span class="line">.text:000000000040125B                 mov     [rax+8], rbx</span><br><span class="line">.text:000000000040125F                 mov     rbx, [rax+10h]</span><br><span class="line">.text:0000000000401263                 rol     rbx, 38h</span><br><span class="line">.text:0000000000401267                 mov     [rax+10h], rbx</span><br><span class="line">.text:000000000040126B                 mov     rbx, [rax+18h]</span><br><span class="line">.text:000000000040126F                 rol     rbx, 0Eh</span><br><span class="line">.text:0000000000401273                 mov     [rax+18h], rbx</span><br><span class="line">.text:0000000000401277                 mov     ebx, 0</span><br><span class="line">.text:000000000040127C</span><br><span class="line">.text:000000000040127C loc_40127C:                             ; CODE XREF: add_401200+43↑j</span><br><span class="line">.text:000000000040127C                 mov     ebx, 0</span><br><span class="line">.text:0000000000401281                 xor     rax, rax</span><br><span class="line">.text:0000000000401284                 mov     rsp, rbp</span><br><span class="line">.text:0000000000401287                 pop     rbp</span><br><span class="line">.text:0000000000401288                 retf    8</span><br><span class="line">.text:0000000000401288 add_401200      endp</span><br></pre></td></tr></table></figure>
+
+<p>第三处（同第一处由 haven_gate 函数申请内存保存并修改指令）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.text:00401467 jmp     far ptr loc_4015C0</span><br></pre></td></tr></table></figure>
+
+<p>64 位代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">add_401290:                             ; 第三次64位跳转</span><br><span class="line">.text:0000000000401290                 xor     rax, rax</span><br><span class="line">.text:0000000000401293                 mov     rax, 4014C5h    </span><br><span class="line">.text:000000000040129D                 mov     dword_407000, eax </span><br><span class="line">.text:00000000004012A4                 lea     rax, ds:407014h ; 初始key</span><br><span class="line">.text:00000000004012AC                 mov     bl, [rax]</span><br><span class="line">.text:00000000004012AE                 mov     cl, [rax+4]</span><br><span class="line">.text:00000000004012B1                 and     bl, cl</span><br><span class="line">.text:00000000004012B3                 mov     [rax], bl</span><br><span class="line">.text:00000000004012B5                 mov     bl, [rax+4]</span><br><span class="line">.text:00000000004012B8                 mov     cl, [rax+8]</span><br><span class="line">.text:00000000004012BB                 or      bl, cl</span><br><span class="line">.text:00000000004012BD                 mov     [rax+4], bl</span><br><span class="line">.text:00000000004012C0                 mov     bl, [rax+8]</span><br><span class="line">.text:00000000004012C3                 mov     cl, [rax+0Ch]</span><br><span class="line">.text:00000000004012C6                 xor     bl, cl</span><br><span class="line">.text:00000000004012C8                 mov     [rax+8], bl</span><br><span class="line">.text:00000000004012CB                 mov     bl, [rax+0Ch]</span><br><span class="line">.text:00000000004012CE                 not     bl</span><br><span class="line">.text:00000000004012D0                 mov     [rax+0Ch], bl</span><br><span class="line">.text:00000000004012D3                 xor     rax, rax</span><br><span class="line">.text:00000000004012D6                 jmp     qword_407050</span><br></pre></td></tr></table></figure>
+
+<p>​	这里对接下来参与加密异或的密钥进行了初始化。这部分执行完后，我发现程序仍然没法调试，说明仍处于 64 位的工作模式，再加上一开始审视主函数代码时发现，这里跳转回去后后几行出现无法被正常解析的数据，猜测这里仍处于 64 位模式工作，我们用 64 位 ida 静态分析其代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">.text:000000000040146E                 mov     rax, qword_4070C8 ; 长度判断并对输入与密钥执行异或</span><br><span class="line">.text:0000000000401476                 cmp     rax, 20h ; &#x27; &#x27;</span><br><span class="line">.text:000000000040147A                 jz      short loc_4014BC</span><br><span class="line">.text:000000000040147C                 xor     rdx, rdx</span><br><span class="line">.text:000000000040147F                 mov     rcx, 4</span><br><span class="line">.text:0000000000401489                 div     rcx</span><br><span class="line">.text:000000000040148C                 lea     rbx, ds:407014h</span><br><span class="line">.text:0000000000401494                 mov     dl, [rbx+rdx*4]</span><br><span class="line">.text:0000000000401497                 mov     rax, qword_4070C8</span><br><span class="line">.text:000000000040149F                 lea     rbx, ds:407060h</span><br><span class="line">.text:00000000004014A7                 mov     cl, [rbx+rax]</span><br><span class="line">.text:00000000004014AA                 xor     cl, dl</span><br><span class="line">.text:00000000004014AC                 mov     [rbx+rax], cl</span><br><span class="line">.text:00000000004014AF                 inc     rax</span><br><span class="line">.text:00000000004014B2                 mov     qword_4070C8, rax</span><br><span class="line">.text:00000000004014BA                 jmp     short loc_40146E ; 长度判断并对输入与密钥执行异或</span><br><span class="line">.text:00000000004014BC ; -------------------------------------------------------------------</span><br><span class="line">.text:00000000004014BC</span><br><span class="line">.text:00000000004014BC loc_4014BC:                             ; CODE XREF: .text:000000000040147A↑j</span><br><span class="line">.text:00000000004014BC                 mov     eax, 407000h # 存储地址：4014C5</span><br><span class="line">.text:00000000004014C2                 jmp     qword ptr [rax]</span><br></pre></td></tr></table></figure>
+
+<p>​		由此我们分析出程序的加密逻辑：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">dbg_get = <span class="number">0x5DF966AE</span></span><br><span class="line"><span class="built_in">input</span> = <span class="string">&#x27;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&#x27;</span></span><br><span class="line">dbg_get -= <span class="number">0x21524111</span></span><br><span class="line">list_input = []</span><br><span class="line">qword_arr=[]</span><br><span class="line">cmp_data = [<span class="number">0xE20F4FAA</span>, <span class="number">0x549941E4</span>, <span class="number">0x7E842B2C</span>, <span class="number">0x788B8FBC</span>, <span class="number">0x5E8873D3</span>, <span class="number">0x708547AE</span>, <span class="number">0xCE09B331</span>, <span class="number">0xCA0DF513</span>]</span><br><span class="line">origin_key = [<span class="number">0x9d</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0x44</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0x37</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0xb5</span>, <span class="number">0x0</span>, <span class="number">0x0</span>, <span class="number">0x0</span>]</span><br><span class="line"><span class="comment"># 分组 &amp; 扩散</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">32</span>, <span class="number">4</span>):</span><br><span class="line">    list_input.append((<span class="built_in">ord</span>(<span class="built_in">input</span>[i + <span class="number">3</span>]) &lt;&lt; <span class="number">24</span>) + (<span class="built_in">ord</span>(<span class="built_in">input</span>[i + <span class="number">2</span>]) &lt;&lt; <span class="number">16</span>) + (<span class="built_in">ord</span>(<span class="built_in">input</span>[i + <span class="number">1</span>]) &lt;&lt; <span class="number">8</span>) + <span class="built_in">ord</span>(<span class="built_in">input</span>[i]))</span><br><span class="line">    list_input[<span class="built_in">int</span>(i/<span class="number">4</span>)] = (list_input[<span class="built_in">int</span>(i/<span class="number">4</span>)] + dbg_get) &amp; <span class="number">0xffffffff</span></span><br><span class="line">    dbg_get ^= list_input[<span class="built_in">int</span>(i/<span class="number">4</span>)]</span><br><span class="line">    <span class="comment"># print(hex(dbg_get))</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># for i in range(8):</span></span><br><span class="line"><span class="comment">#     print(hex(list_input[i]))</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">    qword_arr.append((list_input[i*<span class="number">2</span>+<span class="number">1</span>] &lt;&lt; <span class="number">32</span>) + list_input[i*<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># for i in range(4):</span></span><br><span class="line"><span class="comment">#     print(hex(qword_arr[i]))</span></span><br><span class="line">    </span><br><span class="line">qword_arr[<span class="number">0</span>] = ((qword_arr[<span class="number">0</span>] &lt;&lt; <span class="number">0xc</span>) &amp; <span class="number">0xffffffffffffffff</span>) | ((qword_arr[<span class="number">0</span>] &lt;&lt; <span class="number">0xc</span>) &gt;&gt; <span class="number">64</span>)</span><br><span class="line">qword_arr[<span class="number">1</span>] = ((qword_arr[<span class="number">1</span>] &lt;&lt; <span class="number">0x22</span>) &amp; <span class="number">0xffffffffffffffff</span>) | ((qword_arr[<span class="number">1</span>] &lt;&lt; <span class="number">0x22</span>) &gt;&gt; <span class="number">64</span>)</span><br><span class="line">qword_arr[<span class="number">2</span>] = ((qword_arr[<span class="number">2</span>] &lt;&lt; <span class="number">0x38</span>) &amp; <span class="number">0xffffffffffffffff</span>) | ((qword_arr[<span class="number">2</span>] &lt;&lt; <span class="number">0x38</span>) &gt;&gt; <span class="number">64</span>)</span><br><span class="line">qword_arr[<span class="number">3</span>] = ((qword_arr[<span class="number">3</span>] &lt;&lt; <span class="number">0xe</span>) &amp; <span class="number">0xffffffffffffffff</span>) | ((qword_arr[<span class="number">3</span>] &lt;&lt; <span class="number">0xe</span>) &gt;&gt; <span class="number">64</span>)   </span><br><span class="line"></span><br><span class="line"><span class="comment"># for i in range(4):</span></span><br><span class="line"><span class="comment">#     print(hex(qword_arr[i]))</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">    list_input[i*<span class="number">2</span>+<span class="number">1</span>] = qword_arr[i] &gt;&gt; <span class="number">32</span></span><br><span class="line">    list_input[i*<span class="number">2</span>] = qword_arr[i] &amp; <span class="number">0xffffffff</span></span><br><span class="line">    </span><br><span class="line"><span class="comment"># for i in range(8):</span></span><br><span class="line"><span class="comment">#     print(hex(list_input[i]))</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># for i in range(4):</span></span><br><span class="line"><span class="comment">#     print(hex(origin_key[i*4]) + &#x27;,&#x27;,end=&#x27;&#x27;)</span></span><br><span class="line"><span class="comment"># print()</span></span><br><span class="line">origin_key[<span class="number">0</span>] = origin_key[<span class="number">0</span>] &amp; origin_key[<span class="number">4</span>]</span><br><span class="line">origin_key[<span class="number">4</span>] = origin_key[<span class="number">4</span>] | origin_key[<span class="number">8</span>]</span><br><span class="line">origin_key[<span class="number">8</span>] = origin_key[<span class="number">8</span>] ^ origin_key[<span class="number">0xc</span>]</span><br><span class="line">origin_key[<span class="number">0xc</span>] = (-origin_key[<span class="number">0xc</span>] - <span class="number">1</span>)&amp; <span class="number">0xff</span></span><br><span class="line"><span class="comment"># for i in range(4):</span></span><br><span class="line"><span class="comment">#     print(hex(origin_key[i*4]) + &#x27;,&#x27;,end=&#x27;&#x27;)</span></span><br><span class="line"></span><br><span class="line">key = (origin_key[<span class="number">12</span>] &lt;&lt; <span class="number">24</span>) + (origin_key[<span class="number">8</span>] &lt;&lt; <span class="number">16</span>) + (origin_key[<span class="number">4</span>] &lt;&lt; <span class="number">8</span>) + origin_key[<span class="number">0</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(key))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    list_input[i] ^= key</span><br><span class="line">    </span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    <span class="keyword">if</span> list_input[i] != cmp_data[i]:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;Wrong flag&#x27;</span>)</span><br><span class="line">        exit()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Right, flag is DASCTF&#123;your input&#125;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>由此我们写出解题脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">xor_reverse</span>(<span class="params">data, key</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        data[i] ^= key</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rol_reverse</span>(<span class="params">data, offset</span>):</span><br><span class="line">    tmp_arr=[]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        tmp_arr.append((data[i*<span class="number">2</span>+<span class="number">1</span>] &lt;&lt; <span class="number">32</span>) + data[i*<span class="number">2</span>])</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        tmp_arr[i] = ((tmp_arr[i] &gt;&gt; offset[i]) | ((tmp_arr[i] &lt;&lt; (<span class="number">64</span>-offset[i])) &amp; <span class="number">0xffffffffffffffff</span>)) &amp; <span class="number">0xffffffffffffffff</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        data[<span class="number">2</span>*i] = tmp_arr[i] &amp; <span class="number">0xffffffff</span></span><br><span class="line">        data[<span class="number">2</span>*i+<span class="number">1</span>] = tmp_arr[i] &gt;&gt; <span class="number">32</span></span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">deffusion_reverse</span>(<span class="params">data, factor</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(data)):</span><br><span class="line">        tmp = data[i]</span><br><span class="line">        data[i] = (data[i] - factor) &amp; <span class="number">0xffffffff</span></span><br><span class="line">        factor ^= tmp</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    cmp_data = [<span class="number">0xE20F4FAA</span>, <span class="number">0x549941E4</span>, <span class="number">0x7E842B2C</span>, <span class="number">0x788B8FBC</span>, <span class="number">0x5E8873D3</span>, <span class="number">0x708547AE</span>, <span class="number">0xCE09B331</span>, <span class="number">0xCA0DF513</span>]</span><br><span class="line">    final_key = <span class="number">0x4a827704</span></span><br><span class="line">    rol_offset = [<span class="number">0xc</span>, <span class="number">0x22</span>, <span class="number">0x38</span>, <span class="number">0xe</span>]</span><br><span class="line">    diffusion_factor = <span class="number">0x3CA7259D</span></span><br><span class="line">    flag_arr = xor_reverse(cmp_data, final_key)</span><br><span class="line">    flag_arr = rol_reverse(flag_arr, rol_offset)</span><br><span class="line">    flag_arr = deffusion_reverse(flag_arr, diffusion_factor)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;DASCTF&#123;&#x27;</span>, end=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> flag_arr:</span><br><span class="line">        <span class="built_in">print</span>(<span class="built_in">int</span>.to_bytes(i, <span class="number">4</span>, <span class="string">&#x27;little&#x27;</span>).decode(),end=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;&#125;&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>flag：DASCTF{6cc1e44811647d38a15017e389b3f704}</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://kamasammohana.github.io/2023/02/14/%E8%A5%BF%E6%B9%96%E8%AE%BA%E5%89%91%202023%20%E5%88%9D%E8%B5%9B%20RE%20%E5%A4%8D%E7%8E%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2023/01/15/Android%20%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E4%B8%8E%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E8%BF%9B%E5%85%A5%20Android%20Dalvik%20%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Android 软件安全与逆向分析第三章：进入 Android Dalvik 虚拟机（内含 smali 汇编学习）</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2022-2023
+        <i class="ri-heart-fill heart_icon"></i> Syclover.Kama
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Kama"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://bcyng-w.github.io">Friends Chain B</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://sycskye.xyz">Friends Chain C</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://lzhnb.site">Friends Chain H</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1824020871&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
